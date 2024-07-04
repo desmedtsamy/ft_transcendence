@@ -5,28 +5,4 @@
 {% endblock %}
 {% block content %}
 <h1 id="neon">PONG</h1>
-{% if scoreboard %}
-	<table id="scoreboard">
-		<thead>
-			<tr>
-				<th class="text-center">Rank</th>
-				<th class="text-center">Name</th>
-				<th class="text-center">Score</th>
-				<th class="text-center">Ratio</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for player in scoreboard %}
-			<tr>
-				<td class="text-center">{{ forloop.counter }}</td>
-				<td class="text-center">{{ player.name | truncatechars:10}}</td>
-				<td class="text-center">{{ player.score }}</td>
-				<td class="text-center">{{ player.ratio }}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-{% else %}
-	<p>No scoreboard data available.</p>
-{% endif %}
 {% endblock %}

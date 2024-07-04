@@ -12,13 +12,8 @@ from django.contrib import messages
 
 
 def index(request):
-	top_players = User.objects.order_by('-score')[:10]
-	context = {
-		'scoreboard' : [
-			{'name': p.username, 'score': p.score, 'avatar': p.avatar, 'ratio': p.wins / (p.losses + 1) if p.losses > 0 else float('inf')} for p in top_players
-		],
-	}
-	return render(request,'index.html', context)
+	
+	return render(request,'index.html')
 
 @login_required
 def home(request):
