@@ -1,0 +1,220 @@
+body, html {
+	margin: 0;
+	padding: 0;
+	font-family: 'Courier New', monospace;
+	background-color: #000;
+	color: #0f0;
+	height: 100%;
+	overflow: hidden;
+}
+#pong-game {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+.content {
+	position: relative;
+	z-index: 1;
+	background-color: rgba(0, 0, 0, 0.5);
+	min-height: 100vh;
+	padding: 20px;
+	box-sizing: border-box;
+}
+h1 {
+	font-size: 3em;
+	text-transform: uppercase;
+	animation: blink 1s infinite;
+	margin-top: 20px;
+	text-align: center;
+}
+@keyframes blink {
+	50% { opacity: 0; }
+}
+nav {
+	background-color: #0f0;
+	padding: 10px 0;
+	margin-bottom: 20px;
+}
+nav ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+nav ul li {
+	margin: 0 15px;
+}
+nav ul li a {
+	color: #000;
+	text-decoration: none;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 0.9em;
+	transition: all 0.3s ease;
+}
+nav ul li a:hover, nav ul li a.active {
+	color: #fff;
+	text-shadow: 0 0 5px #0f0, 0 0 10px #0f0;
+}
+.profile-menu {
+	position: relative;
+}
+.profile-pic {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	border: 2px solid #000;
+	cursor: pointer;
+}
+.dropdown-content {
+	display: none;
+	position: absolute;
+	right: 0;
+	background-color: #0f0;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+}
+.dropdown-content a {
+	color: #000;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+	text-align: left;
+}
+.dropdown-content a:hover {
+	background-color: #000;
+	color: #0f0;
+}
+.profile-menu:hover .dropdown-content {
+	display: block;
+}
+table {
+	width: 100%;
+	max-width: 600px;
+	margin: 20px auto;
+	border-collapse: collapse;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+th, td {
+	border: 1px solid #0f0;
+	padding: 10px;
+	text-align: left;
+}
+th {
+	background-color: #0f0;
+	color: #000;
+}
+#training-game {
+	width: 100%;
+	max-width: 800px;
+	height: 400px;
+	margin: 20px auto;
+	background-color: #000;
+	border: 2px solid #0f0;
+}
+#score {
+	text-align: center;
+	font-size: 2em;
+	margin-top: 10px;
+}
+#start-button {
+	display: block;
+	margin: 20px auto;
+	padding: 10px 20px;
+	font-size: 1.2em;
+	background-color: #0f0;
+	color: #000;
+	border: none;
+	cursor: pointer;
+	font-family: 'Courier New', monospace;
+}
+#start-button:hover {
+	background-color: #000;
+	color: #0f0;
+	border: 1px solid #0f0;
+}
+
+#username{
+	font-size: 1.2em;
+	text-decoration: none;
+	color : white;
+	margin-right: 1em;
+}
+.avatar{ 
+	width: 2.5em;
+	border-radius: 50%;
+	object-fit: cover;
+	overflow: hidden;
+}
+.avatar-xl {
+	width: 7.5em;
+  }
+
+.avatar-small {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	margin-right: 0.5rem;
+	border: 2px solid #ffff00; /* Bordure jaune */
+}
+
+/* Dropdown */
+.dropdown-toggle {
+    background: none;
+    border: none;
+}
+.dropdown-toggle::after {
+	content: none;
+}
+.dropdown-menu {
+	background-color: #343a40;
+}
+
+.dropdown-item {
+    color: #f8f9fa;
+    background-color: #343a40;
+    font-size: 16px;
+    padding: 0.5rem 1rem;
+    border: none;  /* Supprime la bordure par défaut */
+}
+.dropdown-item:hover {
+    background-color: #e9ecef;
+}
+.logo {
+	width: 2.5em;
+	height: auto;
+}
+#scoreboard {
+	width: 42em;
+	border-collapse: collapse;
+	font-family: "Press Start 2P";
+  }
+  
+  #scoreboard th,
+  #scoreboard td {
+	padding: 0.5em;
+	border: 1px solid #f2f2f2;
+	text-align: center;
+  }
+  
+  #scoreboard th {
+	background-color: #262750;
+	color: #f2f2f2;
+  }
+  #scoreboard .avatar {
+
+	float: left;
+	margin-right: 0.5em;
+  }
+  .cellule {
+	display: flex;
+	align-items: center;
+  }
+
+  

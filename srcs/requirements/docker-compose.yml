@@ -1,0 +1,20 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    volumes:
+      - ../data/db:/var/lib/postgresql/data
+    env_file: ../../.env
+  web:
+    container_name: web
+    build:
+      context: ./django
+    image: web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ../django/:/app
+    ports:
+      - "8000:8000"
+    env_file: ../../.env
+    depends_on:
+      - db

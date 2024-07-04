@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Paramètres du compte</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="fields" id="edit_avatar">
+            <label for="{{ form.avatar.id_for_label }}">
+                <img id="previewImg" src="{{ user.avatar.url }}" alt="profile picture" class="avatar avatar-xl">
+                <i class="bi bi-pencil"></i> 
+            </label>
+			<span class="to_hide">
+            {{ form.avatar }}
+			</span>
+        </div>
+        {% for field in form %}
+            {% if field.name != 'avatar' %}
+                <div class="fields">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <button type="submit" class="submit"  class="btn btn-primary">save</button>
+		{% if not user.intra_id or user.intra_id == 0 %}
+			<a class="submit" id="login_42" href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-c69dfbecc299610c1300d4f931cbf3bb8fa4c079346bd4e3a1f95145f0fa55b4&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Faccount%2F42sync&response_type=code">
+			<span> link with 42 profile </span>
+			</a>
+		{% endif %}
+    </form>
+</div>
+<script> 
+	const fileInput = document.getElementById('id_avatar');
+	const previewImage = document.getElementById('previewImg');
+	
+	fileInput.addEventListener('change', (event) => {
+	  const file = event.target.files[0];
+	  const reader = new FileReader();
+	
+	  reader.onload = (e) => {
+		previewImage.src = e.target.result;
+	  };
+	
+	  reader.readAsDataURL(file);
+	});
+	 </script>
+{% endblock %}

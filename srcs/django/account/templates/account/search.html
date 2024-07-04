@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/account/search.css' %}">
+{% endblock %}
+{% block content %} 
+    <div class="container mt-5">
+        <h2>Rechercher des utilisateurs</h2>
+
+        <form method="get" action="{% url 'account:search_users' %}">
+            <div class="fields">
+                <label for="query">Recherche :</label>
+                <input type="text" name="query" id="query" value="{{ query }}">
+            </div>
+            <button type="submit" class="submit">Rechercher</button>
+        </form>
+
+        {% if users %}
+            <h3>Résultats de la recherche</h3>
+            <ul>
+                {% for user in users %}
+                    <li>
+                        <a href="/">
+                            <img  class="avatar-small" src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}">
+                            {{ user.username }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% if query %}
+                <p>Aucun utilisateur trouvé pour la recherche "{{ query }}".</p>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock content %} 

@@ -1,0 +1,28 @@
+
+#neon{
+   animation: neon 1.5s ease-in-out infinite alternate;
+   text-align: center;
+   font-size: 7em;
+   margin-bottom: 1em;
+   margin-top: 0.5em;
+   line-height: 1;
+   text-decoration: none;
+   color: #fff;
+   font-family: "Press Start 2P";
+ }  
+
+@keyframes neon {
+	from {
+	  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #0f0,
+		0 0 70px #0f0, 0 0 80px #0f0, 0 0 100px #0f0, 0 0 100px #0f0;
+	}
+	to {
+	  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #0f0,
+		0 0 35px #0f0, 0 0 40px #0f0, 0 0 50px #0f0, 0 0 75px #0f0;
+	}
+  }
+  @media (max-width: 650px) {
+	#neon {
+	  font-size: 3.5em;
+	}
+  }
