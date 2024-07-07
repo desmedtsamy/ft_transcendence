@@ -1,37 +1,6 @@
-body {
-    background-color: #000; /* Fond noir */
-    color: #ff69b4; /* Texte rose fluo */
-    font-family: 'Press Start 2P', cursive; /* Police pixelisée */
-}
-
-h2 {
-    font-size: 3rem;
-    text-align: center;
-    text-shadow: 0 0 10px #ff00ff; /* Ombre portée violette */
-    margin-bottom: 2rem;
-}
-
-form {
-    background-color: #191970; /* Bleu marine */
-    padding: 1rem;
-    border: 4px solid #ff00ff; /* Bordure épaisse violette */
-    border-radius: 10px; /* Bords arrondis */
-    margin-bottom: 2rem;
-}
-
-input[type="text"] {
-    background-color: #000;
-    color: #fff;
-    padding: 0.5rem;
-    border: 2px solid #ff69b4; /* Bordure rose fluo */
-}
-
-button[type="submit"] {
-    background-color: #ff69b4; /* Rose fluo */
-    color: #000;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
+/* Demandes d'amis reçues */
+h3 {
+    margin-top: 30px; /* Espacement entre les sections */
 }
 
 ul {
@@ -40,13 +9,43 @@ ul {
 }
 
 li {
-    background-color: #000; 
-    padding: 1rem;
-    border: 2px solid #00ffff; /* Bordure cyan */
-    margin-bottom: 0.5rem;
+    display: flex;           /* Use flexbox for layout */
+    align-items: center;     /* Align items vertically */
+    justify-content: space-between; /* Distribute space between items */
+    padding: 15px;
+    border-bottom: 1px solid #343a40; /* Add subtle separator */
 }
 
-li a {
-    color: #fff;
-    text-decoration: none;
+.avatar-small { /* Style pour les avatars plus petits */
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Red */
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333; /* Darker red on hover */
 }

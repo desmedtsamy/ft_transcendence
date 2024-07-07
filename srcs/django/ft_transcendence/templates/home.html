@@ -1,9 +1,23 @@
 {% extends 'base.html' %}
 
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}"> 
+{% endblock %}
 {% block title %}
 	Home
 {% endblock %}
 {% block content %}
+
+{% if user.is_admin %}
+<form method="post" action="/generate_users/">
+    {% csrf_token %}
+    <label> Number of users to generate: </label>
+    <input type="number" name="num_users" value="10" min="1" max="100">
+    <button type="submit">Générer</button>
+</form>
+{% endif %}
+
 <h1 id="neon">SCOREBOARD</h1>
 {% if scoreboard %}
 	<table id="scoreboard">
@@ -19,7 +33,7 @@
 			{% for player in scoreboard %}
 			<tr>
 				<td class="text-center">{{ forloop.counter }}</td>
-				<td class="text-center cellule"><img class="avatar" src="{{ player.avatar.url }}" alt="Avatar"> {{ player.name | truncatechars:10}}</td>
+				<td class="text-center cellule"><img class="avatar" src="{{ player.avatar.url }}" alt="Avatar"> {{ player.name }}</td>
 				<td class="text-center">{{ player.score }}</td>
 				<td class="text-center">{{ player.ratio }}</td>
 			</tr>

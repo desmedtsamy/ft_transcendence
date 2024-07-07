@@ -12,9 +12,7 @@ urlpatterns = [
     path('42callback/', views.callback_42, name='42callback'),
     path('42sync/', views.sync_42, name='42sync'),
 	path('friends/', views.friends_view, name='friends'),
-path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
-
-	
+	path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
 	path('search/', views.search_users_view, name='search_users'),
 	path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
 	path('accept_friend_request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
