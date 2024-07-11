@@ -9,11 +9,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.db.models import Q
 import requests
 import os
-from .models import User, FriendshipRequest, Friendship
+from .models import User, FriendshipRequest, Friendship, Match
 from .forms import LoginForm, RegisterForm, UserSettingsForm
+from django.utils import timezone
+
 
 class LoginView(View):
 	template_name = 'account/login.html'
@@ -52,7 +56,6 @@ class RegisterView(View):
 			messages.success(request, f"Bienvenue, {user.username} !")
 			return redirect('home')
 		return render(request, self.template_name, {'form': form})
-
 
 class SettingsView(LoginRequiredMixin, UpdateView):
 	model = User
@@ -178,61 +181,86 @@ def callback_42(request):
 @login_required
 def search_users_view(request):
 	query = request.GET.get('query', '')
+	user = request.user
+	now = timezone.now()
+	friends = user.get_friends()
+	friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
+	friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
 	users = User.objects.filter(
 		Q(username__icontains=query) | Q(email__icontains=query)
-	)
-	return render(request, 'account/search.html', {'users': users, 'query': query})
+	).exclude(pk=user.pk)
+
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('account/search_results.html', {'users': users, 'friends': friends, 'friend_requests_sent': list(friend_requests_sent), 'friend_requests_received': list(friend_requests_received)})  
+		return HttpResponse(html)
+	return render(request, 'account/search.html', {
+		'users': users, 
+		'query': query,
+		'friends': friends, 
+		'friend_requests_sent': list(friend_requests_sent),
+		'friend_requests_received': list(friend_requests_received),
+		'now': now
+	})
+
 
 @login_required
 def friends_view(request):
+	friend_requests = FriendshipRequest.objects.filter(to_user=request.user)
 	all_users = User.objects.all()
 	friends = request.user.get_friends()
-	friend_requests = FriendshipRequest.objects.filter(to_user=request.user)
-	exclude_ids = [request.user.id] + [friend.id for friend in friends] + [request.from_user_id for request in friend_requests]
-	all_users = User.objects.exclude(id__in=exclude_ids)
-
 	return render(request, 'account/friends.html', {
-		'all_users': all_users,
 		'friend_requests': friend_requests,
-		'friends': friends
+		'all_users': all_users,
+		'friends' : friends
 	})
 
 @login_required
-def send_friend_request(request):
-    if request.method == 'POST':
-        user_id = request.POST['user_id']
-        try:
-            to_user = User.objects.get(id=user_id)
-            if to_user == request.user:
-                messages.error(request, "Vous ne pouvez pas vous envoyer une demande d'ami.")
-            elif Friendship.objects.filter(Q(user1=request.user, user2=to_user) | Q(user1=to_user, user2=request.user)).exists():
-                messages.warning(request, f"Vous êtes déjà ami avec {to_user.username} ou une demande est en attente.")
-            else:
-                FriendshipRequest.objects.create(from_user=request.user, to_user=to_user)
-                messages.success(request, f"Demande d'ami envoyée à {to_user.username}.")
-        except User.DoesNotExist:
-            messages.error(request, "Utilisateur introuvable.")
-    return redirect('account:friends')
+def send_friend_request(request, user_id):
+	if request.method == 'POST':
+		try:
+			to_user = User.objects.get(id=user_id)
+			if to_user == request.user:
+				messages.error(request, "Vous ne pouvez pas vous envoyer une demande d'ami.")
+			elif Friendship.objects.filter(Q(user1=request.user, user2=to_user) | Q(user1=to_user, user2=request.user)).exists():
+				messages.warning(request, f"Vous êtes déjà ami avec {to_user.username} ou une demande est en attente.")
+			else:
+				FriendshipRequest.objects.create(from_user=request.user, to_user=to_user)
+				messages.success(request, f"Demande d'ami envoyée à {to_user.username}.")
+		except User.DoesNotExist:
+			messages.error(request, "Utilisateur introuvable.")
+	return redirect('account:search_users')
 
 @login_required
-def accept_friend_request(request, request_id):
+def accept_friend_request(request, user_id):
 	try:
-		friend_request = FriendshipRequest.objects.get(id=request_id, to_user=request.user)
+		friend_request = FriendshipRequest.objects.get(from_user__id=user_id, to_user=request.user)
 		friend_request.accept()
 		messages.success(request, f"Vous êtes maintenant ami avec {friend_request.from_user.username}.")
 	except FriendshipRequest.DoesNotExist:
 		messages.error(request, "Demande d'ami introuvable.")
-	return redirect('account:friends')
+	return redirect('account:search_users') 
 
 @login_required
-def reject_friend_request(request, request_id):
+def reject_friend_request(request, user_id):
 	try:
-		friend_request = FriendshipRequest.objects.get(id=request_id, to_user=request.user)
-		friend_request.reject()
+		# Filtrer par to_user (vous) et from_user (celui qui a envoyé la demande)
+		friend_request = FriendshipRequest.objects.get(to_user=request.user, from_user_id=user_id) 
+		friend_request.cancel()  # Refuse la demande
 		messages.success(request, f"Demande d'ami de {friend_request.from_user.username} refusée.")
 	except FriendshipRequest.DoesNotExist:
 		messages.error(request, "Demande d'ami introuvable.")
-	return redirect('account:friends')
+	return redirect('account:search_users')
+
+@login_required
+def remove_friend_request(request, user_id):
+	try:
+		# Filtrer par from_user (vous) et to_user (celui à qui la demande a été envoyée)
+		friend_request = FriendshipRequest.objects.get(from_user=request.user, to_user_id=user_id)
+		friend_request.cancel()  # Annule la demande
+		messages.success(request, f"Demande d'ami à {friend_request.to_user.username} annulée.")
+	except FriendshipRequest.DoesNotExist:
+		messages.error(request, "Demande d'ami introuvable.")
+	return redirect('account:search_users')
 
 @login_required
 def remove_friend(request, friend_id):
@@ -244,8 +272,27 @@ def remove_friend(request, friend_id):
 		)
 	except Friendship.DoesNotExist:
 		messages.error(request, "Vous n'êtes pas ami avec cet utilisateur.")
-		return redirect('account:friends')
+		return redirect('account:search_users')
 
 	friendship.remove_friend(friend)
 	messages.success(request, f"Vous n'êtes plus ami avec {friend.username}.")
-	return redirect('account:friends')
+	return redirect('account:search_users')
+
+@login_required
+def profile_view(request, username):
+	user = get_object_or_404(User, username=username)
+
+	if user.wins + user.losses > 0:
+		ratio = round(user.wins / (user.wins + user.losses) * 100, 1)
+	else:
+		ratio = 0
+
+	matches = Match.objects.filter(players=user).order_by('-created_at')
+	recent_matches = Match.objects.filter(players=user).order_by('-created_at')[:5]
+
+	return render(request, 'account/profile.html', {
+		'profile_user': user,
+		'ratio': ratio,
+		'recent_matches': recent_matches,
+		'matches': matches,
+	})

@@ -20,8 +20,8 @@
             <ul> 
                 {% if user.is_authenticated %}
                     <li> <a href="/home"><i class="fas fa-home"></i> Accueil</a> </li>
-                    <li> <a href="/account/search"><i class="fas fa-trophy"></i> Classement</a> </li>
-                    <li><a href="/account/friends"><i class="bi bi-people"></i> Friends</a></li>
+                    <li> <a href="/scoreboard"><i class="fas fa-trophy"></i> Classement</a> </li>
+                    <li><a href="/account/search"><i class="fa fa-search" aria-hidden="true"></i> rechercher</a></li>
                     <li><a href="#"><i class="bi bi-flag"></i> Tournois</a></li>
                     
                     {% if user.is_admin %}
@@ -38,6 +38,7 @@
                             <li class="profile-menu">
                                 <img src="{{ user.avatar.url }}" alt="Profile" class="profile-pic">
                                 <div class="dropdown-content">
+                                    <a href="{% url 'account:profile' user.username %}"><i class="fa fa-user" aria-hidden="true"></i> profil</a>
                                     <a href="{% url 'account:settings' %}"><i class="fas fa-cog"></i> Réglages</a>
                                     <a href="{% url 'account:logout' %}"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
                                 </div>
@@ -56,7 +57,7 @@
     </header>
 
     {% for message in messages %}
-    <div>
+    <div class ="alert">
         {{ message }}
     </div>
     {% endfor %}
@@ -64,5 +65,13 @@
                 {% block content %}
         {% endblock %}
     </div>
+
+	<script>
+		setInterval(function() {
+			fetch('{% url "update_last_activity" %}')
+				.then(response => response.json())
+				.then(data => {});
+		}, 60000);
+	</script>
 </body>
 </html>

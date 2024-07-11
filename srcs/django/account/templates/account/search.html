@@ -4,6 +4,7 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/account/search.css' %}">
 {% endblock %}
+
 {% block content %} 
     <div class="container mt-5">
         <h2>Rechercher des utilisateurs</h2>
@@ -11,27 +12,34 @@
         <form method="get" action="{% url 'account:search_users' %}">
             <div class="fields">
                 <label for="query">Recherche :</label>
-                <input type="text" name="query" id="query" value="{{ query }}">
-            </div>
-            <button type="submit" class="submit">Rechercher</button>
+				<input type="text" name="query" id="query" value="{{ query }}" onkeyup="searchUsers()"> 
+			</div>
         </form>
 
-        {% if users %}
-            <h3>Résultats de la recherche</h3>
-            <ul>
-                {% for user in users %}
-                    <li>
-                        <a href="/">
-                            <img  class="avatar" src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}">
-                            {{ user.username }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            {% if query %}
-                <p>Aucun utilisateur trouvé pour la recherche "{{ query }}".</p>
-            {% endif %}
-        {% endif %}
-    </div>
+		<ul id="search-results" class="user_list">
+			{% if users %}  
+				{% for user in users %}
+					{% endfor %}
+			{% else %}  
+				{% if query %}  
+					<p>Aucun utilisateur trouvé pour la recherche "{{ query }}".</p>
+				{% endif %}  
+			{% endif %}
+		</ul>
+
+<script>
+	function searchUsers() {
+		const query = document.getElementById('query').value;
+	
+		fetch('{% url 'account:search_users' %}?query=' + query, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		})
+			.then(response => response.text())
+			.then(data => {
+				document.getElementById('search-results').innerHTML = data;
+			});
+	}
+</script>
 {% endblock content %} 

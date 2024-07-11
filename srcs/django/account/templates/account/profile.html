@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block head %}
+	<link rel="stylesheet" href="{% static 'css/account/profile.css' %}">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h2>Profil de {{ profile_user.username }}</h2>
+	<img src="{{ profile_user.avatar.url }}" alt="Profile" class="avatar_xl">
+
+    <p>Ratio victoires/défaites : {{ ratio }}%</p>
+    <p>Score : {{ profile_user.score }}</p>
+    <p>Dernière connexion : {{ profile_user.last_connection }}</p> 
+    <!-- Ajout du graphique -->
+    <h3>Évolution du score</h3>
+    <canvas id="scoreChart" width="400" height="200"></canvas>
+
+	<h3>Historique des matchs récents</h3>
+	{% if recent_matches %}
+		<ul>
+			{% for match in recent_matches %}
+    <li class="match-item">
+		<div class="match-date">{{ match.created_at|date:"d/m/Y H:i" }}</div>         
+        <div class="match-duration">Durée: {{ match.duration }} secondes</div>
+        <div class="match-players">
+            {% for player in match.players.all %}
+                {% if forloop.counter == 1 %}
+                    <div class="player">
+                        <a href="{% url 'account:profile' player.username %}">
+                            {{ player.username }}
+                        </a>
+                        {% if match.winner == player %}
+                            <span class="score-change" style="color: green;">+{{ match.points_at_stake }}</span>
+                        {% else %}
+                            <span class="score-change" style="color: red;">-{{ match.points_at_stake }}</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="versus">VS</div>
+                    <div class="player">
+                        <a href="{% url 'account:profile' player.username %}">
+                            {{ player.username }}
+                        </a>
+                        {% if match.winner == player %}
+                            <span class="score-change" style="color: green;">+{{ match.points_at_stake }}</span>
+                        {% else %}
+                            <span class="score-change" style="color: red;">-{{ match.points_at_stake }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </li>
+{% endfor %}
+
+		</ul>
+	{% else %}
+		<p>Aucun match récent.</p>
+	{% endif %}
+
+	
+
+<script>
+	var ctx = document.getElementById('scoreChart').getContext('2d');
+	var scoreData = [{{ profile_user.score }}];
+	var labels = ['Score actuel'];
+
+	{% for match in matches %}
+		{% if match.winner == profile_user %}
+			scoreData.push(scoreData[scoreData.length - 1] - {{ match.points_at_stake }});
+		{% else %}
+			scoreData.push(scoreData[scoreData.length - 1] + {{ match.points_at_stake }});
+		{% endif %}
+		labels.push('{{ match.created_at|date:"d/m/Y H:i" }}');
+	{% endfor %}
+
+	scoreData.reverse();
+	labels.reverse();
+
+	var scoreChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Score',
+				data: scoreData,
+				borderColor: 'rgb(75, 192, 192)',
+				tension: 0.1
+			}]
+		},
+		options: {
+			responsive: true,
+			scales: {
+				y: {
+					beginAtZero: true
+				}
+			}
+		}
+	});
+</script>
+{% endblock content %}

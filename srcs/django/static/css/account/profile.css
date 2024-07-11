@@ -1,0 +1,32 @@
+.match-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #343a40;
+}
+
+.match-date {
+    font-size: 0.8em;
+    color: #6c757d; /* Gris clair */
+}
+
+.match-players {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.versus {
+    font-weight: bold;
+}
+
+.score-change {
+    font-size: 0.9em;
+}

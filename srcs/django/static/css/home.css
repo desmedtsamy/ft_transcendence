@@ -1,0 +1,73 @@
+/* Form Container Styling */
+form {
+    display: flex; /* Use flexbox for easy alignment */
+    flex-direction: column; /* Stack form elements vertically */
+    max-width: 400px; /* Adjust width as needed */
+    margin: 30px auto; /* Center the form */
+    padding: 25px; 
+    background-color: var(--secondary-bg); /* Use your secondary background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 20px rgba(22, 224, 189, 0.1); /* Subtle glow */
+}
+
+/* Form Label Styling */
+form label {
+    color: var(--primary-color); /* Use your text color */
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+/* Scoreboard Table Styling */
+#scoreboard {
+    width: 95%; /* Adjust width as needed */
+    margin: 20px auto; /* Center the table */
+    border-collapse: collapse; /* Remove default cell spacing */
+    overflow: hidden; /* Hide overflow for rounded corners */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    border-radius: 10px; /* Rounded corners */
+}
+
+#scoreboard th {
+    background-color: var(--primary-color); /* Use your primary color */
+    color: var(--bg-color); /* Text color for contrast */
+    font-weight: bold;
+    padding: 15px;
+    text-align: left;
+}
+
+#scoreboard td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(22, 224, 189, 0.1); /* Subtle horizontal line */
+    text-align: left;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+#scoreboard tr:nth-child(even) td {
+    background-color: rgba(22, 224, 189, 0.05); /* Alternate row background */
+}
+
+#scoreboard tr:hover td {
+    background-color: rgba(22, 224, 189, 0.2); /* Hover effect */
+}
+
+/* Avatar Styling within Table */
+#scoreboard .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px; /* Add space between avatar and text */
+    vertical-align: middle; /* Align avatar with text */
+}
+
+/* Optional: Responsive Styling for Smaller Screens */
+@media (max-width: 768px) {
+    #scoreboard {
+        width: 100%; /* Make table full width on small screens */
+    }
+
+    #scoreboard th, #scoreboard td {
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+}
