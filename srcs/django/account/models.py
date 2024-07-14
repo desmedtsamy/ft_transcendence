@@ -40,7 +40,6 @@ class Match(models.Model):
 	points_at_stake = models.IntegerField(default=0)
 
 	def save(self, *args, **kwargs):
-		# Calculer les points en jeu avant de sauvegarder le match
 		self.points_at_stake = self.duration
 		super().save(*args, **kwargs)
 	
