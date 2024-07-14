@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
 
 ## needed for generate users
 import random
@@ -40,7 +41,7 @@ def scoreboard_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_admin)
+@user_passes_test(lambda u: u.is_superuser)
 def generate_users_view(request):
 	if request.method == 'POST':
 		num_users = int(request.POST.get('num_users', 10))
@@ -63,10 +64,10 @@ def generate_users_view(request):
 			created_users += 1
 
 		messages.success(request, f"{created_users} utilisateurs ont été générés avec succès !")
-		return redirect('home')
+		return redirect('scoreboard')
 
 @login_required
-@user_passes_test(lambda u: u.is_admin)
+@user_passes_test(lambda u: u.is_superuser)
 def create_match_view(request):
 	if request.method == 'POST':
 		player1_id = request.POST.get('player1')
@@ -98,7 +99,7 @@ def create_match_view(request):
 				loser.save()
 
 				messages.success(request, f"match created")
-				return redirect('/home')
+				return redirect('scoreboard')
 			except (User.DoesNotExist, ValueError) as e:
 				print(f"Erreur lors de la création du match : {e}")
-	return redirect('/home')
+	return redirect('scoreboard')

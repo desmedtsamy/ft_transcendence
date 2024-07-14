@@ -9,14 +9,14 @@
 {% endblock %}
 {% block content %}
 
-{% if user.is_admin %}
-<form method="post" action="/generate_users/">
+{% if user.is_superuser %}
+<form method="post" action="{% url 'generate_users' %}">
     {% csrf_token %}
     <label> Number of users to generate: </label>
     <input type="number" name="num_users" value="10" min="1" max="100">
     <button type="submit">Générer</button>
 </form>
-<form method="post" action="/create_match/">
+<form method="post" action="{% url 'create_match' %}">
     {% csrf_token %}
 	<label>Créer un match</label>
     <div class="fields">

@@ -15,7 +15,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
 	path('generate_users/', generate_users_view, name='generate_users'),
 	path('create_match/', create_match_view, name='create_match'),
-	path('scoreboard/', scoreboard_view, name='create_match'),
+	path('scoreboard/', scoreboard_view, name='scoreboard'),
 
 ]
 

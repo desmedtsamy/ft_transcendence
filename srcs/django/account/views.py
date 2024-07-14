@@ -17,6 +17,7 @@ import os
 from .models import User, FriendshipRequest, Friendship, Match
 from .forms import LoginForm, RegisterForm, UserSettingsForm
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_protect
 
 
 class LoginView(View):
@@ -179,20 +180,39 @@ def callback_42(request):
 	return redirect(redirect_url)
 
 @login_required
+@csrf_protect
 def search_users_view(request):
+	if request.method == 'POST':
+		pass  # Gérer la soumission du formulaire de recherche si nécessaire (actuellement vide)
+
 	query = request.GET.get('query', '')
 	user = request.user
 	now = timezone.now()
+
+	# Récupération des amis, demandes d'amis envoyées et reçues
 	friends = user.get_friends()
 	friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
 	friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
+
+	# Recherche des utilisateurs en excluant l'utilisateur courant
 	users = User.objects.filter(
 		Q(username__icontains=query) | Q(email__icontains=query)
 	).exclude(pk=user.pk)
 
+	# Requête AJAX
 	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-		html = render_to_string('account/search_results.html', {'users': users, 'friends': friends, 'friend_requests_sent': list(friend_requests_sent), 'friend_requests_received': list(friend_requests_received)})  
+		print(f"ajax")
+		html = render_to_string('account/search_results.html', {
+			'users': users, 
+			'friends': friends, 
+			'friend_requests_sent': list(friend_requests_sent), 
+			'friend_requests_received': list(friend_requests_received),
+			'now': now.isoformat()
+		})  
 		return HttpResponse(html)
+
+	# Requête normale
+	print(f"not ajax")
 	return render(request, 'account/search.html', {
 		'users': users, 
 		'query': query,
@@ -289,10 +309,16 @@ def profile_view(request, username):
 
 	matches = Match.objects.filter(players=user).order_by('-created_at')
 	recent_matches = Match.objects.filter(players=user).order_by('-created_at')[:5]
+	is_friend = Friendship.objects.filter(Q(user1=request.user, user2=user) | Q(user1=user, user2=request.user)).exists()
+	friend_request_sent = FriendshipRequest.objects.filter(from_user=request.user, to_user=user).exists()
+	friend_request_received = FriendshipRequest.objects.filter(from_user=user, to_user=request.user).exists()
 
 	return render(request, 'account/profile.html', {
 		'profile_user': user,
 		'ratio': ratio,
 		'recent_matches': recent_matches,
 		'matches': matches,
+        'is_friend': is_friend,
+        'friend_request_sent': friend_request_sent,
+        'friend_request_received': friend_request_received
 	})

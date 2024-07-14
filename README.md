@@ -11,6 +11,7 @@ https://profile.intra.42.fr/oauth/applications
 make
 
 creation / mise a jour de la db
+executer la commande dans le container "web"
 python manage.py makemigrations && python manage.py migrate
 
 creation d'un compte admin

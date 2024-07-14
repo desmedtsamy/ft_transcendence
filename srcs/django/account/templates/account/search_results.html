@@ -1,47 +1,36 @@
-<ul class="user_list">
-	{% for user in users %}
-		<li class= "user_element">
-			<a href="{% url 'account:profile' user.username %}">
-                <div class="avatar-container">
-                    <img class="avatar" src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}">
+<ul id="search-results" class="user_list">
+    {% if users %}
+        {% for user in users %}
+            <li class="user_element" data-user-id="{{ user.id }}"> 
+                <a href="{% url 'account:profile' user.username %}">
+                    <div class="avatar-container">
+                        <img class="avatar" src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}">
+                        {% if user.is_online %}
+                            <span class="online-status"><i class="fas fa-circle"></i></span>
+                        {% else %}
+                            <span class="offline-status"><i class="fas fa-circle"></i></span>
+                        {% endif %}
+                    </div>
+                    {{ user.username }}
+                </a>
 
-                    {% if user.is_online %}
-                        <span class="online-status"><i class="fas fa-circle"></i></span>
-                    {% else %}
-						<span class="offline-status"><i class="fas fa-circle"></i></span>
-					{% endif %}
-                </div>
-                {{ user.username }}
-            </a>
-
-
-			{% if user in friends %}
-				<form method="post" action="{% url 'account:remove_friend' user.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn btn-danger"><i class="fas fa-user-times"></i></button>
-				</form>
-			{% elif user.pk in friend_requests_sent %}
-				Demande envoyée
-				<form method="post" action="{% url 'account:remove_friend_request' user.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn btn-danger">annuler</button>
-				</form>
-			{% elif user.pk in friend_requests_received %}
-				Demande en attente
-				<form method="post" action="{% url 'account:accept_friend_request' user.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn">Accepter</button>
-				</form>
-				<form method="post" action="{% url 'account:reject_friend_request' user.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn btn-danger">Refuser</button>
-				</form>
-			{% else %}
-				<form method="post" action="{% url 'account:send_friend_request' user.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn"><i class="fas fa-user-plus"></i></button>
-				</form>
-			{% endif %}
-		</li>
-	{% endfor %}
+                {% if user in friends %}
+                    <button class="btn btn-danger remove-friend" data-action="{% url 'account:remove_friend' user.id %}"><i class="fas fa-user-times"></i></button>
+                {% elif user.pk in friend_requests_sent %}
+                    Demande envoyée
+                    <button class="btn btn-danger cancel-friend-request" data-action="{% url 'account:remove_friend_request' user.id %}">Annuler</button>
+                {% elif user.pk in friend_requests_received %}
+                    Demande en attente
+                    <button class="btn btn-success accept-friend-request" data-action="{% url 'account:accept_friend_request' user.id %}">Accepter</button>
+                    <button class="btn btn-danger reject-friend-request" data-action="{% url 'account:reject_friend_request' user.id %}">Refuser</button>
+                {% else %}
+                    <button class="btn btn-primary send-friend-request" data-action="{% url 'account:send_friend_request' user.id %}"><i class="fas fa-user-plus"></i></button>
+                {% endif %}
+            </li>
+        {% endfor %}
+    {% else %}
+        {% if query %}
+            <p>Aucun utilisateur trouvé pour la recherche "{{ query }}".</p>
+        {% endif %}
+    {% endif %}
 </ul>

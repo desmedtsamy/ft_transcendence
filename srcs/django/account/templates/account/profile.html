@@ -13,8 +13,37 @@
     <p>Ratio victoires/défaites : {{ ratio }}%</p>
     <p>Score : {{ profile_user.score }}</p>
     <p>Dernière connexion : {{ profile_user.last_connection }}</p> 
-    <!-- Ajout du graphique -->
-    <h3>Évolution du score</h3>
+	<div class="friend-actions">
+        {% if profile_user != request.user %}
+            {% if is_friend %}
+                <form method="post" action="{% url 'account:remove_friend' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Supprimer de la liste d'amis</button>
+                </form>
+            {% elif friend_request_sent %}
+                <p>Demande d'ami envoyée</p>
+                <form method="post" action="{% url 'account:remove_friend_request' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Annuler la demande</button>
+                </form>
+            {% elif friend_request_received %}
+                <form method="post" action="{% url 'account:accept_friend_request' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Accepter la demande</button>
+                </form>
+                <form method="post" action="{% url 'account:reject_friend_request' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Refuser la demande</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'account:send_friend_request' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Envoyer une demande d'ami</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+	<h3>Évolution du score</h3>
     <canvas id="scoreChart" width="400" height="200"></canvas>
 
 	<h3>Historique des matchs récents</h3>
