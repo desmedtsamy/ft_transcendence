@@ -25,7 +25,9 @@ class LoginView(View):
 	form_class = LoginForm
 
 	def get(self, request):
-		return render(request, self.template_name, {'form': self.form_class})
+		return render(request, self.template_name, {'form': self.form_class,
+														'fortytwo_client_id': settings.FORTYTWO_CLIENT_ID,
+														})
 	def post(self, request):
 		form = self.form_class(request, data=request.POST)
 		if form.is_valid():
@@ -48,7 +50,9 @@ class RegisterView(View):
 	form_class = RegisterForm
 
 	def get(self, request):
-		return render(request, self.template_name, {'form': self.form_class})
+		return render(request, self.template_name, {'form': self.form_class,
+														'fortytwo_client_id': settings.FORTYTWO_CLIENT_ID,
+														})
 	def post(self, request):
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -212,7 +216,6 @@ def search_users_view(request):
 		return HttpResponse(html)
 
 	# Requête normale
-	print(f"not ajax")
 	return render(request, 'account/search.html', {
 		'users': users, 
 		'query': query,

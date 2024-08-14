@@ -1,8 +1,9 @@
 all: up
 
 prepare:
+	@./init.sh
 	#@ mkdir -p data/django
-	@ echo "Creating data folder"
+	#@ echo "Creating data folder"
 build:
 	@ docker compose -f srcs/requirements/docker-compose.yml build
 

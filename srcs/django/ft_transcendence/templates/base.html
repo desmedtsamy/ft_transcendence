@@ -36,6 +36,7 @@
                     <nav>
                         <ul>
                             <li class="profile-menu">
+								<span class="username" >{{ user.username }}</span>
                                 <img src="{{ user.avatar.url }}" alt="Profile" class="profile-pic">
                                 <div class="dropdown-content">
                                     <a href="{% url 'account:profile' user.username %}"><i class="fa fa-user" aria-hidden="true"></i> profil</a>

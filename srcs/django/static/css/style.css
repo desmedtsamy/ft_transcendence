@@ -135,8 +135,8 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .profile-pic {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     border: 2px solid var(--bg-color);
     cursor: pointer;
@@ -306,4 +306,9 @@ online-status i {
 .scoreboard-status {
 	bottom: -0.4em;
 	font-size: 0.5em;
+}
+
+.username {
+	padding-right: 0.25em; 
+    color: var(--bg-color);
 }

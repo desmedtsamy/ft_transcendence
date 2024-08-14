@@ -1,4 +1,3 @@
-version: "3"
 services:
   db:
     image: postgres
@@ -10,7 +9,7 @@ services:
     build:
       context: ./django
     image: web
-    command: python manage.py runserver 0.0.0.0:8000
+    #command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ../django/:/app
     ports:

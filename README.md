@@ -14,14 +14,3 @@ http://localhost:8000/account/42sync
 ```bash
 make
 ```
-
-### Création / mise à jour de la DB
-Exécuter la commande suivante dans le container "web" :
-```bash
-python manage.py makemigrations && python manage.py migrate
-```
-
-### Création d'un compte admin
-```bash
-python manage.py createsuperuser
-```
