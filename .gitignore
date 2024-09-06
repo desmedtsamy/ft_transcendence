@@ -1,3 +1,5 @@
 .env
 .DS_Store
 srcs/data/
+srcs/django/media/profile_pics/*
+!srcs/django/media/profile_pics/default.png

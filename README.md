@@ -14,3 +14,26 @@ http://localhost:8000/account/42sync
 ```bash
 make
 ```
+
+### creer une nouvelle app dans django
+```bash
+python manage.py startapp newapp
+```
+
+
+python3 manage.py makemigrations && python3 manage.py migrate
+
+V1	django
+V0.5	postgresSQL
+V1	standard user management
+V1	Oauth 42
+V0.5	User and Game Stat Dashboard
+
+X1	Another game
+X1	Remote players
+X(0.5)	Game Customization
+X(1)		Live chat
+X(0.5) GDPR
+X(0.5)	expanding browser compatibility
+X(0.5)	Multiple language supports
+

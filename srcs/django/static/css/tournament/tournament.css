@@ -1,0 +1,228 @@
+
+:root {
+	--primary-color: #16e0bd;
+    --bg-color: #1a1a2e;
+    --text-color: #16e0bd;
+    --secondary-bg: #242444;
+}
+
+#content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+.container {
+	display: flex;
+	height: 100%;
+}
+.left-panel {
+	width: 25%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.right-panel {
+	width: 75%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.tournoi-list {
+	overflow-y: auto;
+	width: 100%;
+	height: 20%;
+}
+.tournoi-item {
+	padding: 15px 20px;
+	border-bottom: 1px solid #ddd;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	font-size: 1.1em;
+	border : 0.05em solid var(--primary-color);
+}
+
+/* Ajouter des icônes */
+.tournoi-item::before {
+	content: "\f0c0"; /* Icone FontAwesome */
+	font-family: "Font Awesome 5 Free"; 
+	font-weight: 900; 
+	margin-right: 10px;
+}
+.tournoi-item.selected {
+	background-color: var(--primary-color);
+	color: black;
+}
+
+.tournoi-item:hover {
+	background-color: var(--primary-color);
+	color: black;
+}
+.create-button {
+	padding: 20px;
+	background-color: var(--primary-color);
+	color: black;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	border-radius: 5px 5px 0 0;
+	border : 0.05em solid var(--primary-color);
+}
+
+.create-button:hover {
+	
+	background-color: var(--bg-color);
+	color: var(--primary-color);
+}
+
+#tournoi-details {
+	background-color: #f9f9f9;
+	padding: 20px;
+	border-radius: 5px;
+}
+
+/* Styles for tournament display */
+#tournament {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+}
+.round {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	margin: 0 10px;
+}
+.match {
+	padding: 5px;
+	margin: 5px 0;
+	width: 5em;
+	position: relative;
+	min-height: 40px;  /* Set a minimum height for empty matches */
+}
+.player {
+	width: 5em;
+	height: 1em;
+	background-color: #34495e;
+	border-radius: 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0.5em 0;
+	padding: 0.25em;
+	color: white;
+}
+.seed {
+	background-color: #7f8c8d;
+	color: white;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 0.8em;
+	margin-right: 5px;
+}
+.winner {
+    font-size: 1.2em;
+    align-content: center;
+    background: linear-gradient(135deg, #ffd700, #ffcc00); /* Dégradé or */
+    color: black; /* Texte noir pour le contraste */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 25px rgba(255, 215, 0, 0.5); /* Ombres dorées */
+    position: relative; /* Pour les particules */
+    overflow: hidden; /* Pour les particules */
+    animation: glow 1.5s infinite alternate; /* Animation pour un effet brillant */
+}
+
+/* Animation de glow */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 25px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 215, 0, 0.7);
+    }
+}
+
+/* Particules */
+.winner::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 223, 0, 0.4), transparent 70%);
+    animation: particles 6s infinite linear;
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0.8;
+    pointer-events: none; /* Ne pas bloquer les interactions */
+}
+
+@keyframes particles {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.win {
+	background-color: var(--primary-color);
+	color: black;
+}
+.looser {
+	background-color: #e74c3c;
+	color: black;
+}
+
+/* Style pour la modal */
+.modal {
+    display: none; /* Caché par défaut */
+    position: fixed; 
+    z-index: 1000; /* Au-dessus des autres éléments */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    justify-content: center; /* Centrer horizontalement */
+    align-items: center; /* Centrer verticalement */
+    background-color: rgba(0, 0, 0, 0.4); /* Couleur de fond avec opacité */
+    backdrop-filter: blur(5px); /* Appliquer le flou */
+}
+
+/* Contenu de la modal */
+.modal-content {
+    background-color: var(--bg-color);
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Peut être ajusté */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ajouter une ombre pour l'effet de profondeur */
+    position: relative; /* Pour le positionnement du bouton de fermeture */
+}
+
+/* Bouton pour fermer la modal */
+.close-button {
+    color: #aaa;
+    position: absolute; /* Positionner le bouton en haut à droite */
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

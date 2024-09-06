@@ -20,4 +20,8 @@ urlpatterns = [
 	path('remove_friend_request/<int:user_id>/', views.remove_friend_request, name='remove_friend_request'),
 	path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
 	path('profile/<str:username>/', views.profile_view, name='profile'),
+
+
+
+	
 ]

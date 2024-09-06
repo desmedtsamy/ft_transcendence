@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" type="image/x-icon" href="{% static 'img/logo2.ico' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.ico' %}">
 
     {% block head %}
     {% endblock %}
@@ -22,10 +22,10 @@
                     <li> <a href="/home"><i class="fas fa-home"></i> Accueil</a> </li>
                     <li> <a href="/scoreboard"><i class="fas fa-trophy"></i> Classement</a> </li>
                     <li><a href="/account/search"><i class="fa fa-search" aria-hidden="true"></i> rechercher</a></li>
-                    <li><a href="#"><i class="bi bi-flag"></i> Tournois</a></li>
+                    <li><a href="/tournament"><i class="fa fa-users"></i> Tournois</a></li>
                     
                     {% if user.is_superuser %}
-                        <li><a href="/admin"><i class="bi bi-gear"></i> Admin</a></li>
+                        <li><a href="/admin"><i class="fa fa-user-ninja"></i> Admin</a></li>
                     {% endif %}
                 {% else %}
 				<li> <a href="/"><i class="fas fa-home"></i> Accueil</a> </li>
@@ -63,15 +63,22 @@
     </div>
     {% endfor %}
     <div id="content">
-                {% block content %}
+        {% block content %}
         {% endblock %}
     </div>
-
 	<script>
 		setInterval(function() {
-			fetch('{% url "update_last_activity" %}')
-				.then(response => response.json())
-				.then(data => {});
+			fetch('{% url "update_last_activity" %}', {
+				method: 'POST',
+				headers: {
+					'X-CSRFToken': '{{ csrf_token }}'
+				}
+			})
+			.then(response => response.json())
+			.then(data => {})
+			.catch(error => {
+				console.error('Erreur:', error);
+			});
 		}, 60000);
 	</script>
 </body>

@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
+from django.views import View
 
 ## needed for generate users
 import random
@@ -16,17 +17,23 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-def update_last_activity(request):
-    if request.user.is_authenticated:
-        request.user.last_activity = timezone.now()
-        request.user.save()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'})
+
+class UpdateLastActivityView(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            try:
+                request.user.last_activity = timezone.now()
+                request.user.save()
+                return JsonResponse({'status': 'success'})
+            except Exception as e:
+                # Handle errors more specifically
+                return JsonResponse({'status': 'error', 'message': str(e)})
+        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
 def index(request):
 	
-	return render(request,'index.html')
+	return render(request,'old_index.html')
 
 @login_required
 def scoreboard_view(request):
@@ -102,4 +109,4 @@ def create_match_view(request):
 				return redirect('scoreboard')
 			except (User.DoesNotExist, ValueError) as e:
 				print(f"Erreur lors de la création du match : {e}")
-	return redirect('scoreboard')
+	return redirect('home')
