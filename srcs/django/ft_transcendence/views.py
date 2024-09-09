@@ -32,8 +32,7 @@ class UpdateLastActivityView(View):
         return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
 def index(request):
-	
-	return render(request,'old_index.html')
+	return render(request,'index.html')
 
 @login_required
 def scoreboard_view(request):
