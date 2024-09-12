@@ -18,8 +18,8 @@ urlpatterns = [
 	path('create_match/', create_match_view, name='create_match'),
 	path('scoreboard/', scoreboard_view, name='create_match'),
     path('tournament/', include('tournament.urls')),
-	path('test/', TemplateView.as_view(template_name='index.html')),
 
+    path('api/account/', include('account.urls')),
 ]
 
 if settings.DEBUG:

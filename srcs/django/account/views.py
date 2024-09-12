@@ -15,7 +15,9 @@ from django.views.decorators.csrf import csrf_protect
 
 
 
-from rest_framework import generics, views, status, permissions
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework import status, generics, views, status, permissions
 from rest_framework.response import Response
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.shortcuts import get_object_or_404, render, redirect
@@ -385,6 +387,39 @@ def profile_view(request, username):
 
 
 
+class CurrentUserView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		if not request.user.is_authenticated:
+			return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+		# Vérification supplémentaire pour voir si user est None
+		if not request.user:
+			return Response({'error': 'User object is None'}, status=status.HTTP_400_BAD_REQUEST)
+
+		user = request.user
+		if user is None:
+			return Response({'error': 'User object is None'}, status=status.HTTP_404_NOT_FOUND)
+
+		# Sérialise l'utilisateur
+		serializer = UserSerializer(user)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
+class LoginView(APIView):
+	permission_classes = [AllowAny]
+
+	def get(self, request):
+		return Response({'test': ' les requests pass yesss'}, status=status.HTTP_200_OK)
+	def post(self, request):
+		username = request.data.get('username')
+		password = request.data.get('password')
+
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			login(request, user)
+			return Response({'detail': 'Login successful'}, status=status.HTTP_200_OK)
+		else:
+			return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class LoginAPIView(views.APIView):
 #     permission_classes = [permissions.AllowAny]

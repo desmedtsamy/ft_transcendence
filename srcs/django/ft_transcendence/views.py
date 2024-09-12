@@ -15,21 +15,21 @@ import random
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import redirect
 from django.contrib import messages
-
+from django.contrib.auth import authenticate, login
 
 
 class UpdateLastActivityView(View):
 
-    def post(self, request):
-        if request.user.is_authenticated:
-            try:
-                request.user.last_activity = timezone.now()
-                request.user.save()
-                return JsonResponse({'status': 'success'})
-            except Exception as e:
-                # Handle errors more specifically
-                return JsonResponse({'status': 'error', 'message': str(e)})
-        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
+	def post(self, request):
+		if request.user.is_authenticated:
+			try:
+				request.user.last_activity = timezone.now()
+				request.user.save()
+				return JsonResponse({'status': 'success'})
+			except Exception as e:
+				# Handle errors more specifically
+				return JsonResponse({'status': 'error', 'message': str(e)})
+		return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
 def index(request):
 	return render(request,'index.html')
@@ -109,3 +109,11 @@ def create_match_view(request):
 			except (User.DoesNotExist, ValueError) as e:
 				print(f"Erreur lors de la création du match : {e}")
 	return redirect('home')
+
+
+
+
+
+
+
+

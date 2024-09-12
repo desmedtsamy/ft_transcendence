@@ -1,21 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <title>ft_transcendence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/x-icon" href="img/logo.ico">
-
+    <link rel="icon" type="image/x-icon" href="/img/logo.ico">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-	<h1>ft_transcendence</h1>
-    <div id="app">
-        <!-- Ton application sera rendue ici -->
+    <nav id="main-nav">
+        <ul> 
+            <li> <a href="#" data-link="/">Accueil</a> </li>
+            <li> <a href="#" data-link="/test/scoreboard">Classement</a> </li>
+            <li><a href="#" data-link="/account/search"><i class="fa fa-search" aria-hidden="true"></i> rechercher</a></li>
+            <li><a href="#" data-link="/tournament">Tournois</a></li>
+            <li id="admin-link" style="display:none;"> <a href="#" data-link="/admin">Admin</a> </li>
+            <li id="login-link" style="display:none;"> <a href="#" data-link="/login"><i class="fas fa-sign-in-alt"></i> Se connecter</a> </li>
+            <li id="logout-link" style="display:none;"> <a href="#" data-link="/logout"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a> </li>
+        </ul>
+        <div id="profile-menu" style="display:none;">
+            <ul>
+                <li class="profile-menu">
+                    <span class="username" id="username"></span>
+                    <img src="" alt="Profile" class="profile-pic" id="profile-pic">
+                    <div class="dropdown-content">
+                        <a href="#" data-link="/profile"><i class="fa fa-user" aria-hidden="true"></i> profil</a>
+                        <a href="#" data-link="/settings"><i class="fas fa-cog"></i> Réglages</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="app" class="container">
     </div>
-    <script src="scripts/app.js"></script>
+
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/pages.js"></script>
+    <script src="/scripts/router.js"></script>
 </body>
 </html>

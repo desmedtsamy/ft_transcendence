@@ -4,6 +4,10 @@ services:
     volumes:
       - ../data/db:/var/lib/postgresql/data
     env_file: ../../.env
+    networks:
+      - app-network
+
+
   backend:
     container_name: backend
     build:
@@ -11,12 +15,15 @@ services:
     image: backend
     volumes:
       - ../django/:/app
-      - ../frontend/:/frontend
     ports:
       - "8000:8000"
+    networks:
+      - app-network
     env_file: ../../.env
     depends_on:
       - db
+  
+  
   frontend:
     container_name: frontend
     build:
@@ -24,7 +31,13 @@ services:
     image: frontend
     volumes:
       - ../frontend/:/usr/share/nginx/html
+      - ../django/media/:/app/media
     ports:
       - "80:80"
+    networks:
+      - app-network
     depends_on:
       - backend
+networks:
+  app-network:
+    driver: bridge

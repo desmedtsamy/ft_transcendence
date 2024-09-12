@@ -2,10 +2,13 @@
 from django.urls import path, include
 from . import views
 
+# api
+from .views import CurrentUserView, LoginView
+
 app_name = 'account'
 
 urlpatterns = [
-    path('login/', views.LoginView.as_view(), name='login'),
+   # path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('settings', views.SettingsView.as_view(), name='settings'),
@@ -20,6 +23,9 @@ urlpatterns = [
 	path('remove_friend_request/<int:user_id>/', views.remove_friend_request, name='remove_friend_request'),
 	path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
 	path('profile/<str:username>/', views.profile_view, name='profile'),
+	
+	path('current-user/', CurrentUserView.as_view(), name='current-user'),
+	path('login/', LoginView.as_view(), name='api_login'),
 
 
 
