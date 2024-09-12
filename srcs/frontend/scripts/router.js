@@ -10,11 +10,17 @@ const routes = {
 };
 
 function navigateTo(path) {
-    window.history.pushState({}, path, window.location.origin + path);
-    render(path);
+    const currentPath = window.location.pathname;
+    const absolutePath = path.startsWith('/') 
+        ? path
+        : (currentPath.endsWith('/') ? currentPath : currentPath + '/') + path;
+
+    window.history.pushState({}, '', absolutePath);
+    render(absolutePath);
 }
 
 async function render(path) {
+	console.log(path + " render");
     const app = document.getElementById('app'); 
     if (!app) {
         console.error("Element with id 'app' not found in the DOM.");
@@ -22,10 +28,12 @@ async function render(path) {
     }
 
     path = path || '/'; 
-
+	
     if (routes[path]) {
+		console.log('Rendering page:', path, " ", routes[path]);
         try {
             const content = await routes[path](); // Attend le chargement du contenu HTML
+			console.log ('Content:', content);
             app.innerHTML = content;
             if (path === '/login') {
                 setupLoginForm(); 
@@ -35,6 +43,7 @@ async function render(path) {
             app.innerHTML = '<h1>Error loading page</h1>'; 
         }
     } else {
+		console.error('Page not found:', path);
         app.innerHTML = '<h1>404 - Page Not Found</h1>';
     }
 }
