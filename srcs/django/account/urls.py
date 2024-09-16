@@ -3,13 +3,13 @@ from django.urls import path, include
 from . import views
 
 # api
-from .views import CurrentUserView, LoginView
+from .views import CurrentUserView, LoginView, LoginViewAPI, LogoutViewAPI
 
 app_name = 'account'
 
 urlpatterns = [
-   # path('login/', views.LoginView.as_view(), name='login'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('login_OLD/', views.LoginView.as_view(), name='login'),
+    path('logout_OLD/', views.LogoutView.as_view(), name='logout'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('settings', views.SettingsView.as_view(), name='settings'),
     path('42callback/', views.callback_42, name='42callback'),
@@ -25,7 +25,8 @@ urlpatterns = [
 	path('profile/<str:username>/', views.profile_view, name='profile'),
 	
 	path('current-user/', CurrentUserView.as_view(), name='current-user'),
-	path('login/', LoginView.as_view(), name='api_login'),
+	path('login/', LoginViewAPI.as_view(), name='api_login'),
+	path('logout/', LogoutViewAPI.as_view(), name='api_login'),
 
 
 

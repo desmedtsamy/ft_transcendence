@@ -41,7 +41,7 @@
                                 <div class="dropdown-content">
                                     <a href="{% url 'account:profile' user.username %}"><i class="fa fa-user" aria-hidden="true"></i> profil</a>
                                     <a href="{% url 'account:settings' %}"><i class="fas fa-cog"></i> Réglages</a>
-                                    <a href="{% url 'account:logout' %}"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
+                                    <a href="{% url 'account:logout_OLD' %}"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
                                 </div>
                             </li>
                         </ul>
@@ -49,7 +49,7 @@
                 {% else %}
 					<nav>
 						<ul>
-                    		<li> <a href="{% url 'account:login' %}"><i class="fas fa-sign-in-alt"></i> Se connecter</a> </li>
+                    		<li> <a href="{% url 'account:login_OLD' %}"><i class="fas fa-sign-in-alt"></i> Se connecter</a> </li>
 						</ul>
 					</nav>
                 {% endif %}

@@ -1,39 +1,71 @@
+
+async function loginPage() {
+	const response = await fetch('/templates/login.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/account/login.js",
+		};
+}
+
 async function homePage() {
 	const response = await fetch('/templates/home.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
 
 async function scoreboardPage() {
 	const response = await fetch('/templates/scoreboard.html');   
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
 
 async function searchPage() {
 	const response = await fetch('/templates/search.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
 
 async function tournamentPage() {
 	const response = await fetch('/templates/tournament.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
-
-async function loginPage() {
-	const response = await fetch('/templates/login.html');
-    return await response.text();
-}
-
 async function profilePage() {
 	const response = await fetch('/templates/profile.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
 
 async function settingsPage() {
 	const response = await fetch('/templates/settings.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }
 
 async function adminPage() {
 	const response = await fetch('/templates/admin.html');
-    return await response.text();
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "",
+	};
 }

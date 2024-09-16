@@ -1,6 +1,6 @@
 const routes = {
     '/': homePage,
-    '/test/scoreboard': scoreboardPage,
+    '/scoreboard': scoreboardPage,
     '/account/search': searchPage,
     '/tournament': tournamentPage,
     '/login': loginPage,
@@ -30,8 +30,24 @@ async function render(path) {
 
     if (routes[path]) {
 		try {
-            const content = await routes[path]();
-			app.innerHTML = content;
+            const pageData = await routes[path]();
+			app.innerHTML = pageData.html;
+			// Charger dynamiquement le script si nécessaire
+            if (pageData.script) { 
+                const script = document.createElement('script');
+                script.src = pageData.script;
+                script.async = true; // Charger le script de manière asynchrone
+                script.addEventListener('load', () => {
+					if (typeof window.onLoad === 'function') {
+						window.onLoad();
+					} else {
+						// DEBUG
+						console.log('No onLoad function found in the global scope for path:', path);
+					}
+				});
+			
+				document.head.appendChild(script);
+			}
         } catch (error) {
             console.error('Error loading page content:', error);
             app.innerHTML = '<h1>Error loading page</h1>'; 

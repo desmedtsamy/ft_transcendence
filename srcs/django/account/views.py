@@ -3,7 +3,7 @@ from django.views.generic import View
 from requests_oauthlib import OAuth2Session
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -388,11 +388,11 @@ def profile_view(request, username):
 
 
 class CurrentUserView(APIView):
-	permission_classes = [IsAuthenticated]
+	permission_classes = [AllowAny]
 
 	def get(self, request):
 		if not request.user.is_authenticated:
-			return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+			return Response({'is_authenticated': False}, status=status.HTTP_200_OK)
 		# Vérification supplémentaire pour voir si user est None
 		if not request.user:
 			return Response({'error': 'User object is None'}, status=status.HTTP_400_BAD_REQUEST)
@@ -403,17 +403,15 @@ class CurrentUserView(APIView):
 
 		# Sérialise l'utilisateur
 		serializer = UserSerializer(user)
-		return Response(serializer.data, status=status.HTTP_200_OK)
+		return Response({'is_authenticated': True, 'user': serializer.data}, status=status.HTTP_200_OK)
 
-class LoginView(APIView):
+class LoginViewAPI(APIView):
 	permission_classes = [AllowAny]
 
-	def get(self, request):
-		return Response({'test': ' les requests pass yesss'}, status=status.HTTP_200_OK)
 	def post(self, request):
 		username = request.data.get('username')
 		password = request.data.get('password')
-
+		print (username, " ", password)
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			login(request, user)
@@ -421,173 +419,9 @@ class LoginView(APIView):
 		else:
 			return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-# class LoginAPIView(views.APIView):
-#     permission_classes = [permissions.AllowAny]
+class LogoutViewAPI(APIView):
+	permission_classes = [IsAuthenticated]
 
-#     def post(self, request):
-#         form = LoginForm(data=request.data)
-#         if form.is_valid():
-#             user = form.get_user()
-#             login(request, user)
-#             return Response({"message": f"Bienvenue, {user.username} !"}, status=status.HTTP_200_OK)
-#         return Response({"error": "Nom d'utilisateur ou mot de passe incorrect."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class LogoutAPIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request):
-#         logout(request)
-#         return Response({"message": "Vous êtes maintenant déconnecté."}, status=status.HTTP_200_OK)
-
-
-# class RegisterAPIView(views.APIView):
-#     permission_classes = [permissions.AllowAny]
-
-#     def post(self, request):
-#         form = RegisterForm(data=request.data)
-#         if form.is_valid():
-#             user = form.save()
-#             login(request, user)
-#             return Response({"message": f"Bienvenue, {user.username} !"}, status=status.HTTP_201_CREATED)
-#         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class UserSettingsAPIView(generics.UpdateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = UserSerializer
-
-#     def get_object(self):
-#         return self.request.user
-
-#     def put(self, request, *args, **kwargs):
-#         form = UserSettingsForm(request.data, instance=request.user)
-#         if form.is_valid():
-#             user = form.save()
-#             if form.cleaned_data.get('new_password1'):
-#                 user.set_password(form.cleaned_data['new_password1'])
-#                 user.save()
-#                 update_session_auth_hash(request, user)
-#                 return Response({"message": "Votre mot de passe a été changé avec succès."}, status=status.HTTP_200_OK)
-#             return Response({"message": "Vos paramètres ont été mis à jour."}, status=status.HTTP_200_OK)
-#         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class Sync42APIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request):
-#         client_id = settings.FORTYTWO_CLIENT_ID
-#         client_secret = settings.FORTYTWO_CLIENT_SECRET
-#         token_url = 'https://api.intra.42.fr/oauth/token'
-#         redirect_uri = 'http://localhost:8000/account/42sync'
-#         code = request.GET.get('code')
-#         oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
-#         token = oauth.fetch_token(
-#             token_url,
-#             code=code,
-#             client_secret=client_secret,
-#             include_client_id=True
-#         )
-#         intra_api_url = 'https://api.intra.42.fr/v2/me'
-#         response = oauth.get(intra_api_url)
-#         user_data = response.json()
-
-#         user = request.user
-#         user.intra_id = user_data['id']
-#         avatar_url = user_data['image']['link']
-#         avatar_response = requests.get(avatar_url)
-#         if avatar_response.status_code == 200:
-#             try:
-#                 os.makedirs(os.path.join(settings.MEDIA_ROOT, 'profile_pics'), exist_ok=True)
-#                 with open(os.path.join(settings.MEDIA_ROOT, f'profile_pics/{user.username}.jpg'), 'wb') as f:
-#                     f.write(avatar_response.content)
-#                 user.avatar = f'profile_pics/{user.username}.jpg'
-#                 user.save()
-#                 return Response({"message": "Compte 42 synchronisé avec succès."}, status=status.HTTP_200_OK)
-#             except Exception as e:
-#                 return Response({"error": f"Erreur lors de l'enregistrement de l'avatar : {e}"}, status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             return Response({"error": "Erreur lors du téléchargement de l'avatar."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class SearchUsersAPIView(generics.ListAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = UserSerializer
-
-#     def get_queryset(self):
-#         query = self.request.GET.get('query', '')
-#         return User.objects.filter(username__icontains=query).exclude(pk=self.request.user.pk)
-
-
-# class FriendshipRequestListAPIView(generics.ListCreateAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = FriendshipRequestSerializer
-
-#     def get_queryset(self):
-#         return FriendshipRequest.objects.filter(to_user=self.request.user)
-
-#     def perform_create(self, serializer):
-#         to_user = get_object_or_404(User, id=self.request.data.get('to_user_id'))
-#         if to_user == self.request.user:
-#             return Response({"error": "Vous ne pouvez pas vous envoyer une demande d'ami."}, status=status.HTTP_400_BAD_REQUEST)
-#         elif Friendship.objects.filter(
-#                 Q(user1=self.request.user, user2=to_user) | Q(user1=to_user, user2=self.request.user)
-#         ).exists():
-#             return Response({"error": "Vous êtes déjà ami ou une demande est en attente."}, status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             serializer.save(from_user=self.request.user, to_user=to_user)
-
-
-# class AcceptFriendRequestAPIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, user_id):
-#         friend_request = get_object_or_404(FriendshipRequest, from_user__id=user_id, to_user=request.user)
-#         friend_request.accept()
-#         return Response({"message": f"Vous êtes maintenant ami avec {friend_request.from_user.username}."}, status=status.HTTP_200_OK)
-
-
-# class RejectFriendRequestAPIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, user_id):
-#         friend_request = get_object_or_404(FriendshipRequest, from_user__id=user_id, to_user=request.user)
-#         friend_request.cancel()
-#         return Response({"message": f"Demande d'ami de {friend_request.from_user.username} refusée."}, status=status.HTTP_200_OK)
-
-
-# class RemoveFriendAPIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, user_id):
-#         friend = get_object_or_404(User, id=user_id)
-#         friendship = get_object_or_404(
-#             Friendship, Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user)
-#         )
-#         friendship.remove_friend(friend)
-#         return Response({"message": f"Vous n'êtes plus ami avec {friend.username}."}, status=status.HTTP_200_OK)
-
-
-# class ProfileAPIView(views.APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request, username):
-#         user = get_object_or_404(User, username=username)
-#         ratio = round(user.wins / (user.wins + user.losses) * 100, 1) if (user.wins + user.losses) > 0 else 0
-#         recent_matches = Match.objects.filter(players=user).order_by('-created_at')[:5]
-#         is_friend = Friendship.objects.filter(
-#             Q(user1=request.user, user2=user) | Q(user1=user, user2=request.user)
-#         ).exists()
-#         friend_request_sent = FriendshipRequest.objects.filter(from_user=request.user, to_user=user).exists()
-#         friend_request_received = FriendshipRequest.objects.filter(from_user=user, to_user=request.user).exists()
-
-#         data = {
-#             'profile_user': UserSerializer(user).data,
-#             'ratio': ratio,
-#             'recent_matches': MatchSerializer(recent_matches, many=True).data,
-#             'is_friend': is_friend,
-#             'friend_request_sent': friend_request_sent,
-#             'friend_request_received': friend_request_received,
-#         }
-#         return Response(data, status=status.HTTP_200_OK)
+	def get(self, request):
+		logout(request)
+		return Response({'detail': 'Logout successful'}, status=status.HTTP_200_OK)

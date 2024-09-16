@@ -1,8 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-	const app = document.getElementById('app');
     const loginLink = document.getElementById('login-link');
-    const logoutLink = document.getElementById('logout-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');
     const usernameSpan = document.getElementById('username');
@@ -16,53 +14,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 	
-	render(window.location.pathname);
-
+	
     window.addEventListener('popstate', () => {
-        render(window.location.pathname);
+		render(window.location.pathname);
     });
-
+	
     async function fetchUserInfo() {
-        try {
-            const response = await fetch('/api/account/current-user/', {
-                method: 'GET',
-                credentials: 'include',
-            });
-
-            if (response.ok) {
-                const user = await response.json();
-                handleUserAuthenticated(user);
-            } else {
-                console.error('Failed to fetch user information');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
-    function handleUserAuthenticated(user) {
-        usernameSpan.textContent = user.username;
+		try {
+			const response = await fetch('/api/account/current-user/', {
+				method: 'GET',
+				credentials: 'include',
+			});
+	
+			if (response.ok) {
+				const data = await response.json();
+				if (data.is_authenticated) {
+					handleUserAuthenticated(data.user); 
+				} else {
+					handleUserNotAuthenticated();
+					// DEBUG
+					console.log('User is not authenticated');
+				}
+			} else {
+				console.error('Failed to fetch user information');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+	
+    window.handleUserAuthenticated = function(user) {
+		usernameSpan.textContent = user.username;
         profilePic.src = user.avatar; 
         loginLink.style.display = 'none';
-        logoutLink.style.display = 'block';
         profileMenu.style.display = 'block';
         if (user.is_superuser) {
-            adminLink.style.display = 'block';
+			adminLink.style.display = 'block';
         }
     }
 
+	function handleUserNotAuthenticated() {
+		loginLink.style.display = 'block';
+		profileMenu.style.display = 'none';
+		adminLink.style.display = 'none';
+	}
+
     function getCookie(name) {
-        let cookieValue = null;
+		let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
+			const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
+				const cookie = cookies[i].trim();
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
                 }
             }
         }
         return cookieValue;
     }
+	
+	render(window.location.pathname);
+	fetchUserInfo();
+
 });
