@@ -1,11 +1,5 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginLink = document.getElementById('login-link');
-    const profileMenu = document.getElementById('profile-menu');
-    const adminLink = document.getElementById('admin-link');
-    const usernameSpan = document.getElementById('username');
-    const profilePic = document.getElementById('profile-pic');
-	
     document.addEventListener('click', (event) => {
 		if (event.target.matches('[data-link]')) {
 			event.preventDefault();
@@ -42,24 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			console.error('Error:', error);
 		}
 	}
-	
-    window.handleUserAuthenticated = function(user) {
-		usernameSpan.textContent = user.username;
-        profilePic.src = user.avatar; 
-        loginLink.style.display = 'none';
-        profileMenu.style.display = 'block';
-        if (user.is_superuser) {
-			adminLink.style.display = 'block';
-        }
-    }
 
-	function handleUserNotAuthenticated() {
-		loginLink.style.display = 'block';
-		profileMenu.style.display = 'none';
-		adminLink.style.display = 'none';
-	}
-
-    function getCookie(name) {
+    window.getCookie = function(name) {
 		let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
 			const cookies = document.cookie.split(';');
@@ -73,8 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return cookieValue;
     }
-	
 	render(window.location.pathname);
 	fetchUserInfo();
+
+
+	window.alert = function(message) {
+		const alertsEl = document.getElementById('alerts');
+		const alertEl = document.createElement('div');
+		alertEl.className = 'alert';
+		alertEl.textContent = message;
+		alertEl.style.display = 'block';
+		alertsEl.appendChild(alertEl);
+		setTimeout(() => {
+			alertEl.style.display = 'none';
+		}, 5000);
+	}
 
 });

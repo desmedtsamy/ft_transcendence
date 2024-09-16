@@ -136,8 +136,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .profile-pic {
-    width: 60px;
-    height: 60px;
+    height: 1.3em;
     border-radius: 50%;
     border: 2px solid var(--bg-color);
     cursor: pointer;
@@ -273,11 +272,11 @@ tr:hover td {
 
 .alert {
 	padding: 15px;
-	margin: 20px 0;
+	margin: 0.75em 1em;
 	border-radius: 5px;
 	font-weight: bold;
 	color : var(--primary-color);
-	background-color: rgba(22, 224, 189, 0.1);
+	background-color: rgba(0, 255, 213, 0.1);
 }
 
 online-status i {

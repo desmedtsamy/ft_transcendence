@@ -414,14 +414,15 @@ class LoginViewAPI(APIView):
 		print (username, " ", password)
 		user = authenticate(username=username, password=password)
 		if user is not None:
-			login(request, user)
-			return Response({'detail': 'Login successful'}, status=status.HTTP_200_OK)
+			login(request, user)   
+			serializer = UserSerializer(user)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
 			return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutViewAPI(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def get(self, request):
+	def post(self, request):
 		logout(request)
 		return Response({'detail': 'Logout successful'}, status=status.HTTP_200_OK)

@@ -8,8 +8,8 @@ from .views import CurrentUserView, LoginView, LoginViewAPI, LogoutViewAPI
 app_name = 'account'
 
 urlpatterns = [
-    path('login_OLD/', views.LoginView.as_view(), name='login'),
-    path('logout_OLD/', views.LogoutView.as_view(), name='logout'),
+    path('login_OLD/', views.LoginView.as_view(), name='login_OLD'),
+    path('logout_OLD/', views.LogoutView.as_view(), name='logout_OLD'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('settings', views.SettingsView.as_view(), name='settings'),
     path('42callback/', views.callback_42, name='42callback'),
