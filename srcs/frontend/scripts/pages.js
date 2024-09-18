@@ -1,4 +1,13 @@
 
+async function callbackPage() {
+	const response = await fetch('/templates/login.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/account/login.js",
+		};
+}
+
 async function loginPage() {
 	const response = await fetch('/templates/login.html');
 	const htmlContent = await response.text();

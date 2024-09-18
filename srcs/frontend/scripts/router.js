@@ -6,8 +6,36 @@ const routes = {
     '/login': loginPage,
     '/profile': profilePage,
     '/settings': settingsPage,
-    '/admin': adminPage
+    '/admin': adminPage,
 };
+
+function callback(){
+	const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const csrftoken = getCookie('csrftoken');
+        fetch('/api/account/42callback/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ code }),
+        })
+        .then(async (response) => {
+            if (response.ok) {
+				const json = await response.json();
+				const user = json.user;
+				alert("Bonjour " + user.username);
+				handleUserAuthenticated(user);
+				navigateTo('/');
+            } else {
+                console.error("Erreur lors de l'authentification 42:", response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error("Erreur lors de la requête au backend :", error);
+        });
+}
 
 function navigateTo(path) {
     const currentPath = window.location.pathname;
@@ -15,8 +43,13 @@ function navigateTo(path) {
         ? path
         : (currentPath.endsWith('/') ? currentPath : currentPath + '/') + path;
 
-    window.history.pushState({}, '', absolutePath);
-    render(absolutePath);
+	if (absolutePath === '/42callback') {
+		callback();
+	}
+	else {
+		window.history.pushState({}, '', absolutePath);
+		render(absolutePath);
+	}
 }
 
 async function render(path) {

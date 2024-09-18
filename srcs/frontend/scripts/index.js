@@ -24,7 +24,6 @@ async function logout() {
 }
 
 window.handleUserAuthenticated = function(user) {
-
     const loginLink = document.getElementById('login-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');

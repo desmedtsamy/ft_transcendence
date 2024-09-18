@@ -2,9 +2,6 @@
 from django.urls import path, include
 from . import views
 
-# api
-from .views import CurrentUserView, LoginView, LoginViewAPI, LogoutViewAPI
-
 app_name = 'account'
 
 urlpatterns = [
@@ -13,6 +10,7 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('settings', views.SettingsView.as_view(), name='settings'),
     path('42callback/', views.callback_42, name='42callback'),
+    path('42callback_old/', views.callback_42_old, name='42callback_old'),
     path('42sync/', views.sync_42, name='42sync'),
 	path('friends/', views.friends_view, name='friends'),
 	path('search/', views.search_users_view, name='search_users'),
@@ -24,11 +22,9 @@ urlpatterns = [
 	path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
 	path('profile/<str:username>/', views.profile_view, name='profile'),
 	
-	path('current-user/', CurrentUserView.as_view(), name='current-user'),
-	path('login/', LoginViewAPI.as_view(), name='api_login'),
-	path('logout/', LogoutViewAPI.as_view(), name='api_login'),
-
-
-
+	path('current-user/', views.CurrentUserView.as_view(), name='current-user'),
+	path('login/', views.LoginViewAPI.as_view(), name='api_login'),
+	path('logout/', views.LogoutViewAPI.as_view(), name='api_login'),
+	path('42client/', views.Client42ViewAPI.as_view(), name='api_login'),
 	
 ]

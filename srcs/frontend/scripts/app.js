@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	
     window.addEventListener('popstate', () => {
-		render(window.location.pathname);
+		navigateTo(window.location.pathname);
     });
 	
     async function fetchUserInfo() {
@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return cookieValue;
     }
-	render(window.location.pathname);
+
+	navigateTo(window.location.pathname);
 	fetchUserInfo();
 
 

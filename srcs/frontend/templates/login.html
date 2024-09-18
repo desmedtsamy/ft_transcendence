@@ -3,12 +3,12 @@
 
 <h1>Login Page</h1>
 	<form id="login-form" onsubmit="LoginForm(); return false;">
-		<input type="text" id="username_form" placeholder="Username" required>
-		<input type="password" id="password" placeholder="Password" required>
-		<button type="submit">Login</button>
+		<input class="form_elem" type="text" id="username_form" placeholder="Username" required>
+		<input class="form_elem" type="password" id="password" placeholder="Password" required>
+		<button class="form_elem" type="submit">Login</button>
 
-	<a class="submit" id="login_42" href="https://api.intra.42.fr/oauth/authorize?client_id={{ fortytwo_client_id }}&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Faccount%2F42callback&response_type=code">
-		<span>sign in with 42</span>
+	<a class="submit form_elem" id="login_42" >
+		<span>sign in with </span> <img src="/img/42_logo.svg" alt="42" style="height:1em ">
 	</a>
 </form>
 	<p>Don't have an account? <a class="submit" id="sign_up" href="{% url 'account:register' %}">Sign Up</a></p>

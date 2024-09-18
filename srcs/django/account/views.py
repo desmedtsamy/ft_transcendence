@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 
 
 
-
+import json
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework import status, generics, views, status, permissions
@@ -126,7 +126,6 @@ def sync_42(request):
     intra_api_url = 'https://api.intra.42.fr/v2/me'
     response = oauth.get(intra_api_url)
     user_data = response.json()
-
     email = user_data['email']
     intra_id = user_data['id']
     username = user_data['login']
@@ -149,16 +148,107 @@ def sync_42(request):
     return redirect('home')
 
 
-# Callback 42 Account
 def callback_42(request):
+    client_id = settings.FORTYTWO_CLIENT_ID
+    client_secret = settings.FORTYTWO_CLIENT_SECRET
+    token_url = 'https://api.intra.42.fr/oauth/token'
+    redirect_uri = 'http://localhost/42callback'
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            code = data.get('code')
+            if not code:
+                return JsonResponse({'success': False, 'error': 'Code d\'autorisation manquant.'}, status=400)
+            oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
+            
+            print("token url : ", token_url)
+            print("code : {", code,"}")
+            print("client_secret : ", client_secret)
+            token = oauth.fetch_token(
+                token_url,
+                code=code
+                    ,
+                client_secret=client_secret,
+                include_client_id=True
+            )
+
+            print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE")
+            intra_api_url = 'https://api.intra.42.fr/v2/me'
+            response = oauth.get(intra_api_url)
+            user_data = response.json()
+
+            email = user_data['email']
+            intra_id = user_data['id']
+            username = user_data['login']
+            avatar_url = user_data['image']['link']
+            print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE2")
+
+            try:
+                user = User.objects.get(intra_id=intra_id)
+            except User.DoesNotExist:
+                try:
+                    user = User.objects.get(email=email)
+                    return JsonResponse({'success': False, 'error': 'Un compte existe déjà avec cet email.'})
+                except User.DoesNotExist:
+                    try:
+                        user = User.objects.get(username=user_data['login'])
+                        messages.error(request, "Un compte existe déjà avec ce nom d'utilisateur.")
+                        num = 1
+                        while User.objects.filter(username=username).exists():
+                            username = f"{user_data['login']}_{num}"
+                            num += 1
+                        redirect_url = 'account:settings' 
+                    except User.DoesNotExist:
+                        redirect_url = 'home'
+                    user = User.objects.create_user(
+                        username=username,
+                        email=email,
+                        intra_id=intra_id,
+                    )
+                    avatar_response = requests.get(avatar_url)
+                    if avatar_response.status_code == 200:
+                        try:
+                            os.makedirs(os.path.join(settings.MEDIA_ROOT, 'profile_pics'), exist_ok=True)
+                            with open(os.path.join(settings.MEDIA_ROOT, f'profile_pics/{user.username}.jpg'), 'wb') as f:
+                                f.write(avatar_response.content)
+                            user.avatar = f'profile_pics/{user.username}.jpg'
+                            user.save()
+                        except Exception as e:
+                            print(f"Erreur lors de l'enregistrement de l'avatar : {e}")
+                    else:
+                        print(f"Erreur lors du téléchargement de l'avatar : {avatar_response.status_code}")
+
+            login(request, user)
+
+            print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE")
+            # Renvoyer une réponse JSON avec les informations de l'utilisateur
+            return JsonResponse({'success': True, 'user': {
+                'username': user.username,
+                'email': user.email,
+                'intra_id': user.intra_id,
+                'avatar': user.avatar.url if user.avatar else None 
+            }})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Données JSON invalides.'}, status=400)
+
+    else:
+        return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, status=405)
+
+
+def callback_42_old(request):
     redirect_url = "home"
     client_id = settings.FORTYTWO_CLIENT_ID
     client_secret = settings.FORTYTWO_CLIENT_SECRET
     authorization_base_url = 'https://api.intra.42.fr/oauth/authorize'
     token_url = 'https://api.intra.42.fr/oauth/token'
-    redirect_uri = 'http://localhost:8000/account/42callback'
+    redirect_uri = 'http://localhost:8000/account/42callback_old'
     code = request.GET.get('code')
     oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
+    print("token url : ", token_url)
+    print("code : {", code,"}")
+    print("client_secret : ", client_secret)
     token = oauth.fetch_token(
         token_url,
         code=code,
@@ -426,3 +516,9 @@ class LogoutViewAPI(APIView):
 	def post(self, request):
 		logout(request)
 		return Response({'detail': 'Logout successful'}, status=status.HTTP_200_OK)
+class Client42ViewAPI(APIView):
+	permission_classes = [AllowAny]
+
+	def post(self, request):
+		client_id = settings.FORTYTWO_CLIENT_ID
+		return Response({'client_id': client_id}, status=status.HTTP_200_OK)
