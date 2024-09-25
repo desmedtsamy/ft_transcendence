@@ -1,9 +1,10 @@
 const routes = {
     '/': homePage,
     '/scoreboard': scoreboardPage,
-    '/account/search': searchPage,
+    '/search': searchPage,
     '/tournament': tournamentPage,
     '/login': loginPage,
+	'/register': registerPage,
     '/profile': profilePage,
     '/settings': settingsPage,
     '/admin': adminPage,
@@ -65,7 +66,6 @@ async function render(path) {
 		try {
             const pageData = await routes[path]();
 			app.innerHTML = pageData.html;
-			// Charger dynamiquement le script si nécessaire
             if (pageData.script) { 
                 const script = document.createElement('script');
                 script.src = pageData.script;

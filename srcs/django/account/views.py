@@ -87,67 +87,67 @@ import requests
 # 		return render(request, self.template_name, {'form': form})
 
 
-# Settings View
-class SettingsView(LoginRequiredMixin, UpdateView):
-	model = User
-	form_class = UserSettingsForm
-	template_name = 'account/settings.html'
-	success_url = reverse_lazy('home') # Redirige vers la page de paramètres après la mise à jour
+# # Settings View
+# class SettingsView(LoginRequiredMixin, UpdateView):
+# 	model = User
+# 	form_class = UserSettingsForm
+# 	template_name = 'account/settings.html'
+# 	success_url = reverse_lazy('home') # Redirige vers la page de paramètres après la mise à jour
 
-	def get_object(self, queryset=None):
-		return self.request.user
+# 	def get_object(self, queryset=None):
+# 		return self.request.user
 
-	def form_valid(self, form):
-		user = form.save()
-		if form.cleaned_data.get('new_password1'):
-			user.set_password(form.cleaned_data['new_password1']) # Hash le nouveau mot de passe
-			user.save()
-			update_session_auth_hash(self.request, user)
-			messages.success(self.request, "Votre mot de passe a été changé avec succès.")
-		messages.success(self.request, 'Vos paramètres ont été mis à jour.')
-		return super().form_valid(form)
+# 	def form_valid(self, form):
+# 		user = form.save()
+# 		if form.cleaned_data.get('new_password1'):
+# 			user.set_password(form.cleaned_data['new_password1']) # Hash le nouveau mot de passe
+# 			user.save()
+# 			update_session_auth_hash(self.request, user)
+# 			messages.success(self.request, "Votre mot de passe a été changé avec succès.")
+# 		messages.success(self.request, 'Vos paramètres ont été mis à jour.')
+# 		return super().form_valid(form)
 
 
-# Search Users View
-@login_required
-@csrf_protect
-def search_users_view(request):
-	if request.method == 'POST':
-		pass  # Gérer la soumission du formulaire de recherche si nécessaire (actuellement vide)
+# # Search Users View
+# @login_required
+# @csrf_protect
+# def search_users_view(request):
+# 	if request.method == 'POST':
+# 		pass  # Gérer la soumission du formulaire de recherche si nécessaire (actuellement vide)
 
-	query = request.GET.get('query', '')
-	user = request.user
-	now = timezone.now()
+# 	query = request.GET.get('query', '')
+# 	user = request.user
+# 	now = timezone.now()
 
-	# Récupération des amis, demandes d'amis envoyées et reçues
-	friends = user.get_friends()
-	friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
-	friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
+# 	# Récupération des amis, demandes d'amis envoyées et reçues
+# 	friends = user.get_friends()
+# 	friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
+# 	friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
 
-	# Recherche des utilisateurs en excluant l'utilisateur courant
-	users = User.objects.filter(
-		Q(username__icontains=query)
-	).exclude(pk=user.pk)
+# 	# Recherche des utilisateurs en excluant l'utilisateur courant
+# 	users = User.objects.filter(
+# 		Q(username__icontains=query)
+# 	).exclude(pk=user.pk)
 
-	# Requête AJAX
-	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-		html = render_to_string('account/search_results.html', {
-			'users': users,
-			'friends': friends,
-			'friend_requests_sent': list(friend_requests_sent),
-			'friend_requests_received': list(friend_requests_received),
-			'now': now.isoformat()
-		})
-		return HttpResponse(html)
+# 	# Requête AJAX
+# 	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+# 		html = render_to_string('account/search_results.html', {
+# 			'users': users,
+# 			'friends': friends,
+# 			'friend_requests_sent': list(friend_requests_sent),
+# 			'friend_requests_received': list(friend_requests_received),
+# 			'now': now.isoformat()
+# 		})
+# 		return HttpResponse(html)
 
-	return render(request, 'account/search.html', {
-		'users': users,
-		'query': query,
-		'friends': friends,
-		'friend_requests_sent': list(friend_requests_sent),
-		'friend_requests_received': list(friend_requests_received),
-		'now': now
-	})
+# 	return render(request, 'account/search.html', {
+# 		'users': users,
+# 		'query': query,
+# 		'friends': friends,
+# 		'friend_requests_sent': list(friend_requests_sent),
+# 		'friend_requests_received': list(friend_requests_received),
+# 		'now': now
+# 	})
 
 
 # Friends View
@@ -163,27 +163,41 @@ def friends_view(request):
 	})
 
 
-# Send Friend Request
-@login_required
-def send_friend_request(request, user_id):
-	if request.method == 'POST':
-		try:
-			to_user = User.objects.get(id=user_id)
-			if to_user == request.user:
-				messages.error(request, "Vous ne pouvez pas vous envoyer une demande d'ami.")
-			elif Friendship.objects.filter(
-				Q(user1=request.user, user2=to_user) | Q(user1=to_user, user2=request.user)
-			).exists():
-				messages.error(request, f"Vous êtes déjà ami avec {to_user.username} ou une demande est en attente.")
-			else:
-				FriendshipRequest.objects.create(from_user=request.user, to_user=to_user)
-				messages.success(request, f"Demande d'ami envoyée à {to_user.username}.")
-		except User.DoesNotExist:
-			messages.error(request, "Utilisateur introuvable.")
-		return redirect('account:search_users')
-	else:
-		return redirect('account:search_users')
+# # Send Friend Request
+# @login_required
+# def SendFriendRequestView(request, user_id):
+# 	if request.method == 'POST':
+# 		try:
+# 			to_user = User.objects.get(id=user_id)
+# 			if to_user == request.user:
+# 				messages.error(request, "Vous ne pouvez pas vous envoyer une demande d'ami.")
+# 			elif Friendship.objects.filter(
+# 				Q(user1=request.user, user2=to_user) | Q(user1=to_user, user2=request.user)
+# 			).exists():
+# 				messages.error(request, f"Vous êtes déjà ami avec {to_user.username} ou une demande est en attente.")
+# 			else:
+# 				FriendshipRequest.objects.create(from_user=request.user, to_user=to_user)
+# 				messages.success(request, f"Demande d'ami envoyée à {to_user.username}.")
+# 		except User.DoesNotExist:
+# 			messages.error(request, "Utilisateur introuvable.")
+# 		return redirect('account:search_users')
+# 	else:
+# 		return redirect('account:search_users')
 
+
+# # Remove Friend Request
+# @login_required
+# def RemoveFriendRequestView(request, user_id):
+# 	if request.method == 'POST':
+# 		try:
+# 			friend_request = FriendshipRequest.objects.get(from_user=request.user, to_user__id=user_id)
+# 			friend_request.cancel()
+# 			messages.success(request, f"Demande d'ami à {friend_request.to_user.username} annulée.")
+# 		except FriendshipRequest.DoesNotExist:
+# 			messages.error(request, "Demande d'ami introuvable.")
+# 		return redirect('account:search_users')
+# 	else:
+# 		return redirect('account:search_users')
 
 # Accept Friend Request
 @login_required
@@ -214,20 +228,6 @@ def reject_friend_request(request, user_id):
 	else:
 		return redirect('account:search_users')
 
-
-# Remove Friend Request
-@login_required
-def remove_friend_request(request, user_id):
-	if request.method == 'POST':
-		try:
-			friend_request = FriendshipRequest.objects.get(from_user=request.user, to_user__id=user_id)
-			friend_request.cancel()
-			messages.success(request, f"Demande d'ami à {friend_request.to_user.username} annulée.")
-		except FriendshipRequest.DoesNotExist:
-			messages.error(request, "Demande d'ami introuvable.")
-		return redirect('account:search_users')
-	else:
-		return redirect('account:search_users')
 
 
 # Remove Friend
@@ -279,9 +279,6 @@ def profile_view(request, username):
 		'friend_request_sent': friend_request_sent,
 		'friend_request_received': friend_request_received,
 	})
-
-
-
 
 class CurrentUserViewAPI(APIView):
 	permission_classes = [AllowAny]
@@ -342,22 +339,33 @@ class registerViewAPI(APIView):
 		serializer = UserSerializer(data=data)
 		if serializer.is_valid():
 			user = serializer.save()
-			user.set_password(data['password'])
+			# user.set_password(data['password'])
 			print(user.password)
 			print("ici")
 			login(request, user)
 			return JsonResponse(serializer.data, status=201)
 		else:
 			return JsonResponse(serializer.errors, status=400)
-
-# Sync 42 Account
-def sync_42(request):
+def get_42_user_data(request, redirect_uri):
+	"""
+	Fonction utilitaire pour récupérer les données de l'utilisateur 42 à partir du code d'autorisation.
+	"""
 	client_id = settings.FORTYTWO_CLIENT_ID
 	client_secret = settings.FORTYTWO_CLIENT_SECRET
-	authorization_base_url = 'https://api.intra.42.fr/oauth/authorize'
 	token_url = 'https://api.intra.42.fr/oauth/token'
-	redirect_uri = 'http://localhost:8000/account/42sync'
-	code = request.GET.get('code')
+
+	if request.method == 'POST':
+		try:
+			data = json.loads(request.body)
+			code = data.get('code')
+		except json.JSONDecodeError:
+			return JsonResponse({'success': False, 'error': 'Données JSON invalides.'}, status=400)
+	else: 
+		code = request.GET.get('code')
+
+	if not code:
+		return JsonResponse({'success': False, 'error': 'Code d\'autorisation manquant.'}, status=400)
+
 	oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
 	token = oauth.fetch_token(
 		token_url,
@@ -365,15 +373,50 @@ def sync_42(request):
 		client_secret=client_secret,
 		include_client_id=True
 	)
+
 	intra_api_url = 'https://api.intra.42.fr/v2/me'
 	response = oauth.get(intra_api_url)
 	user_data = response.json()
+	return user_data
+
+def handle_42_user(request, user_data, update_existing_user=False):
+	"""
+	Gère la création ou la mise à jour d'un utilisateur à partir des données 42.
+	"""
 	email = user_data['email']
 	intra_id = user_data['id']
 	username = user_data['login']
 	avatar_url = user_data['image']['link']
-	user = User.objects.get(email=email)
-	user.intra_id = intra_id
+
+	if update_existing_user:
+		try:
+			user = User.objects.get(email=email)
+		except User.DoesNotExist:
+			return JsonResponse({'success': False, 'error': 'Utilisateur non trouvé.'}, status=404)
+	else:
+		try:
+			user = User.objects.get(intra_id=intra_id)
+		except User.DoesNotExist:
+			try:
+				user = User.objects.get(email=email)
+				return JsonResponse({'success': False, 'error': 'Un compte existe déjà avec cet email.'})
+			except User.DoesNotExist:
+				try:
+					user = User.objects.get(username=username)
+					messages.error(request, "Un compte existe déjà avec ce nom d'utilisateur.")
+					num = 1
+					while User.objects.filter(username=username).exists():
+						username = f"{user_data['login']}_{num}"
+						num += 1
+				except User.DoesNotExist:
+					pass 
+				user = User.objects.create_user(
+					username=username,
+					email=email,
+					intra_id=intra_id,
+				)
+
+	# Téléchargement et enregistrement de l'avatar
 	avatar_response = requests.get(avatar_url)
 	if avatar_response.status_code == 200:
 		try:
@@ -386,90 +429,149 @@ def sync_42(request):
 			print(f"Erreur lors de l'enregistrement de l'avatar : {e}")
 	else:
 		print(f"Erreur lors du téléchargement de l'avatar : {avatar_response.status_code}")
-	login(request, user)
-	return redirect('home')
 
+	login(request, user)
+
+	return JsonResponse({'success': True, 'user': {
+		'username': user.username,
+		'email': user.email,
+		'intra_id': user.intra_id,
+		'avatar': user.avatar.url if user.avatar else None
+	}})
+
+# Sync 42 Account
+def sync_42(request):
+	redirect_uri = 'http://localhost:8000/account/42sync' 
+	user_data = get_42_user_data(request, redirect_uri)
+	if isinstance(user_data, JsonResponse): # En cas d'erreur dans get_42_user_data
+		return user_data
+	return handle_42_user(request, user_data, update_existing_user=True)
 
 def callback_42(request):
-	client_id = settings.FORTYTWO_CLIENT_ID
-	client_secret = settings.FORTYTWO_CLIENT_SECRET
-	token_url = 'https://api.intra.42.fr/oauth/token'
-	redirect_uri = 'http://localhost/42callback'
+	redirect_uri = 'http://localhost/42callback'  
+	user_data = get_42_user_data(request, redirect_uri)
+	if isinstance(user_data, JsonResponse):
+		return user_data
+	return handle_42_user(request, user_data)
 
-	if request.method == 'POST':
+
+class UserSettingsView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def patch(self, request, *args, **kwargs):
+		user = request.user
+		serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})  # partial=True
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SearchUsersAPIView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+
+        query = self.request.query_params.get('query', '')
+        user = self.request.user
+        now = timezone.now()
+
+        # Récupération des amis, demandes d'amis envoyées et reçues
+        friends = user.get_friends()
+        friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
+        friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
+
+        queryset = User.objects.filter(
+            Q(username__icontains=query)
+        ).exclude(pk=user.pk)
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+
+        # Ajouter les champs dynamiques à la réponse sérialisée
+        friends = request.user.get_friends()
+        friend_requests_sent = FriendshipRequest.objects.filter(from_user=request.user).values_list('to_user', flat=True)
+        friend_requests_received = FriendshipRequest.objects.filter(to_user=request.user).values_list('from_user', flat=True)
+
+        for user_data in serializer.data:
+            user_id = user_data['id']
+            user_obj = User.objects.get(id=user_id) 
+            user_data['is_friend'] = user_obj in friends
+            user_data['friend_request_sent'] = user_obj.pk in friend_requests_sent
+            user_data['friend_request_received'] = user_obj.pk in friend_requests_received
+
+        return Response(serializer.data)
+	
+class SendFriendRequestView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def post(self, request, user_id):
+		from_user = request.user
 		try:
-			data = json.loads(request.body)
-			code = data.get('code')
-			if not code:
-				return JsonResponse({'success': False, 'error': 'Code d\'autorisation manquant.'}, status=400)
-			oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
-			token = oauth.fetch_token(
-				token_url,
-				code=code
-					,
-				client_secret=client_secret,
-				include_client_id=True
-			)
+			to_user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
-			print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE")
-			intra_api_url = 'https://api.intra.42.fr/v2/me'
-			response = oauth.get(intra_api_url)
-			user_data = response.json()
+		# Vérifier si une demande d'ami existe déjà
+		existing_request = FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).first()
+		if existing_request:
+			return Response({'error': 'Une demande d\'ami a déjà été envoyée à cet utilisateur.'}, status=status.HTTP_400_BAD_REQUEST)
 
-			email = user_data['email']
-			intra_id = user_data['id']
-			username = user_data['login']
-			avatar_url = user_data['image']['link']
-			print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE2")
+		# Créer la demande d'ami
+		friend_request = FriendshipRequest.objects.create(from_user=from_user, to_user=to_user)
+		return Response({'success': 'Demande d\'ami envoyée avec succès.'}, status=status.HTTP_201_CREATED)
 
-			try:
-				user = User.objects.get(intra_id=intra_id)
-			except User.DoesNotExist:
-				try:
-					user = User.objects.get(email=email)
-					return JsonResponse({'success': False, 'error': 'Un compte existe déjà avec cet email.'})
-				except User.DoesNotExist:
-					try:
-						user = User.objects.get(username=user_data['login'])
-						messages.error(request, "Un compte existe déjà avec ce nom d'utilisateur.")
-						num = 1
-						while User.objects.filter(username=username).exists():
-							username = f"{user_data['login']}_{num}"
-							num += 1
-						redirect_url = 'account:settings' 
-					except User.DoesNotExist:
-						redirect_url = 'home'
-					user = User.objects.create_user(
-						username=username,
-						email=email,
-						intra_id=intra_id,
-					)
-					avatar_response = requests.get(avatar_url)
-					if avatar_response.status_code == 200:
-						try:
-							os.makedirs(os.path.join(settings.MEDIA_ROOT, 'profile_pics'), exist_ok=True)
-							with open(os.path.join(settings.MEDIA_ROOT, f'profile_pics/{user.username}.jpg'), 'wb') as f:
-								f.write(avatar_response.content)
-							user.avatar = f'profile_pics/{user.username}.jpg'
-							user.save()
-						except Exception as e:
-							print(f"Erreur lors de l'enregistrement de l'avatar : {e}")
-					else:
-						print(f"Erreur lors du téléchargement de l'avatar : {avatar_response.status_code}")
+class RemoveFriendRequestView(APIView):
+	permission_classes = [IsAuthenticated]
 
-			login(request, user)
+	def post(self, request, user_id):
+		from_user = request.user
+		try:
+			to_user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
-			print("MDR J'ARRIVE QUAND MEME ICI AVANT DE DIE")
-			# Renvoyer une réponse JSON avec les informations de l'utilisateur
-			return JsonResponse({'success': True, 'user': {
-				'username': user.username,
-				'email': user.email,
-				'intra_id': user.intra_id,
-				'avatar': user.avatar.url if user.avatar else None 
-			}})
+		# Supprimer la demande d'ami (si elle existe)
+		FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).delete()
+		return Response({'success': 'Demande d\'ami annulée avec succès.'})
+class AcceptFriendRequestView(APIView):
+	permission_classes = [IsAuthenticated]
 
-		except json.JSONDecodeError:
-			return JsonResponse({'success': False, 'error': 'Données JSON invalides.'}, status=400)
+	def post(self, request, user_id):
+		to_user = request.user
+		try:
+			from_user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
-	else:
-		return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, status=405)
+		# Vérifier si une demande d'ami existe
+		friend_request = FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).first()
+		if not friend_request:
+			return Response({'error': 'Demande d\'ami introuvable.'}, status=status.HTTP_404_NOT_FOUND)
+
+		# Créer l'amitié
+		Friendship.objects.create(user1=from_user, user2=to_user)
+		friend_request.delete()
+		return Response({'success': 'Demande d\'ami acceptée avec succès.'})
+class RejectFriendRequestView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def post(self, request, user_id):
+		to_user = request.user
+		try:
+			from_user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
+
+		# Vérifier si une demande d'ami existe
+		friend_request = FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).first()
+		if not friend_request:
+			return Response({'error': 'Demande d\'ami introuvable.'}, status=status.HTTP_404_NOT_FOUND)
+
+		# Supprimer la demande d'ami
+		friend_request.delete()
+		return Response({'success': 'Demande d\'ami refusée avec succès.'})

@@ -1,6 +1,6 @@
 
 async function LoginForm() {
-	const username = document.getElementById('username_form').value;
+	const username = document.getElementById('username_input').value;
     const password = document.getElementById('password').value;
 	
     event.preventDefault();

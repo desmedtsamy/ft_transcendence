@@ -1,3 +1,5 @@
+window.user;
+
 
 document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (event) => {
@@ -56,16 +58,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	fetchUserInfo();
 
 
-	window.alert = function(message) {
+	window.alert = function(message, type = 'normal') {
 		const alertsEl = document.getElementById('alerts');
 		const alertEl = document.createElement('div');
-		alertEl.className = 'alert';
+		
+		alertEl.className = `alert alert-${type}`;
 		alertEl.textContent = message;
 		alertEl.style.display = 'block';
+		
 		alertsEl.appendChild(alertEl);
+		
 		setTimeout(() => {
 			alertEl.style.display = 'none';
 		}, 5000);
 	}
+	
 
 });

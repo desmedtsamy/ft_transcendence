@@ -3,7 +3,10 @@
 
 <h1>Login Page</h1>
 	<form id="login-form" onsubmit="LoginForm(); return false;">
-		<input class="form_elem" type="text" id="username_form" placeholder="Username" required>
+
+		<input type="text" name="username" style="position: absolute; left: -9999px;">
+		<input type="password" name="password" style="position: absolute; left: -9999px;">
+		<input class="form_elem" type="text" id="username_input" placeholder="Username" required>
 		<input class="form_elem" type="password" id="password" placeholder="Password" required>
 		<button class="form_elem" type="submit">Login</button>
 
@@ -11,4 +14,4 @@
 		<span>sign in with </span> <img src="/img/42_logo.svg" alt="42" style="height:1em ">
 	</a>
 </form>
-	<p>Don't have an account? <a class="submit" id="sign_up" href="{% url 'account:register' %}">Sign Up</a></p>
+	<p>Don't have an account? <a class="submit" id="sign_up" href="/register">Sign Up</a></p>

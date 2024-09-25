@@ -1,43 +1,72 @@
 
-.avatar-small { /* Style pour les avatars plus petits */
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 10px;
-    object-fit: cover;
-}
-
-.btn-danger {
-    background-color: #f44336 !important; /* Rouge */
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #da190b; /* Rouge plus foncé au survol */
-    transform: scale(1.05);    /* Agrandit légèrement le bouton au survol */
-}
-
-/* Liste des résultats */
 .user_list {
-    list-style: none;
+    list-style: none; /* Supprimer les puces par défaut */
     padding: 0;
+    margin: 20px 0; /* Ajouter un peu d'espace autour de la liste */
 }
 
 .user_element {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 15px;
-    border-bottom: 1px solid #343a40; /* Séparateur subtil */
+    border-bottom: 1px solid #eee; /* Séparateur subtil entre les éléments */
+    transition: background-color 0.2s; /* Ajoute une transition pour un effet de survol plus doux */
 }
 
-.user_element img {
-    padding-right: 1em;
+.user_element:hover {
+    /* background-color: #3c7c72; */
+	color: #1a1a2e;
+	background-color :#16e0bd;
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Avatar rond */
+    object-fit: cover; /* Pour que l'image remplisse l'espace sans être déformée */
+}
+
+.online-status, .offline-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white; /* Bordure blanche pour le contraste */
+}
+
+.online-status {
+    background-color: green; /* Vert pour en ligne */
+}
+
+.offline-status {
+    background-color: gray; /* Gris pour hors ligne */
 }
 
 .user_element a {
-    display: flex;
-    width: 100%;
-    align-items: center;
+    text-decoration: none;
+    color: inherit; /* Hérite de la couleur du texte parent */
+}
 
+.button {
+    padding: 8px 12px;
+    cursor: pointer;
+	border: 0.2em solid #1a1a2e;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Rouge pour les boutons "danger" */
+    color: white;
+}
+
+.btn-danger:hover {
+    color: #dc3545; /* Rouge plus foncé au survol */
 }

@@ -29,5 +29,11 @@ urlpatterns = [
 	path('42client/', views.Client42ViewAPI.as_view(), name='api_login'),
     path('42callback/', views.callback_42, name='42callback'),
     path('42sync/', views.sync_42, name='42sync'),
+    path('settings/', views.UserSettingsView.as_view(), name='register'),
 	
+	path('search/', views.SearchUsersAPIView.as_view(), name='search_users_api'),
+	path('friend-requests/<int:user_id>/send/',views.SendFriendRequestView.as_view(), name='send_friend_request_api'),
+    path('friend-requests/<int:user_id>/cancel/',views.RemoveFriendRequestView.as_view(), name='cancel_friend_request_api'),
+	path('friend-requests/<int:user_id>/accept/',views.AcceptFriendRequestView.as_view(), name='accept_friend_request_api'),
+	path('friend-requests/<int:user_id>/reject/',views.RejectFriendRequestView.as_view(), name='reject_friend_request_api'),
 ]

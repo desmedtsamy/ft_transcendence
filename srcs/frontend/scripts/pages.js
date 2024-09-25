@@ -8,6 +8,14 @@ async function callbackPage() {
 		};
 }
 
+async function registerPage() {
+	const response = await fetch('/templates/register.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/account/register.js",
+		};
+}
 async function loginPage() {
 	const response = await fetch('/templates/login.html');
 	const htmlContent = await response.text();
@@ -36,11 +44,15 @@ async function scoreboardPage() {
 }
 
 async function searchPage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
 	const response = await fetch('/templates/search.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/account/search.js",
 	};
 }
 
@@ -66,7 +78,7 @@ async function settingsPage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/account/settings.js",
 	};
 }
 

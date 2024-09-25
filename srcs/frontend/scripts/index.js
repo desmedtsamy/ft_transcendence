@@ -21,9 +21,12 @@ async function logout() {
     } catch (error) {
         console.error('Error:', error);
     }
+	window.user = null;
 }
 
 window.handleUserAuthenticated = function(user) {
+
+	window.user = user;
     const loginLink = document.getElementById('login-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');
@@ -40,7 +43,7 @@ window.handleUserAuthenticated = function(user) {
 }
 
 window.handleUserNotAuthenticated = function() {
-
+	window.user = null;
     const loginLink = document.getElementById('login-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');

@@ -1,2 +1,35 @@
-<h1>Settings</h1>
-<p>Adjust your settings here!</p>
+<form id="settings-form" >
+
+	<input type="text" name="username_fake" style="display:none">
+	<input type="password" name="password" style="display:none">
+
+	<div>
+		<label for="username">Nom d'utilisateur:</label>
+		<input type="text" id="username_input" name="username" autocomplete="new-password"> 
+	</div>
+	<div>
+		<label for="email">Email:</label>
+		<input type="email" id="email" name="email" autocomplete="new-password">
+	</div>   
+
+	<div>
+		<label for="avatar">Avatar:</label>
+		<input type="file" id="avatar" name="avatar" accept="image/*">
+	</div>
+	<div>
+		<label for="old_password">Ancien mot de passe:</label>
+		<input type="password" id="old_password" name="old_password" autocomplete="new-password">
+	</div>
+	<div>
+		<label for="new_password1">Nouveau mot de passe:</label>
+		<input type="password" id="new_password1" name="new_password1" autocomplete="new-password">
+	</div>
+	<div>
+		<label for="new_password2">Confirmez le nouveau mot de passe:</label>
+		<input type="password" id="new_password2" name="new_password2" autocomplete="new-password">   
+
+	</div>
+	<button type="submit">Enregistrer les modifications</button>
+</form>
+
+<div id="message"></div> 
