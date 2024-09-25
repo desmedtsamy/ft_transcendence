@@ -1,2 +1,37 @@
-<h1>Classement</h1>
-<p>This is the scoreboard page!</p>
+<h1 id="neon">SCOREBOARD</h1>
+<style>
+	.avatar_scoreboard {
+		width: 30px; 
+		height: 30px;
+		border-radius: 50%;
+		object-fit: cover;
+		margin-right:0.5em
+	}
+	
+	.player-info {
+		display: flex;
+		align-items: center;
+	}
+	
+	.player-info .avatar-container {
+		display: flex; 
+		justify-content: center;
+		align-items: center;
+		margin-right: 10px; /* Add space between avatar and username */
+	}
+	
+	#scoreboard th:nth-child(2), #scoreboard td:nth-child(2) {
+		width: 200px; 
+	}
+</style>
+    <table id="scoreboard">
+        <thead>
+            <tr>
+                <th class="text-center">Rank</th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Score</th>
+            </tr>
+        </thead>
+        <tbody id="scoreboard-body">
+        </tbody>
+    </table>

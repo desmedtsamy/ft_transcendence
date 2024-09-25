@@ -12,8 +12,6 @@ from django.db.models import Q
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_protect
 
-
-
 import json
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
@@ -31,254 +29,6 @@ from .serializers import (
 from .forms import LoginForm, RegisterForm, UserSettingsForm
 import os
 import requests
-
-
-
-
-# # Login View
-# class LoginView(View):
-# 	template_name = 'account/login.html'
-# 	form_class = LoginForm
-
-# 	def get(self, request):
-# 		return render(request, self.template_name, {
-# 			'form': self.form_class,
-# 			'fortytwo_client_id': settings.FORTYTWO_CLIENT_ID,
-# 		})
-
-# 	def post(self, request):
-# 		form = self.form_class(request, data=request.POST)
-# 		if form.is_valid():
-# 			user = form.get_user()
-# 			login(request, user)
-# 			messages.success(request, f"Bienvenue, {user.username} !")
-# 			return redirect('home')
-# 		else:
-# 			messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
-# 			return render(request, self.template_name, {'form': form})
-
-
-# # Logout View
-# class LogoutView(View):
-# 	def get(self, request):
-# 		logout(request)
-# 		messages.success(request, "Vous êtes maintenant déconnecté.")
-# 		return redirect('index')
-
-
-# # Register View
-# class RegisterView(View):
-# 	template_name = 'account/register.html'
-# 	form_class = RegisterForm
-
-# 	def get(self, request):
-# 		return render(request, self.template_name, {
-# 			'form': self.form_class,
-# 			'fortytwo_client_id': settings.FORTYTWO_CLIENT_ID,
-# 		})
-
-# 	def post(self, request):
-# 		form = self.form_class(request.POST)
-# 		if form.is_valid():
-# 			user = form.save()
-# 			login(request, user)
-# 			messages.success(request, f"Bienvenue, {user.username} !")
-# 			return redirect('home')
-# 		return render(request, self.template_name, {'form': form})
-
-
-# # Settings View
-# class SettingsView(LoginRequiredMixin, UpdateView):
-# 	model = User
-# 	form_class = UserSettingsForm
-# 	template_name = 'account/settings.html'
-# 	success_url = reverse_lazy('home') # Redirige vers la page de paramètres après la mise à jour
-
-# 	def get_object(self, queryset=None):
-# 		return self.request.user
-
-# 	def form_valid(self, form):
-# 		user = form.save()
-# 		if form.cleaned_data.get('new_password1'):
-# 			user.set_password(form.cleaned_data['new_password1']) # Hash le nouveau mot de passe
-# 			user.save()
-# 			update_session_auth_hash(self.request, user)
-# 			messages.success(self.request, "Votre mot de passe a été changé avec succès.")
-# 		messages.success(self.request, 'Vos paramètres ont été mis à jour.')
-# 		return super().form_valid(form)
-
-
-# # Search Users View
-# @login_required
-# @csrf_protect
-# def search_users_view(request):
-# 	if request.method == 'POST':
-# 		pass  # Gérer la soumission du formulaire de recherche si nécessaire (actuellement vide)
-
-# 	query = request.GET.get('query', '')
-# 	user = request.user
-# 	now = timezone.now()
-
-# 	# Récupération des amis, demandes d'amis envoyées et reçues
-# 	friends = user.get_friends()
-# 	friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
-# 	friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
-
-# 	# Recherche des utilisateurs en excluant l'utilisateur courant
-# 	users = User.objects.filter(
-# 		Q(username__icontains=query)
-# 	).exclude(pk=user.pk)
-
-# 	# Requête AJAX
-# 	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-# 		html = render_to_string('account/search_results.html', {
-# 			'users': users,
-# 			'friends': friends,
-# 			'friend_requests_sent': list(friend_requests_sent),
-# 			'friend_requests_received': list(friend_requests_received),
-# 			'now': now.isoformat()
-# 		})
-# 		return HttpResponse(html)
-
-# 	return render(request, 'account/search.html', {
-# 		'users': users,
-# 		'query': query,
-# 		'friends': friends,
-# 		'friend_requests_sent': list(friend_requests_sent),
-# 		'friend_requests_received': list(friend_requests_received),
-# 		'now': now
-# 	})
-
-
-# Friends View
-@login_required
-def friends_view(request):
-	friend_requests = FriendshipRequest.objects.filter(to_user=request.user)
-	all_users = User.objects.all()
-	friends = request.user.get_friends()
-	return render(request, 'account/friends.html', {
-		'friend_requests': friend_requests,
-		'all_users': all_users,
-		'friends': friends
-	})
-
-
-# # Send Friend Request
-# @login_required
-# def SendFriendRequestView(request, user_id):
-# 	if request.method == 'POST':
-# 		try:
-# 			to_user = User.objects.get(id=user_id)
-# 			if to_user == request.user:
-# 				messages.error(request, "Vous ne pouvez pas vous envoyer une demande d'ami.")
-# 			elif Friendship.objects.filter(
-# 				Q(user1=request.user, user2=to_user) | Q(user1=to_user, user2=request.user)
-# 			).exists():
-# 				messages.error(request, f"Vous êtes déjà ami avec {to_user.username} ou une demande est en attente.")
-# 			else:
-# 				FriendshipRequest.objects.create(from_user=request.user, to_user=to_user)
-# 				messages.success(request, f"Demande d'ami envoyée à {to_user.username}.")
-# 		except User.DoesNotExist:
-# 			messages.error(request, "Utilisateur introuvable.")
-# 		return redirect('account:search_users')
-# 	else:
-# 		return redirect('account:search_users')
-
-
-# # Remove Friend Request
-# @login_required
-# def RemoveFriendRequestView(request, user_id):
-# 	if request.method == 'POST':
-# 		try:
-# 			friend_request = FriendshipRequest.objects.get(from_user=request.user, to_user__id=user_id)
-# 			friend_request.cancel()
-# 			messages.success(request, f"Demande d'ami à {friend_request.to_user.username} annulée.")
-# 		except FriendshipRequest.DoesNotExist:
-# 			messages.error(request, "Demande d'ami introuvable.")
-# 		return redirect('account:search_users')
-# 	else:
-# 		return redirect('account:search_users')
-
-# Accept Friend Request
-@login_required
-def accept_friend_request(request, user_id):
-	if request.method == 'POST':
-		try:
-			friend_request = FriendshipRequest.objects.get(from_user__id=user_id, to_user=request.user)
-			friend_request.accept()
-			messages.success(request, f"Vous êtes maintenant ami avec {friend_request.from_user.username}.")
-		except FriendshipRequest.DoesNotExist:
-			messages.error(request, "Demande d'ami introuvable.")
-		return redirect('account:search_users')
-	else:
-		return redirect('account:search_users')
-
-
-# Reject Friend Request
-@login_required
-def reject_friend_request(request, user_id):
-	if request.method == 'POST':
-		try:
-			friend_request = FriendshipRequest.objects.get(to_user=request.user, from_user__id=user_id)
-			friend_request.cancel()
-			messages.success(request, f"Demande d'ami de {friend_request.from_user.username} refusée.")
-		except FriendshipRequest.DoesNotExist:
-			messages.error(request, "Demande d'ami introuvable.")
-		return redirect('account:search_users')
-	else:
-		return redirect('account:search_users')
-
-
-
-# Remove Friend
-@login_required
-def remove_friend(request, user_id):
-	if request.method == 'POST':
-		friend = get_object_or_404(User, id=user_id)
-		try:
-			friendship = Friendship.objects.get(
-				Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user)
-			)
-			friendship.remove_friend(friend)
-			messages.success(request, f"Vous n'êtes plus ami avec {friend.username}.")
-		except Friendship.DoesNotExist:
-			messages.error(request, "Amitié introuvable.")
-		return redirect('account:search_users')
-	else:
-		return redirect('account:search_users')
-	
-# Profile View
-@login_required
-def profile_view(request, username):
-	user = get_object_or_404(User, username=username)
-
-	# Calcul du ratio de victoires/défaites
-	if user.wins + user.losses > 0:
-		ratio = round(user.wins / (user.wins + user.losses) * 100, 1)
-	else:
-		ratio = 0
-
-	# Récupération des matchs récents
-	matches = Match.objects.filter(players=user).order_by('-created_at')
-	recent_matches = Match.objects.filter(players=user).order_by('-created_at')[:5]
-
-	# Vérification de l'amitié ou des demandes d'amis
-	is_friend = Friendship.objects.filter(
-		Q(user1=request.user, user2=user) | Q(user1=user, user2=request.user)
-	).exists()
-	friend_request_sent = FriendshipRequest.objects.filter(from_user=request.user, to_user=user).exists()
-	friend_request_received = FriendshipRequest.objects.filter(from_user=user, to_user=request.user).exists()
-
-	# Rendu du profil utilisateur
-	return render(request, 'account/profile.html', {
-		'profile_user': user,
-		'ratio': ratio,
-		'recent_matches': recent_matches,
-		'matches': matches,
-		'is_friend': is_friend,
-		'friend_request_sent': friend_request_sent,
-		'friend_request_received': friend_request_received,
-	})
 
 class CurrentUserViewAPI(APIView):
 	permission_classes = [AllowAny]
@@ -575,3 +325,37 @@ class RejectFriendRequestView(APIView):
 		# Supprimer la demande d'ami
 		friend_request.delete()
 		return Response({'success': 'Demande d\'ami refusée avec succès.'})
+	
+
+class UserProfileView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'  # Utiliser le nom d'utilisateur pour la recherche
+
+class UserFriendsListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+
+        user_id = self.kwargs['user_id']
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return user.get_friends()
+
+class UserMatchesListView(generics.ListAPIView):
+	serializer_class = MatchSerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get_queryset(self):
+			username = self.kwargs['username']
+			try:
+				user = User.objects.get(username=username)
+			except User.DoesNotExist:
+				return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
+
+			# Retrieve recent matches where the user is a player
+			return Match.objects.filter(players=user).order_by('-created_at')[:10]  # Get the last 10 matches

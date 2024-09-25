@@ -5,35 +5,22 @@ from . import views
 app_name = 'account'
 
 urlpatterns = [
-    #path('login_OLD/', views.LoginView.as_view(), name='login_OLD'),
-    #path('logout_OLD/', views.LogoutView.as_view(), name='logout_OLD'),
-    #path('register/', views.RegisterView.as_view(), name='register'),
-    #path('settings', views.SettingsView.as_view(), name='settings'),
-    # path('42callback_old/', views.callback_42_old, name='42callback_old'),
-	# path('friends/', views.friends_view, name='friends'),
-	# path('search/', views.search_users_view, name='search_users'),
-	# path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
-	# path('send_friend_request/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
-	# path('accept_friend_request/<int:user_id>/', views.accept_friend_request, name='accept_friend_request'),
-	# path('reject_friend_request/<int:user_id>/', views.reject_friend_request, name='reject_friend_request'),
-	# path('remove_friend_request/<int:user_id>/', views.remove_friend_request, name='remove_friend_request'),
-	# path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
-	# path('profile/<str:username>/', views.profile_view, name='profile'),
-	
 
-	
 	path('current-user/', views.CurrentUserViewAPI.as_view(), name='current-user'),
-	path('login/', views.LoginViewAPI.as_view(), name='api_login'),
 	path('register/', views.registerViewAPI.as_view(), name='api_login'),
+	path('login/', views.LoginViewAPI.as_view(), name='api_login'),
 	path('logout/', views.LogoutViewAPI.as_view(), name='api_login'),
 	path('42client/', views.Client42ViewAPI.as_view(), name='api_login'),
     path('42callback/', views.callback_42, name='42callback'),
     path('42sync/', views.sync_42, name='42sync'),
     path('settings/', views.UserSettingsView.as_view(), name='register'),
-	
 	path('search/', views.SearchUsersAPIView.as_view(), name='search_users_api'),
+	path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile_api'),
+    path('friends/<int:user_id>/', views.UserFriendsListView.as_view(), name='user_friends_list_api'),
+    path('matches/<str:username>/', views.UserMatchesListView.as_view(), name='user_matches_list_api'),
 	path('friend-requests/<int:user_id>/send/',views.SendFriendRequestView.as_view(), name='send_friend_request_api'),
     path('friend-requests/<int:user_id>/cancel/',views.RemoveFriendRequestView.as_view(), name='cancel_friend_request_api'),
 	path('friend-requests/<int:user_id>/accept/',views.AcceptFriendRequestView.as_view(), name='accept_friend_request_api'),
 	path('friend-requests/<int:user_id>/reject/',views.RejectFriendRequestView.as_view(), name='reject_friend_request_api'),
+
 ]

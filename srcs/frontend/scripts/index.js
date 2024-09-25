@@ -32,9 +32,11 @@ window.handleUserAuthenticated = function(user) {
     const adminLink = document.getElementById('admin-link');
     const usernameSpan = document.getElementById('username');
     const profilePic = document.getElementById('profile-pic');
+	profileLink = document.getElementById('profile-link');
 	
 	usernameSpan.textContent = user.username;
 	profilePic.src = user.avatar;
+	profileLink.href = '/profile/' + user.username;
 	loginLink.style.display = 'none';
 	profileMenu.style.display = 'block';
 	if (user.is_superuser) {

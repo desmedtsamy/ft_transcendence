@@ -39,7 +39,7 @@ async function scoreboardPage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/scoreboard.js",
 	};
 }
 
@@ -69,7 +69,7 @@ async function profilePage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/account/profile.js",
 	};
 }
 

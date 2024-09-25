@@ -9,7 +9,7 @@ from .models import Tournament, TournamentMatch, Round
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-@csrf_exempt  # Désactive la protection CSRF juste pour le test (attention en prod)
+@csrf_exempt  # Désactive la protection CSRF juste pour le test
 def set_winner_view(request):
     if request.method == 'POST':
         try:

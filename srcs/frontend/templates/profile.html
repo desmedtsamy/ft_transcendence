@@ -1,1 +1,16 @@
-<h1>Profile</h1><p>Welcome to your profile!</p>
+<link rel="stylesheet" href="css/form.css">
+<h2>Profil de <span id="profile-username"></span></h2>
+        <img id="profile-avatar" alt="Profile" class="avatar_xl">
+
+        <p>Ratio victoires/défaites : <span id="win-loss-ratio"></span>%</p>
+        <p>Score : <span id="profile-score"></span></p>
+        <p>Dernière connexion : <span id="last-connection"></span></p>
+        <div class="friend-actions" id="friend-actions">
+            </div>
+
+        <h3>Évolution du score</h3>
+        <canvas id="scoreChart" width="400" height="200"></canvas>
+
+        <h3>Historique des matchs récents</h3>
+        <ul id="recent-matches">
+            </ul>

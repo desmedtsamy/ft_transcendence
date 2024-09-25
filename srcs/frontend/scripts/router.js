@@ -60,8 +60,11 @@ async function render(path) {
         return;
     }
 
-    path = path || '/'; 
-
+    path = path || '/';
+	while (routes[path] === undefined && path.length > 1) {
+		console.log('path:', path);
+		path = path.slice(0, path.lastIndexOf('/'));
+	}
     if (routes[path]) {
 		try {
             const pageData = await routes[path]();
@@ -87,6 +90,6 @@ async function render(path) {
         }
     } else {
 		console.error('Page not found:', path);
-        app.innerHTML = '<h1>404 - Page Not Found</h1>';
-    }
+		app.innerHTML = '<h1>404 - Page Not Found</h1>';
+	}
 }
