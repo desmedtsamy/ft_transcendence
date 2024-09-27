@@ -27,8 +27,27 @@ function renderProfileInfo(user) {
     profileAvatar.src = user.avatar;
     winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
     profileScore.textContent = user.score;
-    lastConnection.textContent = user.last_connection; 
+    lastConnection.textContent = formatTimeAgo(user.last_connection);
     renderFriendActions(user);
+}
+
+function formatTimeAgo(timestamp) {
+    const now = new Date();
+    const then = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - then) / 1000);
+
+    if (diffInSeconds < 60) {
+        return 'il y a quelques secondes'; 
+    } else if (diffInSeconds < 3600) { // Moins d'une heure
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+    } else if (diffInSeconds < 86400) { // Moins d'un jour
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+    } else {
+        const days = Math.floor(diffInSeconds / 86400);
+        return `il y a ${days} jour${days > 1 ? 's' : ''}`;
+    }
 }
 
 function calculateWinLossRatio(wins, losses) {
@@ -77,7 +96,6 @@ async function fetchMatchesData(username) {
         const response = await fetch(`/api/account/matches/${username}/`); 
         if (response.ok) {
             const matchesData = await response.json();
-            console.log('Historique des matchs:', matchesData)
 			renderRecentMatches(matchesData);
             renderScoreChart(matchesData); 
         } else {
@@ -123,7 +141,8 @@ function renderRecentMatches(matches) {
             playerDiv.classList.add('player');
 
             const playerLink = document.createElement('a');
-            playerLink.href = `/profile/${player.username}`; 
+			playerLink.href = `#`;
+			playerLink.dataset.link = `/profile/${player.username}`;
             playerLink.textContent = player.username;
             playerDiv.appendChild(playerLink);
 
@@ -154,20 +173,33 @@ function renderRecentMatches(matches) {
     }
 }
 
+let scoreChart; 
+
 function renderScoreChart(matches) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
-    const scoreData = [window.user.score];    
+    let currentScore = window.user.score; // On part du score actuel de l'utilisateur
+    const scoreData = [currentScore];
     const labels = ['Score actuel'];
 
-    for (const match of matches) {
-        const pointsChange = (match.winner === window.user.id) ? -match.points_at_stake : match.points_at_stake;
-        scoreData.push(scoreData[scoreData.length - 1] + pointsChange);
-        const matchDate = new Date(match.created_at);
-        const formattedDate = matchDate.toLocaleString(); // Adjust options if needed
-        labels.push(formattedDate); 
+	if (scoreChart) {
+        scoreChart.destroy();
     }
 
-    var scoreChart = new Chart(ctx, {
+    for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
+        const pointsChange = (match.winner && match.winner.id === window.user.id) ? match.points_at_stake : -match.points_at_stake;
+        currentScore -= pointsChange; // On soustrait le changement de score pour revenir en arrière
+        scoreData.push(currentScore);
+        const matchDate = new Date(match.created_at);
+        const formattedDate = matchDate.toLocaleString(); 
+        labels.push(formattedDate);
+    }
+
+    // Inverser les tableaux pour avoir l'ordre chronologique
+    scoreData.reverse();
+    labels.reverse();
+
+    scoreChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -188,6 +220,7 @@ function renderScoreChart(matches) {
         }
     });
 }
+
 function loadScript(src, callback) {
     var script = document.createElement('script');
     script.src = src;

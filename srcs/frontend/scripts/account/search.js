@@ -31,7 +31,8 @@ function renderSearchResults(users) {
 		listItem.dataset.userId = user.id;
 
 		const link = document.createElement('a');
-		link.href = `/profile/${user.username}`; // TODO
+        link.href = `#`;
+        link.dataset.link = `/profile/${user.username}`;
 
 		const avatarContainer = document.createElement('div');
 		avatarContainer.classList.add('avatar-container');

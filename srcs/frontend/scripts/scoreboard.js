@@ -18,7 +18,8 @@ function displayScoreboard(data) {
         avatar.src = user.avatar;
         avatar.alt = `Avatar de ${user.username}`;
         avatar.classList.add('avatar_scoreboard');
-        link.href = `/profile/${user.username}`;
+        link.href = `#`;
+        link.dataset.link = `/profile/${user.username}`;
         const playerInfoContainer = document.createElement('div');
         playerInfoContainer.classList.add('player-info'); 
         playerInfoContainer.appendChild(avatar);

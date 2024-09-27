@@ -2,10 +2,12 @@ window.user;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.addEventListener('click', (event) => {
-		if (event.target.matches('[data-link]')) {
+	document.addEventListener('click', (event) => {
+		console.log("test1");
+		if (event.target.closest('[data-link]')) {
 			event.preventDefault();
-            const path = event.target.getAttribute('data-link');
+            const path = event.target.closest('[data-link]').getAttribute('data-link');
+			console.log("path : " + path);
             navigateTo(path);
         }
     });

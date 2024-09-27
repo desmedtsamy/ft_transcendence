@@ -35,6 +35,10 @@ async function homePage() {
 }
 
 async function scoreboardPage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
 	const response = await fetch('/templates/scoreboard.html');   
     const htmlContent = await response.text();
 	return {
@@ -57,6 +61,10 @@ async function searchPage() {
 }
 
 async function tournamentPage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
 	const response = await fetch('/templates/tournament.html');
     const htmlContent = await response.text();
 	return {
@@ -65,6 +73,10 @@ async function tournamentPage() {
 	};
 }
 async function profilePage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
 	const response = await fetch('/templates/profile.html');
     const htmlContent = await response.text();
 	return {
@@ -74,6 +86,10 @@ async function profilePage() {
 }
 
 async function settingsPage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
 	const response = await fetch('/templates/settings.html');
     const htmlContent = await response.text();
 	return {

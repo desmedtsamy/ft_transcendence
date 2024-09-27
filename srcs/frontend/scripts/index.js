@@ -36,7 +36,7 @@ window.handleUserAuthenticated = function(user) {
 	
 	usernameSpan.textContent = user.username;
 	profilePic.src = user.avatar;
-	profileLink.href = '/profile/' + user.username;
+	profileLink.dataset.link = '/profile/' + user.username;
 	loginLink.style.display = 'none';
 	profileMenu.style.display = 'block';
 	if (user.is_superuser) {

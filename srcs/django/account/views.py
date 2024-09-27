@@ -89,9 +89,6 @@ class registerViewAPI(APIView):
 		serializer = UserSerializer(data=data)
 		if serializer.is_valid():
 			user = serializer.save()
-			# user.set_password(data['password'])
-			print(user.password)
-			print("ici")
 			login(request, user)
 			return JsonResponse(serializer.data, status=201)
 		else:
