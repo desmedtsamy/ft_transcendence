@@ -69,7 +69,7 @@ async function tournamentPage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/tournament/tournament.js",
 	};
 }
 async function profilePage() {

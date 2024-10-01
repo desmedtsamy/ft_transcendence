@@ -61,3 +61,6 @@ async function getClientAPI(){
 function onLoad() {
 	getClientAPI();
 }
+
+export { onLoad };
+window.LoginForm = LoginForm;

@@ -145,3 +145,5 @@ async function handleFriendAction(actionUrl, userId) {
 function onLoad() {
 	searchUsers();
 }
+export { onLoad, searchUsers };
+window.searchUsers = searchUsers;

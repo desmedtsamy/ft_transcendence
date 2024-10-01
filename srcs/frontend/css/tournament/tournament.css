@@ -28,12 +28,12 @@
 	display: flex;
 	flex-direction: column;
 }
-.tournoi-list {
+.tournament-list {
 	overflow-y: auto;
 	width: 100%;
 	height: 20%;
 }
-.tournoi-item {
+.tournament-item {
 	padding: 15px 20px;
 	border-bottom: 1px solid #ddd;
 	cursor: pointer;
@@ -44,18 +44,18 @@
 }
 
 /* Ajouter des icônes */
-.tournoi-item::before {
+.tournament-item::before {
 	content: "\f0c0"; /* Icone FontAwesome */
 	font-family: "Font Awesome 5 Free"; 
 	font-weight: 900; 
 	margin-right: 10px;
 }
-.tournoi-item.selected {
+.tournament-item.selected {
 	background-color: var(--primary-color);
 	color: black;
 }
 
-.tournoi-item:hover {
+.tournament-item:hover {
 	background-color: var(--primary-color);
 	color: black;
 }
@@ -78,7 +78,7 @@
 	color: var(--primary-color);
 }
 
-#tournoi-details {
+#tournament-details {
 	background-color: #f9f9f9;
 	padding: 20px;
 	border-radius: 5px;

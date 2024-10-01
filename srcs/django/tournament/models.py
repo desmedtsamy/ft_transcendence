@@ -3,7 +3,7 @@ from account.models import User
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    players = models.ManyToManyField(User, related_name='tournaments')
+    players = models.ManyToManyField(User, related_name='tournaments', blank=True) 
     number_of_players = models.PositiveIntegerField(default=4)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creator')
     winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='winner')

@@ -3,12 +3,10 @@ window.user;
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.addEventListener('click', (event) => {
-		console.log("test1");
 		if (event.target.closest('[data-link]')) {
 			event.preventDefault();
             const path = event.target.closest('[data-link]').getAttribute('data-link');
-			console.log("path : " + path);
-            navigateTo(path);
+			navigateTo(path);
         }
     });
 	
