@@ -22,19 +22,6 @@ python manage.py startapp newapp
 
 
 
-API
-
-/api/current-user/
-retourne l'utilisateur courant.
-
-/api/login/
-permets de se connecter
-/api/logout/
-permets de se deco
-
-
-
-
 
 python3 manage.py makemigrations && python3 manage.py migrate
 
