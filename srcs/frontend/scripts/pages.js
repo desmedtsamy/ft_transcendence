@@ -16,6 +16,7 @@ async function registerPage() {
 		script: "/scripts/account/register.js",
 		};
 }
+
 async function loginPage() {
 	const response = await fetch('/templates/login.html');
 	const htmlContent = await response.text();
@@ -23,6 +24,22 @@ async function loginPage() {
 		html: htmlContent,
 		script: "/scripts/account/login.js",
 		};
+}
+async function notificationPage() {
+	const response = await fetch('/templates/notification.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/test.js",
+		};
+}
+async function pongPage() {
+	const response = await fetch('/templates/pong.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/pong.js",
+	};
 }
 
 async function homePage() {

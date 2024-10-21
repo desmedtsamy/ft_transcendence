@@ -238,4 +238,4 @@ function onLoad(){
 	fetchProfileData(username);
 }
 
-export { onLoad};
+export {onLoad};

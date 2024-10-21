@@ -5,6 +5,7 @@ from .views import ScoreboardView
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from .views import chat
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     path('api/account/', include('account.urls')),
     path('api/scoreboard/', views.ScoreboardView.as_view(), name='scoreboard'),
     path('api/tournament/', include('tournament.urls')),
+	path("pong/", include('pong.urls')),
 ]
 
 if settings.DEBUG:

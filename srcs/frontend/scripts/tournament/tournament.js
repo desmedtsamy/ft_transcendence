@@ -94,6 +94,7 @@ function onLoad()
 }
 
 export { onLoad };
+
 window.createTournamentModal = createTournamentModal;
 window.closeModal = closeModal;
 // window.joinTournament = joinTournament;

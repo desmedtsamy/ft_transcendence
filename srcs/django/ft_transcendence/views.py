@@ -34,3 +34,8 @@ class ScoreboardView(generics.ListAPIView):
 	#return 20 best players
 	def get_queryset(self):
 		return User.objects.order_by('-score')[:20]
+	
+def chat(request):
+	context = {
+	}
+	return render(request,'pong/pong.html', context)

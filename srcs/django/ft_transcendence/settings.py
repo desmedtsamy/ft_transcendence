@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 	'rest_framework',
 	'corsheaders',
-
+	'channels',
 	# Applications internes
 	'account',
 	'pong',
@@ -174,3 +174,20 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
 	'http://frontend',
 ]
+
+# CHANNELS
+ASGI_APPLICATION = 'ft_transcendence.asgi.application'
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_postgres.core.PostgresChannelLayer',
+#         'CONFIG': {
+#             'database': 'mydatabase',
+#         },
+#     },
+# }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    },
+}

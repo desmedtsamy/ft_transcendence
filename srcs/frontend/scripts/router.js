@@ -10,6 +10,8 @@ const routes = {
 	'/profile': profilePage,
 	'/settings': settingsPage,
 	'/admin': adminPage,
+	'/notification': notificationPage,
+	'/pong': pongPage,
 };
 
 function callback() {
@@ -51,8 +53,6 @@ function navigateTo(path) {
 	}
 	else {
 		if (loadedScript) {
-			// console.log('Removing script:', loadedScript);
-			// document.head.removeChild(loadedScript);
 			loadedScript = null;
 		}
 		window.history.pushState({}, '', absolutePath);
