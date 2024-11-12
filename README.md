@@ -21,7 +21,10 @@ python manage.py startapp newapp
 ```
 
 
-
+pour lancer docker sur les mac de l'ecole  
+```bash
+	correnv
+```
 
 python3 manage.py makemigrations && python3 manage.py migrate
 
