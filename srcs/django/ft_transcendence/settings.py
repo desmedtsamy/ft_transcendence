@@ -168,10 +168,12 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
+    'http://localhost:8003',
 	'http://frontend',
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
+    'http://localhost:8003',
 	'http://frontend',
 ]
 

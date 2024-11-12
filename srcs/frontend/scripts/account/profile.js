@@ -6,7 +6,7 @@ async function fetchProfileData(username) {
         if (response.ok) {
 			const userData = await response.json();
             renderProfileInfo(userData);
-            fetchMatchesData(username); 
+            fetchMatchesData(username);
         } else {
 			profileInfo.innerHTML = '<h1>Utilisateur non trouvé</h1>';
         }

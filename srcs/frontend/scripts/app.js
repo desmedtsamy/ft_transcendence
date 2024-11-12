@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (response.ok) {
 				const data = await response.json();
 				if (data.is_authenticated) {
-					handleUserAuthenticated(data.user); 
+					handleUserAuthenticated(data.user);
 				} else {
 					handleUserNotAuthenticated();
 					// DEBUG

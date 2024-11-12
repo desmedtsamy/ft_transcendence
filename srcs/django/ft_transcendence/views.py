@@ -28,12 +28,17 @@ from rest_framework import generics, permissions, status
 # 		return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
 class ScoreboardView(generics.ListAPIView):
-	serializer_class = UserSerializer
 	permission_classes = [permissions.IsAuthenticated]
 
-	#return 20 best players
-	def get_queryset(self):
-		return User.objects.order_by('-score')[:20]
+	def get(self, request):
+		# Récupère les 20 meilleurs joueurs
+		users = User.objects.order_by('-score')[:20]
+		
+		# Sérialise la liste des utilisateurs
+		serializer = UserSerializer(users, many=True)
+		
+		# Retourne la réponse sous forme de JSON avec les utilisateurs
+		return Response({'top_players': serializer.data}, status=status.HTTP_200_OK)
 	
 def chat(request):
 	context = {

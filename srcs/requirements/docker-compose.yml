@@ -34,7 +34,7 @@ services:
       - ../frontend/:/usr/share/nginx/html
       - ../django/media/:/app/media
     ports:
-      - "80:80"
+      - "8003:80"
     networks:
       - app-network
     depends_on:

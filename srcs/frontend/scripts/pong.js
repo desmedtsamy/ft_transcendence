@@ -17,13 +17,13 @@ function onLoad() {
 
     console.log("User ID: [" + id + "]");
 
-    socket = new WebSocket('ws://localhost/ws/game/' + id);
+    socket = new WebSocket('ws://localhost:8003/ws/game/' + id);
 
     socket.addEventListener('open', function (event) {
         console.log('WebSocket is open now.');
     });
 
-    socket.addEventListener('message', function (event) {
+    socket.addEventListener('message', function (event) {0
         var data = JSON.parse(event.data);
         if (data.type === 'ball_update') {
             ballPosition = data.position;

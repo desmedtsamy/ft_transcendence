@@ -45,7 +45,7 @@ async function fetchScoreboardData() {
 		const response = await fetch('/api/scoreboard/');
 		if (response.ok) {
 			const data = await response.json();
-			displayScoreboard(data);
+			displayScoreboard(data['top_players']);
 		} else {
 			console.error('Failed to fetch scoreboard data');
 		}

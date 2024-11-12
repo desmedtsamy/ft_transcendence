@@ -213,46 +213,36 @@ class UserSettingsView(APIView):
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SearchUsersAPIView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class SearchUsersAPIView(APIView):
+	permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+	def get(self, request, *args, **kwargs):
+		# Récupérer le paramètre 'query' de la requête (valeur vide si non précisé)
+		query = self.request.query_params.get('query', '')
+		user = self.request.user
 
-        query = self.request.query_params.get('query', '')
-        user = self.request.user
-        now = timezone.now()
+		# Récupérer les amis, demandes envoyées et reçues
+		friends = user.get_friends()
+		friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
+		friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
 
-        # Récupération des amis, demandes d'amis envoyées et reçues
-        friends = user.get_friends()
-        friend_requests_sent = FriendshipRequest.objects.filter(from_user=user).values_list('to_user', flat=True)
-        friend_requests_received = FriendshipRequest.objects.filter(to_user=user).values_list('from_user', flat=True)
+		# Construire la queryset pour les utilisateurs à rechercher
+		queryset = User.objects.filter(Q(username__icontains=query)).exclude(pk=user.pk)
 
-        queryset = User.objects.filter(
-            Q(username__icontains=query)
-        ).exclude(pk=user.pk)
+		# Sérialiser les résultats de la recherche
+		serializer = UserSerializer(queryset, many=True)
 
-        return queryset
+		# Ajouter les informations dynamiques à la réponse sérialisée
+		for user_data in serializer.data:
+			user_id = user_data['id']
+			user_obj = User.objects.get(id=user_id)  # Récupérer l'utilisateur complet
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+			user_data['is_friend'] = user_obj in friends
+			user_data['friend_request_sent'] = user_obj.pk in friend_requests_sent
+			user_data['friend_request_received'] = user_obj.pk in friend_requests_received
 
+		return Response(serializer.data, status=status.HTTP_200_OK)
 
-        # Ajouter les champs dynamiques à la réponse sérialisée
-        friends = request.user.get_friends()
-        friend_requests_sent = FriendshipRequest.objects.filter(from_user=request.user).values_list('to_user', flat=True)
-        friend_requests_received = FriendshipRequest.objects.filter(to_user=request.user).values_list('from_user', flat=True)
-
-        for user_data in serializer.data:
-            user_id = user_data['id']
-            user_obj = User.objects.get(id=user_id) 
-            user_data['is_friend'] = user_obj in friends
-            user_data['friend_request_sent'] = user_obj.pk in friend_requests_sent
-            user_data['friend_request_received'] = user_obj.pk in friend_requests_received
-
-        return Response(serializer.data)
-	
 class SendFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -324,24 +314,55 @@ class RejectFriendRequestView(APIView):
 		return Response({'success': 'Demande d\'ami refusée avec succès.'})
 	
 
-class UserProfileView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    lookup_field = 'username'  # Utiliser le nom d'utilisateur pour la recherche
+
+class UserProfileView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, username, *args, **kwargs):
+		try:
+			# Récupérer l'utilisateur par son nom d'utilisateur
+			user = User.objects.get(username=username)
+
+			# Vérifier si l'utilisateur est l'utilisateur authentifié ou un autre utilisateur
+			if user == request.user:
+				is_own_profile = True
+			else:
+				is_own_profile = False
+
+			# Récupérer les amis et les demandes d'amis pour l'utilisateur authentifié
+			friends = request.user.get_friends()
+			friend_requests_sent = FriendshipRequest.objects.filter(from_user=request.user).values_list('to_user', flat=True)
+			friend_requests_received = FriendshipRequest.objects.filter(to_user=request.user).values_list('from_user', flat=True)
+
+			# Sérialiser les informations de l'utilisateur
+			serializer = UserSerializer(user)
+
+			# Ajouter des informations supplémentaires à la réponse
+			user_data = serializer.data
+			user_data['is_friend'] = user in friends
+			user_data['friend_request_sent'] = user.pk in friend_requests_sent
+			user_data['friend_request_received'] = user.pk in friend_requests_received
+			user_data['is_own_profile'] = is_own_profile
+
+			# Retourner la réponse structurée avec l'utilisateur
+			return Response(user_data, status=status.HTTP_200_OK)
+
+		except User.DoesNotExist:
+			return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class UserFriendsListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+	serializer_class = UserSerializer
+	permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
+	def get_queryset(self):
 
-        user_id = self.kwargs['user_id']
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
+		user_id = self.kwargs['user_id']
+		try:
+			user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
-        return user.get_friends()
+		return user.get_friends()
 
 class UserMatchesListView(generics.ListAPIView):
 	serializer_class = MatchSerializer
