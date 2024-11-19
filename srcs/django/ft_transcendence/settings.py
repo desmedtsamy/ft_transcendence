@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -168,12 +169,12 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
-    'http://localhost:8003',
+    'http://localhost:8042',
 	'http://frontend',
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
-    'http://localhost:8003',
+    'http://localhost:8042',
 	'http://frontend',
 ]
 

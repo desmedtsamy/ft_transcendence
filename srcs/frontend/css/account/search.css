@@ -44,11 +44,11 @@
 }
 
 .online-status {
-    background-color: green; /* Vert pour en ligne */
+    background-color: rgb(0, 255, 0); /* Vert pour en ligne */
 }
 
 .offline-status {
-    background-color: gray; /* Gris pour hors ligne */
+    background-color: rgb(255, 0, 0); /* Gris pour hors ligne */
 }
 
 .user_element a {

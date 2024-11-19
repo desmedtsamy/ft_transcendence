@@ -100,7 +100,6 @@ def get_42_user_data(request, redirect_uri):
 	client_id = settings.FORTYTWO_CLIENT_ID
 	client_secret = settings.FORTYTWO_CLIENT_SECRET
 	token_url = 'https://api.intra.42.fr/oauth/token'
-
 	if request.method == 'POST':
 		try:
 			data = json.loads(request.body)
@@ -109,10 +108,8 @@ def get_42_user_data(request, redirect_uri):
 			return JsonResponse({'success': False, 'error': 'Données JSON invalides.'}, status=400)
 	else: 
 		code = request.GET.get('code')
-
 	if not code:
 		return JsonResponse({'success': False, 'error': 'Code d\'autorisation manquant.'}, status=400)
-
 	oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
 	token = oauth.fetch_token(
 		token_url,
@@ -120,7 +117,6 @@ def get_42_user_data(request, redirect_uri):
 		client_secret=client_secret,
 		include_client_id=True
 	)
-
 	intra_api_url = 'https://api.intra.42.fr/v2/me'
 	response = oauth.get(intra_api_url)
 	user_data = response.json()
@@ -195,7 +191,7 @@ def sync_42(request):
 	return handle_42_user(request, user_data, update_existing_user=True)
 
 def callback_42(request):
-	redirect_uri = 'http://localhost/42callback'  
+	redirect_uri = 'http://localhost:8042/42callback'
 	user_data = get_42_user_data(request, redirect_uri)
 	if isinstance(user_data, JsonResponse):
 		return user_data

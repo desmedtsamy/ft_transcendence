@@ -17,7 +17,7 @@ if [ $? -eq 0 ]; then
     echo "La connexion à la base de données PostgreSQL est réussie.";
 	python3 manage.py makemigrations;
 	python3 manage.py migrate;
-	python manage.py createsuperuser --noinput;
+	python manage.py createsuperuser --noinput 2>/dev/null;
 	python manage.py runserver 0.0.0.0:8000
 else
     echo "Échec de la connexion à la base de données PostgreSQL.";

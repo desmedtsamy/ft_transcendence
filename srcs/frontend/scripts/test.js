@@ -9,7 +9,7 @@ function onLoad() {
 	}
 	console.log("User ID: [" + id + "]");
 
-	socket = new WebSocket('ws://localhost:8003/ws/notification/' + id);
+	socket = new WebSocket('ws://localhost:8042/ws/notification/' + id);
 
 	// Écoutez l'événement 'open' qui est déclenché lorsque la connexion est établie.
 	socket.addEventListener('open', function (event) {

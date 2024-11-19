@@ -17,7 +17,6 @@ services:
       - ../django/:/app
     ports:
       - "8000:8000"
-      - "8001:8001"
     networks:
       - app-network
     env_file: ../../.env
@@ -34,7 +33,7 @@ services:
       - ../frontend/:/usr/share/nginx/html
       - ../django/media/:/app/media
     ports:
-      - "8003:80"
+      - "8042:80"
     networks:
       - app-network
     depends_on:

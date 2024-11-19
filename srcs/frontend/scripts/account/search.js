@@ -46,7 +46,6 @@ function renderSearchResults(users) {
 		const statusSpan = document.createElement('span');
 		statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
 		const statusIcon = document.createElement('i');
-		statusIcon.classList.add('fas', 'fa-circle');
 		statusSpan.appendChild(statusIcon);
 		avatarContainer.appendChild(statusSpan);
 
