@@ -4,13 +4,13 @@ from .models import User, Match, FriendshipRequest, Friendship
 
 class UserSerializer(serializers.ModelSerializer):
     friendship_requests_sent = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    old_password = serializers.CharField(write_only=True, required=False)
-    new_password1 = serializers.CharField(write_only=True, required=False)
-    new_password2 = serializers.CharField(write_only=True, required=False)
+    # old_password = serializers.CharField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
+    # new_password2 = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'avatar', 'last_activity', 'last_connection', 'is_online', 'created_at', 'intra_id', 'is_admin', 'score', 'wins', 'losses', 'friendship_requests_sent', 'old_password', 'new_password1', 'new_password2']
+        fields = ['id', 'username', 'email', 'avatar', 'last_activity', 'last_connection', 'is_online', 'created_at', 'intra_id', 'is_admin', 'score', 'wins', 'losses', 'friendship_requests_sent', 'password']
 
     def validate_old_password(self, value):
         user = self.context['request'].user
@@ -19,14 +19,15 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        new_password1 = data.get('new_password1')
-        new_password2 = data.get('new_password2')
-        if new_password1 or new_password2:
-            if not new_password1 or not new_password2:
-                raise serializers.ValidationError("Les deux nouveaux mots de passe doivent être fournis.")
-            if new_password1 != new_password2:
-                raise serializers.ValidationError("Les nouveaux mots de passe ne correspondent pas.")
-            validate_password(new_password1)
+        print (data)
+        password = data.get('password')
+        # new_password2 = data.get('new_password2')
+        # if password or new_password2:
+        #     if not password or not new_password2:
+        #         raise serializers.ValidationError("Les deux nouveaux mots de passe doivent être fournis.")
+        #     if password != new_password2:
+        #         raise serializers.ValidationError("Les nouveaux mots de passe ne correspondent pas.")
+        validate_password(password)
         return data
 
 def update(self, instance, validated_data):
@@ -49,9 +50,9 @@ def update(self, instance, validated_data):
         instance.avatar = avatar
 
     # Mettre à jour le mot de passe si nécessaire
-    new_password1 = validated_data.pop('new_password1', None)
-    if new_password1:
-        instance.set_password(new_password1)
+    password = validated_data.pop('password', None)
+    if password:
+        instance.set_password(password)
 
     instance.save()
     return instance

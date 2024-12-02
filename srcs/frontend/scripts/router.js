@@ -9,7 +9,6 @@ const routes = {
 	'/register': registerPage,
 	'/profile': profilePage,
 	'/settings': settingsPage,
-	'/admin': adminPage,
 	'/notification': notificationPage,
 	'/pong': pongPage,
 };
@@ -52,9 +51,7 @@ function navigateTo(path) {
 		callback();
 	}
 	else {
-		if (loadedScript) {
-			loadedScript = null;
-		}
+		
 		window.history.pushState({}, '', absolutePath);
 		render(absolutePath);
 	}
@@ -77,10 +74,15 @@ async function render(path) {
 			app.innerHTML = pageData.html;
 			if (pageData.script) {
 				try {
-					loadedModule = await import(pageData.script);
-
-					if (loadedModule.onLoad && typeof loadedModule.onLoad === 'function') {
-						loadedModule.onLoad();
+					if (loadedScript) {
+						if (loadedScript.onUnload && typeof loadedScript.onUnload === 'function') {
+							loadedScript.onUnload();
+						}
+						loadedScript = null;
+					}
+					loadedScript = await import(pageData.script);
+					if (loadedScript.onLoad && typeof loadedScript.onLoad === 'function') {
+						loadedScript.onLoad();
 					}
 				} catch (error) {
 					console.error('Erreur lors du chargement du module :', error);

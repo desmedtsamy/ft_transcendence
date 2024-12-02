@@ -1,32 +1,21 @@
 from django.contrib import messages
-from django.views.generic import View
 from requests_oauthlib import OAuth2Session
-from django.views.generic.edit import UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import update_session_auth_hash, authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.http import HttpResponse
-from django.template.loader import render_to_string
+from django.contrib.auth import authenticate, login
 from django.db.models import Q
-from django.utils import timezone
-from django.views.decorators.csrf import csrf_protect
 
 import json
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
-from rest_framework import status, generics, views, status, permissions
+from rest_framework import status, generics, status, permissions
 from rest_framework.response import Response
-from django.contrib.auth import login, logout, update_session_auth_hash
-from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import login, logout
 from django.conf import settings
 from django.http import JsonResponse
 from requests_oauthlib import OAuth2Session
 from .models import User, Match, FriendshipRequest, Friendship
 from .serializers import (
-	UserSerializer, MatchSerializer, FriendshipRequestSerializer, FriendshipSerializer
+	UserSerializer, MatchSerializer
 )
-from .forms import LoginForm, RegisterForm, UserSettingsForm
 import os
 import requests
 
@@ -82,13 +71,13 @@ class registerViewAPI(APIView):
 
 	def post(self, request):
 		try:
-			data = request.data#json.loads(request.body)
+			data = request.data
 		except json.JSONDecodeError:
 			return JsonResponse({'error': 'Données JSON invalides'}, status=400)
-		print(data)
 		serializer = UserSerializer(data=data)
 		if serializer.is_valid():
 			user = serializer.save()
+			user.set_password(data['password'])
 			login(request, user)
 			return JsonResponse(serializer.data, status=201)
 		else:

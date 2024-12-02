@@ -5,6 +5,7 @@ var ballPosition = { x: 400, y: 300 };
 var canvas, ctx;
 
 function onLoad() {
+
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
 
@@ -32,7 +33,6 @@ function onLoad() {
 				ballPosition.x = canvas.width - ballPosition.x;
 				ballPosition.y = canvas.height - ballPosition.y;
 			}
-			console.log('Ball position:', ballPosition);
         } else if (data.type === 'player_update') {
             opponentPosition = data.position;
         }
@@ -95,5 +95,10 @@ function drawBall(position) {
     ctx.fill();
 }
 
-export { onLoad };
+function onUnload() {
+	socket.close();
+}
+
+export { onLoad, onUnload };
 window.onload = onLoad;
+window.onUnload = onUnload;

@@ -32,5 +32,11 @@ function sendNotification() {
 	};
 	socket.send(JSON.stringify(message));
 }
-export { onLoad, sendNotification };
+
+function onUnload() {
+	socket.close();
+}
+
+export { onLoad,onUnload, sendNotification };
 window.sendNotification = sendNotification;
+window.onUnload = onUnload;

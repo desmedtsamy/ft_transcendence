@@ -1,9 +1,9 @@
 function createTournamentModal() {
-	document.getElementById('tournamentModal').style.display = 'flex'; // Montre le modal et le centre
+	document.getElementById('tournamentModal').style.display = 'flex';
 }
 
 function closeModal() {
-	document.getElementById('tournamentModal').style.display = 'none'; // Cache le modal
+	document.getElementById('tournamentModal').style.display = 'none';
 }
 
 
@@ -44,17 +44,12 @@ async function handleCreateTournament(event) {
 
 function selectTournament(element) {
 	
-	// Supprimer la classe 'selected' de tous les éléments .tournoi-item
-	document.querySelectorAll('.tournoi-item.selected').forEach(item => {
+	document.querySelectorAll('.tournament-item.selected').forEach(item => {
 		item.classList.remove('selected');
 	});
 	
-	// Ajouter la classe 'selected' à l'élément cliqué
 	element.classList.add('selected');
-	// Récupérer l'ID du tournoi à partir de l'élément cliqué
 	const tournamentId = element.dataset.tournamentId;
-	
-	// Faire une requête pour récupérer les détails du tournoi
 	fetch(`/api/tournament/${tournamentId}/`)
 	.then(response => response.json())
 	.then(data => {	
@@ -70,7 +65,7 @@ function populateTournaments()
 	.then(data => {
 		const tournamentList = document.getElementById('tournament-list');
 		tournamentList.innerHTML = '';
-		data.forEach(tournament => {
+		data["tournaments"].forEach(tournament => {
 			const tournamentEl = document.createElement('div');
 			tournamentEl.className = 'tournament-item';
 			tournamentEl.textContent = tournament.name;
@@ -101,8 +96,6 @@ window.closeModal = closeModal;
 // window.leaveTournament = leaveTournament;
 
 
-
-
 function renderTournament(tournament) {
 	const tournamentEl = document.getElementById('tournament');
 	tournamentEl.innerHTML = '';
@@ -116,7 +109,9 @@ function renderTournament(tournament) {
 		tournamentEl.appendChild(roundEl);
 	});
 	tournamentEl.appendChild(createWinnerElement(tournament));
-	
+	if (!tournament.isStarted) {
+		document.getElementById('button-container').style.display = 'block';
+	}
 }
 
 function createMatchElement(match) {
@@ -134,35 +129,6 @@ function createMatchElement(match) {
 			player1El.classList.add('looser');
 			player2El.classList.add('win');
 		}
-	}
-	else {
-		const buttonEl = document.createElement('button');
-		buttonEl.textContent = 'set winner';
-		buttonEl.onclick = function() {
-			fetch('/tournament/set-winner/', {
-				method: 'POST',
-                headers: {
-					'Content-Type': 'application/json',
-					// 'X-CSRFToken': getCSRFToken()  // Inclure le CSRF token si nécessaire
-                },
-                body: JSON.stringify({
-					match_id: match.id,
-                    winner_id: match.player1_id
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-				if (data.status === 'success') {
-					console.log('Vainqueur défini avec succès:', data.message);
-                } else {
-					console.error('Erreur:', data.message);
-                }
-            })
-            .catch(error => {
-				console.error('Erreur lors de la requête:', error);
-            });
-		}
-		matchEl.appendChild(buttonEl);
 	}
 	matchEl.appendChild(player1El);
 	matchEl.appendChild(player2El);

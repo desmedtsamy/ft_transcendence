@@ -1,14 +1,4 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template import loader
-from account.models import User, Match
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_protect
-from django.views import View
+from account.models import User
 from account.serializers import UserSerializer
 
 from rest_framework.response import Response
@@ -40,7 +30,3 @@ class ScoreboardView(generics.ListAPIView):
 		# Retourne la réponse sous forme de JSON avec les utilisateurs
 		return Response({'top_players': serializer.data}, status=status.HTTP_200_OK)
 	
-def chat(request):
-	context = {
-	}
-	return render(request,'pong/pong.html', context)

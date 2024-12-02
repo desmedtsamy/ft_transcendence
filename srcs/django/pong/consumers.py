@@ -43,6 +43,8 @@ class PongGameConsumer(WebsocketConsumer):
 			threading.Thread(target=self.update_ball_position).start()
 
 	def disconnect(self, close_code):
+
+		print(f"User {self.user_id} disconnected.")
 		if self.user_id in connected_clients:
 			del connected_clients[self.user_id]
 
