@@ -81,10 +81,11 @@ class PongGameConsumer(WebsocketConsumer):
 	def move_player(self, data):
 		position = data.get('position')
 		if position is not None:
-			if self.role == "left":
-				game_state['players'][1] = position
-			elif self.role == "right":
-				game_state['players'][2] = position
+			if  0 <= position['y'] <= canvas_height - paddle_height:
+				if self.role == "left":
+						game_state['players'][1]['y'] = position['y']
+				elif self.role == "right":
+					game_state['players'][2]['y'] = position['y']
 		else:
 			print("Position data missing")
 
@@ -107,7 +108,7 @@ class PongGameConsumer(WebsocketConsumer):
 		ball['y'] += ball['vy']
 
 		# Collision with top and bottom walls
-		if ball['y'] <= 0 or ball['y'] >= canvas_height:
+		if ball['y'] - ball_size <= 0 or ball['y'] + ball_size >= canvas_height:
 			ball['vy'] = -ball['vy']
 
 		# Collision with left player's paddle

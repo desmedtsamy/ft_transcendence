@@ -71,7 +71,8 @@ function onLoad() {
     window.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowUp') playerPosition.y -= 10;
         if (e.key === 'ArrowDown') playerPosition.y += 10;
-        sendPlayerPosition();
+        if (0 <= playerPosition.y && playerPosition.y <= 600 - 100)
+            sendPlayerPosition();
     });
 }
 
@@ -110,4 +111,3 @@ function draw() {
 
 export { onLoad }
 window.onload = onLoad;
-window.onUnload = onUnload;
