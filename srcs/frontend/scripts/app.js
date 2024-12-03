@@ -71,6 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		setTimeout(() => {
 			alertEl.style.display = 'none';
 		}, 5000);
+
+
+		// FOR DEBUG
+		console.log('Alert:', message);
 	}
 	
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Q
 from django.utils import timezone
+from pong.models import Match
 
 class User(AbstractUser):
 	username = models.CharField(max_length=100, unique=True)
@@ -30,18 +31,6 @@ class User(AbstractUser):
 	@property
 	def friendship_requests_sent(self):
 		return FriendshipRequest.objects.filter(from_user=self)
-	
-
-class Match(models.Model):
-	players = models.ManyToManyField(User, related_name='matches')
-	winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='won_matches')
-	created_at = models.DateTimeField(auto_now_add=True)
-	duration = models.IntegerField(default=42)
-	points_at_stake = models.IntegerField(default=0)
-
-	def save(self, *args, **kwargs):
-		self.points_at_stake = self.duration
-		super().save(*args, **kwargs)
 	
 class FriendshipRequest(models.Model):
 	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_requests_sent')

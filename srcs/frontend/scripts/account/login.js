@@ -64,5 +64,5 @@ function onLoad() {
 	getClientAPI();
 }
 
-export { onLoad};
+export {onLoad};
 window.LoginForm = LoginForm;

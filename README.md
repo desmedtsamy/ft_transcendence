@@ -33,14 +33,15 @@ V0.5	User and Game Stat Dashboard
 V0.5	postgresSQL
 V1		standard user management
 V1		Oauth 42
-
-X1		Remote players
+V1		Remote players
+V0.5	boostrap
 X1		Another game
+X(0.5)	expanding browser compatibility
+
 
 X(0.5)	Game Customization
-X(0.5) GDPR
 X(0.5)	Multiple language supports
+X(0.5) GDPR
 
 X(1)	Live chat
-X(0.5)	expanding browser compatibility
 

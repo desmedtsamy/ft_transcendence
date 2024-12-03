@@ -4,7 +4,7 @@ const routes = {
 	'/': homePage,
 	'/scoreboard': scoreboardPage,
 	'/search': searchPage,
-	'/tournament': tournamentPage,
+	'/tournaments': tournamentsPage,
 	'/login': loginPage,
 	'/register': registerPage,
 	'/profile': profilePage,
