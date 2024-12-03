@@ -23,7 +23,6 @@ game_state = {
 	'scores': {1: 0, 2: 0}
 }
 
-
 class PongGameConsumer(WebsocketConsumer):
 
 	def connect(self):
