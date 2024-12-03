@@ -77,16 +77,16 @@ async function searchPage() {
 	};
 }
 
-async function tournamentPage() {
+async function tournamentsPage() {
 	if (window.user === null) {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/tournament.html');
+	const response = await fetch('/templates/tournaments.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "/scripts/tournament/tournament.js",
+		script: "/scripts/tournaments/tournaments.js",
 	};
 }
 async function profilePage() {

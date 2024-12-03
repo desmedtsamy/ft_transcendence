@@ -1,3 +1,6 @@
+let activeTournament = null;
+
+
 function createTournamentModal() {
 	document.getElementById('tournamentModal').style.display = 'flex';
 }
@@ -53,6 +56,7 @@ function selectTournament(element) {
 	fetch(`/api/tournament/${tournamentId}/`)
 	.then(response => response.json())
 	.then(data => {	
+		activeTournament = data;
 		document.getElementById('tournament_name').textContent = data.name;
 		renderTournament(data);
 	});
@@ -69,6 +73,9 @@ function populateTournaments()
 			const tournamentEl = document.createElement('div');
 			tournamentEl.className = 'tournament-item';
 			tournamentEl.textContent = tournament.name;
+			tournamentEl.textContent += " " + tournament.players_count;
+			tournamentEl.textContent += "/" + tournament.number_of_players;
+			
 			tournamentEl.dataset.tournamentId = tournament.id;
 			tournamentEl.onclick = function() {
 				selectTournament(tournamentEl);
@@ -92,8 +99,43 @@ export { onLoad };
 
 window.createTournamentModal = createTournamentModal;
 window.closeModal = closeModal;
-// window.joinTournament = joinTournament;
-// window.leaveTournament = leaveTournament;
+window.joinTournament = joinTournament;
+window.leaveTournament = leaveTournament;
+
+async function joinTournament(){
+	if (activeTournament)
+	{
+		try {
+			const response = await fetch('/api/tournament/join_tournament/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken'),
+				},
+				body: JSON.stringify({tournamentId: activeTournament.id}),
+			});
+			
+			if (response.ok) {
+				alert('Tournois rejoint avec succès !');
+				navigateTo('/tournaments');
+			} else {
+				const errorData = await response.json();
+				alert('imposible de rejoindre le tournois : ' + JSON.stringify(errorData));
+			}
+		} catch (error) {
+			console.error('Erreur lors de la requête :', error);
+			alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+		}
+	}
+	else
+	{
+		alert('Aucun tournois selectionné');
+	}
+}
+
+function leaveTournament(){
+	console.log("leaveournament")
+}
 
 
 function renderTournament(tournament) {
@@ -109,9 +151,10 @@ function renderTournament(tournament) {
 		tournamentEl.appendChild(roundEl);
 	});
 	tournamentEl.appendChild(createWinnerElement(tournament));
-	if (!tournament.isStarted) {
+	if (!tournament.is_started)
 		document.getElementById('button-container').style.display = 'block';
-	}
+	else
+		document.getElementById('button-container').style.display = 'none';
 }
 
 function createMatchElement(match) {

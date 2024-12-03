@@ -1,6 +1,6 @@
 # views.py
 
-from .services import create_tournament
+from .services import create_tournament, join_tournament
 from .models import Tournament
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, permissions
@@ -10,7 +10,7 @@ from rest_framework import status
 from account.models import User
 from account.serializers import UserSerializer
 from django.http import JsonResponse
-from django.views import View
+from rest_framework.views import APIView
 from .services import get_tournament_details
 
 
@@ -89,11 +89,20 @@ from .services import get_tournament_details
 # 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 # 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class TournamentDetailView(View):
+class TournamentDetailView(APIView):
 	def get(self, request, tournament_id):
 		data, status = get_tournament_details(tournament_id)
-		return JsonResponse(data, status=status)
+		return Response(data, status=status)
 
+class JoinTournamentView(APIView):
+	def post(self, request):
+		data = request.data
+		user = request.user
+		tournament_id = data.get('tournamentId')
+		if not tournament_id:
+			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
+		data,status = join_tournament(tournament_id, user.id);
+		return Response(data, status=status)
 
 class GetTournamentsView(generics.ListAPIView):
 	permission_classes = [permissions.IsAuthenticated]

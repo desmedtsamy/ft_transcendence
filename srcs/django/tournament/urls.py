@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:tournament_id>/', views.TournamentDetailView.as_view(), name='tournament_detail'),
 	path('getTournaments/', views.GetTournamentsView.as_view(), name='getTournaments'),
 	path('create_tournament/', views.CreateTournamentView.as_view(), name='createTournament'),
+	path('join_tournament/', views.JoinTournamentView.as_view(), name='createTournament'),
 ]
