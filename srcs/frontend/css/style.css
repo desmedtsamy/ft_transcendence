@@ -13,10 +13,15 @@ body, html {
     font-family: 'VT323', monospace;
     background-color: var(--bg-color);
     color: #16e0bd;
-	/* var(--text-color); */
     height: 100%;
     overflow-x: hidden;
     font-size: 1.3em;
+}
+
+
+.header_link{
+	display:flex;
+	gap:0.5em;
 }
 
 

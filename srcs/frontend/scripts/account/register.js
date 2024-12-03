@@ -11,7 +11,6 @@ function onLoad() {
 		for (const [key, value] of formData.entries()) {
 			data[key] = value;
 		}
-
 		try {
 			const response = await fetch('/api/account/register/',
 				{

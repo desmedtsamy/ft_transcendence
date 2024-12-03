@@ -114,12 +114,3 @@ async function settingsPage() {
 		script: "/scripts/account/settings.js",
 	};
 }
-
-async function adminPage() {
-	const response = await fetch('/templates/admin.html');
-    const htmlContent = await response.text();
-	return {
-		html: htmlContent,
-		script: "",
-	};
-}

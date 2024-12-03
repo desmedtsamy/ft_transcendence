@@ -116,7 +116,9 @@ def get_tournament_details(tournament_id):
                     ]
                 }
                 for round in rounds
-            ]
+            ],
+            'is_finished': tournament.is_finished,
+            'is_started': tournament.is_started,
         }
 
         return data, 200

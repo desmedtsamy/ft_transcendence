@@ -110,3 +110,4 @@ function draw() {
 
 export { onLoad }
 window.onload = onLoad;
+window.onUnload = onUnload;
