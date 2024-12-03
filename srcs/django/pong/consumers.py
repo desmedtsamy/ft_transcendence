@@ -1,77 +1,159 @@
 from channels.generic.websocket import WebsocketConsumer
+from threading import Lock
 import json
-import threading
 import time
+import threading
 
-connected_clients_notif = {}
-connected_clients = {}
-ball_position = {'x': 50, 'y': 50}
+connected_client_list = []
+lock = Lock()  # thread-safe operations
 
-class NotificationConsumer(WebsocketConsumer):
+canvas_width = 800
+canvas_height = 600
+velocity = 3
+paddle_height = 100
+paddle_width = 10
+ball_size = 10
 
-	def connect(self):
-		self.accept()
-		print (self.scope['url_route']['kwargs']['user_id'])
-		self.user_id = self.scope['url_route']['kwargs']['user_id']
-		connected_clients_notif[self.user_id] = self
+game_state = {
+	'players': {
+		1: {'x': 50, 'y': 250},  # left player
+		2: {'x': 750, 'y': 250}  # right player
+	},
+	'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
+	'scores': {1: 0, 2: 0}
+}
 
-	def disconnect(self, close_code):
-		user_id = self.scope['url_route']['kwargs']['user_id']
-		if user_id in connected_clients_notif:
-			del connected_clients_notif[user_id]
-
-	def receive(self, text_data):
-		text_data_json = json.loads(text_data)
-		message = text_data_json['message']
-
-		for client in connected_clients_notif.values():
-			client.send(text_data=json.dumps({
-				'message': message
-			}))
-			
 
 class PongGameConsumer(WebsocketConsumer):
 
 	def connect(self):
 		self.accept()
-		self.user_id = self.scope['url_route']['kwargs']['user_id']
-		connected_clients[self.user_id] = self
-		print(f"User {self.user_id} connected.")
+		with lock:
+			left_taken = any(client.role == "left" for client in connected_client_list)
+			right_taken = any(client.role == "right" for client in connected_client_list)
 
-		# Démarrer la mise à jour régulière de la position de la balle
-		if len(connected_clients) == 1:  # Démarre la balle si premier joueur
-			threading.Thread(target=self.update_ball_position).start()
+			if not left_taken:
+				self.role = "left"
+			elif not right_taken:
+				self.role = "right"
+			else:
+				self.refuse_connection()
+				return
 
-	def disconnect(self, close_code):
-		if self.user_id in connected_clients:
-			del connected_clients[self.user_id]
+			connected_client_list.append(self)
+			self.send_role_to_client()
 
-	def receive(self, text_data):
-		data = json.loads(text_data)
-		
-		if data['type'] == 'move':
-			# Mise à jour des mouvements du joueur
-			player_position = data['position']
-			for client_id, client in connected_clients.items():
-				if client_id != self.user_id:
-					client.send(json.dumps({
-						'type': 'player_update',
-						'position': player_position
-					}))
+		if len(connected_client_list) == 2:
+			self.start_game_loop()
 
-	def update_ball_position(self):
-		global ball_position
-		while len(connected_clients) > 0:
-			ball_position['x'] += 1
-			ball_position['y'] += 1
-			if ball_position['x'] > 800 or ball_position['y'] > 600:
-				ball_position['x'] = 0
-				ball_position['y'] = 0
-			# Envoyer la nouvelle position à tous les clients
-			for client in connected_clients.values():
-				client.send(json.dumps({
-					'type': 'ball_update',
-					'position': ball_position
-				}))
+	def refuse_connection(self):
+		self.send(json.dumps({"error": "Too many players for the game"}))
+		self.close()
 
-			time.sleep(0.001)
+
+	def send_role_to_client(self):
+		""" Send the player's role (left or right) to the client """
+		self.send(json.dumps({
+			'type': 'role',
+			'role': self.role
+		}))
+	
+	def receive(self, text_data=None, bytes_data=None):
+		try:
+			if text_data:
+				data = json.loads(text_data)
+				print(f"Received data: {data}")
+				self.handle_data(data)
+			elif bytes_data:
+				print(f"Received bytes data: {bytes_data}")
+			else:
+				print("No valid data received")
+		except json.JSONDecodeError as e:
+			print(f"JSON decoding error: {e}")
+			self.send(json.dumps({"error": "Invalid JSON format"}))
+		except Exception as e:
+			print(f"Error in receive: {e}")
+			self.send(json.dumps({"error": "Server error"}))
+
+	def handle_data(self, data):
+		if data.get('type') == 'move':
+			self.move_player(data)
+	
+	def move_player(self, data):
+		position = data.get('position')
+		if position is not None:
+			if self.role == "left":
+				game_state['players'][1] = position
+			elif self.role == "right":
+				game_state['players'][2] = position
+		else:
+			print("Position data missing")
+
+
+
+	def disconnect(self, code):
+		with lock:
+			if self in connected_client_list:
+				connected_client_list.remove(self)
+			if len(connected_client_list) < 2:
+				print("A player has disconnected. Pausing the game.")
+
+	def update_game(self):
+		ball = game_state['ball']
+		left_player = game_state['players'][1]
+		right_player = game_state['players'][2]
+
+		# handle ball logic
+		ball['x'] += ball['vx']
+		ball['y'] += ball['vy']
+
+		# Collision with top and bottom walls
+		if ball['y'] <= 0 or ball['y'] >= canvas_height:
+			ball['vy'] = -ball['vy']
+
+		# Collision with left player's paddle
+		if self.check_collision(ball, left_player):
+			ball['vx'] = -ball['vx']
+			ball['x'] = left_player['x'] + paddle_width + ball_size
+
+		# Collision with right player's paddle
+		if self.check_collision(ball, right_player):
+			ball['vx'] = -ball['vx']
+			ball['x'] = right_player['x'] - paddle_width
+
+
+		# Reset ball if it goes beyond the left or right bounds
+		if ball['x'] <= 0 or ball['x'] >= canvas_width:
+			if ball['x'] <= 0:
+				game_state['scores'][2] += 1  # Right player scores
+			else:
+				game_state['scores'][1] += 1  # Left player scores
+			ball['x'], ball['y'], ball['vx'], ball['vy'] = canvas_width/2, canvas_height/2, velocity, velocity
+
+	def check_collision(self, ball, paddle):
+		""" Checks if the ball collides with a given paddle """
+		ball_rect = {'x': ball['x'], 'y': ball['y'], 'width': ball_size, 'height': ball_size}
+		paddle_rect = {'x': paddle['x'], 'y': paddle['y'], 'width': paddle_width, 'height': paddle_height}
+
+		return (ball_rect['x'] <= paddle_rect['x'] + paddle_rect['width'] and
+				ball_rect['x'] + ball_rect['width'] >= paddle_rect['x'] and
+				ball_rect['y'] <= paddle_rect['y'] + paddle_rect['height'] and
+				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
+
+	def	send_game_state(self):
+		game_data = json.dumps(game_state)
+		print(f"Sending game state: {game_data}")
+		with lock:
+			for client in connected_client_list:
+				client.send(game_data)
+	
+	def start_game_loop(self):
+		def game_loop():
+			#to do: add a stop to the loop upon reaching a certain score
+			while len(connected_client_list) == 2:
+				self.update_game()
+				self.send_game_state()
+				time.sleep(0.01)
+		threading.Thread(target=game_loop, daemon=True).start()
+
+#TO DO : link everything together more

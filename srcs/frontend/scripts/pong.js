@@ -1,99 +1,112 @@
 var socket;
 var playerPosition = { x: 50, y: 250 };
-var opponentPosition = { x: 50, y: 250 };
+var opponentPosition = { x: 750, y: 250 };
 var ballPosition = { x: 400, y: 300 };
 var canvas, ctx;
+var playerRole = '';  // Variable to store the player's role ('left' or 'right')
+var playerId = 0;
+var scores = [0,0]
 
 function onLoad() {
+    console.log("La page charge!");
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
 
-    var id = 42;
-    if (window.user === undefined) {
-        console.log('User not authenticated');
-    } else {
-        id = window.user.id;
-    }
+    // Initialize WebSocket connection
+    socket = new WebSocket('ws://localhost:8042/ws/game/1');
 
-    console.log("User ID: [" + id + "]");
-
-    socket = new WebSocket('ws://localhost:8042/ws/game/' + id);
-
-    socket.addEventListener('open', function (event) {
-        console.log('WebSocket is open now.');
+    // Event listener for WebSocket open event
+    socket.addEventListener('open', function () {
+        console.log('Connected to WebSocket server.');
     });
 
-    socket.addEventListener('message', function (event) {0
-        var data = JSON.parse(event.data);
-        if (data.type === 'ball_update') {
-            ballPosition = data.position;
-			if (user.id == 2)
-			{
-				ballPosition.x = canvas.width - ballPosition.x;
-				ballPosition.y = canvas.height - ballPosition.y;
-			}
-			console.log('Ball position:', ballPosition);
-        } else if (data.type === 'player_update') {
-            opponentPosition = data.position;
+    // Event listener for WebSocket message event
+    socket.addEventListener('message', function (event) {
+        try {
+            var data = JSON.parse(event.data);
+        } catch (e) {
+            console.error("Failed to parse JSON:", event.data);
         }
-        drawGame(); // Redessine à chaque mise à jour
+        // If the server sends the player's role
+        if (data.type === 'role') {
+            playerRole = data.role;  // Store the player's role ('left' or 'right')
+            if (playerRole === 'left')
+                playerId = 1;
+            if (playerRole === 'right')
+                    playerId = 2;
+            console.log(`You are the ${playerRole} player.`);
+        }
+
+        // Handle the game state update
+        if (data.scores) {
+            scores[0] = data.scores[1];
+            scores[1] = data.scores[2];
+        }
+        if (data.players) {
+            if (playerRole === 'left') {
+                playerPosition = data.players[1] || playerPosition;
+                opponentPosition = data.players[2] || opponentPosition;
+            } else if (playerRole === 'right') {
+                playerPosition = data.players[2] || playerPosition;
+                opponentPosition = data.players[1] || opponentPosition;
+            }
+        }
+        if (data.ball) {
+            ballPosition = data.ball;
+        }
+        draw();
     });
 
-    window.addEventListener('keydown', function (event) {
-        handlePlayerMove(event);
-        drawGame();  // Redessine le jeu après le mouvement
+    // Event listener for WebSocket close event
+    socket.addEventListener('close', function () {
+        console.log('WebSocket connection closed.');
     });
 
-    socket.onerror = function (error) {
-        alert(`[error] ${error.message}`);
-    };
+    // Event listener for WebSocket error event
+    socket.addEventListener('error', function (error) {
+        console.error('WebSocket error:', error);
+    });
 
-    drawGame();  // Dessine le jeu la première fois
+    // Event listener for player movement
+    window.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowUp') playerPosition.y -= 10;
+        if (e.key === 'ArrowDown') playerPosition.y += 10;
+        sendPlayerPosition();
+    });
 }
 
-function handlePlayerMove(event) {
-    if (event.code === 'ArrowUp') {
-        playerPosition.y -= 10;
-    } else if (event.code === 'ArrowDown') {
-        playerPosition.y += 10;
-    }
-
-    var moveData = {
+// Send player position to server whenever it changes
+function sendPlayerPosition() {
+    const message = {
         type: 'move',
         position: playerPosition
     };
-    socket.send(JSON.stringify(moveData));
+    socket.send(JSON.stringify(message));
 }
 
-function drawGame() {
-    // Efface le canvas
+// Function to draw the game state (player and ball positions)
+function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Dessine les joueurs
-    drawPlayer(playerPosition, 'blue');
-	 
-	// Inverser la position x de l'adversaire pour l'afficher de manière symétrique
-	 var opponentPositionInverted = { 
-        x: canvas.width - opponentPosition.x - 20, // 20 étant la largeur du paddle
-        y: canvas.height - opponentPosition.y - 100 // 100 étant la hauteur du paddle
-    };
-    drawPlayer(opponentPositionInverted, 'red');
+    // Draw player
+    ctx.fillStyle = 'green';
+    ctx.fillRect(playerPosition.x, playerPosition.y, 10, 100);
 
-    // Dessine la balle
-    drawBall(ballPosition);
-}
+    // Draw opponent
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(opponentPosition.x, opponentPosition.y, 10, 100);
 
-function drawPlayer(position, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(position.x, position.y, 20, 100);
-}
-
-function drawBall(position) {
-    ctx.fillStyle = 'white';
+    // Draw ball
+    ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(position.x, position.y, 10, 0, Math.PI * 2);
+    ctx.arc(ballPosition.x, ballPosition.y, 10, 0, Math.PI * 2);
     ctx.fill();
+
+    //draw score
+    ctx.fillStyle = 'yellow';
+    ctx.font = "20px Arial";
+    ctx.fillText(scores[0] + "  |  " + scores[1], canvas.width/2 -25, 20);
 }
 
-export { onLoad };
+export { onLoad }
 window.onload = onLoad;
