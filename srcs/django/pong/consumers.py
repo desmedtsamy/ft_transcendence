@@ -43,19 +43,34 @@ class PongGameConsumer(WebsocketConsumer):
 			self.send_role_to_client()
 
 		if len(connected_client_list) == 2:
+			self.countdown()
 			self.start_game_loop()
 
 	def refuse_connection(self):
 		self.send(json.dumps({"error": "Too many players for the game"}))
 		self.close()
 
+	def countdown(self):
+		self.send_game_state()
+		with lock:
+			i = 3
+			while i >= 0:
+				for client in connected_client_list:
+					print("valeur de i:", i)
+					client.send(json.dumps({"countdown" : i}))
+				if i > 0:
+					time.sleep(1)
+				i -= 1
+
 
 	def send_role_to_client(self):
 		""" Send the player's role (left or right) to the client """
 		self.send(json.dumps({
 			'type': 'role',
-			'role': self.role
+			'role': self.role,
+			'active_player': len(connected_client_list)
 		}))
+
 	
 	def receive(self, text_data=None, bytes_data=None):
 		try:

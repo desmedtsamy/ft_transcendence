@@ -5,7 +5,9 @@ var ballPosition = { x: 400, y: 300 };
 var canvas, ctx;
 var playerRole = '';  // Variable to store the player's role ('left' or 'right')
 var playerId = 0;
-var scores = [0,0]
+var scores = [0,0];
+var countdown = 0;
+var active_player = 0;
 
 function onLoad() {
     console.log("La page charge!");
@@ -27,6 +29,7 @@ function onLoad() {
         } catch (e) {
             console.error("Failed to parse JSON:", event.data);
         }
+
         // If the server sends the player's role
         if (data.type === 'role') {
             playerRole = data.role;  // Store the player's role ('left' or 'right')
@@ -35,7 +38,14 @@ function onLoad() {
             if (playerRole === 'right')
                     playerId = 2;
             console.log(`You are the ${playerRole} player.`);
+            console.log(`number of active player: ${data.active_player}` )
+            active_player = data.active_player
         }
+
+        if (data.countdown !== undefined) {
+            countdown = data.countdown
+        }
+        console.log("countdown " + countdown )
 
         // Handle the game state update
         if (data.scores) {
@@ -98,15 +108,28 @@ function draw() {
     ctx.fillRect(opponentPosition.x, opponentPosition.y, 10, 100);
 
     // Draw ball
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(ballPosition.x, ballPosition.y, 10, 0, Math.PI * 2);
-    ctx.fill();
+    if (countdown > 0) {
+        ctx.fillStyle = 'white';
+        ctx.font = "80px Arial";
+        ctx.fillText("" + countdown, canvas.width/2 - 40, canvas.height/2);
+    }
+    else {
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(ballPosition.x, ballPosition.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
     //draw score
     ctx.fillStyle = 'yellow';
     ctx.font = "20px Arial";
     ctx.fillText(scores[0] + "  |  " + scores[1], canvas.width/2 -25, 20);
+
+    if (active_player === 1) {
+        ctx.fillStyle = 'white';
+        ctx.font = "30px Arial";
+        ctx.fillText("Waiting for another player", canvas.width/2 -180, canvas.height/3);
+    }
 }
 
 export { onLoad }
