@@ -27,7 +27,7 @@ function setNotification() {
 		if (data.message == "match_request")
 			matchRequest(data.name, data.id);
 		if (data.message == "match_start")
-			window.location.href = '/pong/' + data.match_id;
+			navigateTo( '/pong/' + data.match_id);
 		else
 	alert(data.message);
 });

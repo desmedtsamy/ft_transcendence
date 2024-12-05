@@ -10,12 +10,16 @@ var scores = [0,0];
 // var active_player = 0;
 
 function onLoad() {
+	if (window.user === undefined) {
+		console.log('User not authenticated');
+		return;
+	}
     console.log("La page charge!");
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
 
     // Initialize WebSocket connection
-    socket = new WebSocket('ws://localhost:8042/ws/game/' + window.location.pathname.split('/')[2]);
+    socket = new WebSocket('ws://localhost:8042/ws/game/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     // Event listener for WebSocket open event
     socket.addEventListener('open', function () {

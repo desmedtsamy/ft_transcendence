@@ -44,4 +44,3 @@ X(0.5)	Multiple language supports
 X(0.5) GDPR
 
 X(1)	Live chat
-

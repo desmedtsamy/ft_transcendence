@@ -29,28 +29,38 @@ class PongGameConsumer(WebsocketConsumer):
 	def connect(self):
 		self.accept()
 		self.match = getMatch(self.scope['url_route']['kwargs']['game_id'])
-		print (self.scope['url_route']['kwargs']['game_id'])
-		print(self.match)
+		self.id  = int (self.scope['url_route']['kwargs']['user_id'])
 		with lock:
-			left_taken = any(client.role == "left" for client in connected_client_list)
-			right_taken = any(client.role == "right" for client in connected_client_list)
+			client_to_remove = None
+			for client in connected_client_list:
+				if client.id == self.id:
+					print("Client already connected. Disconnecting the old connection.")
+					client_to_remove = client
+					break
+			if client_to_remove:
+				print("Removing client from the list")
+				connected_client_list.remove(client_to_remove)
+			print("Adding client to the list")
+			connected_client_list.append(self)
 
-			if not left_taken:
+			if self.id == self.match.player1.id:
 				self.role = "left"
-			elif not right_taken:
+			elif self.id == self.match.player2.id:
 				self.role = "right"
 			else:
 				self.refuse_connection()
 				return
 
-			connected_client_list.append(self)
 			# print("connect with role: ", self.role)
 			# time.sleep(1)
 			self.send_role_to_client()
 
 		if len(connected_client_list) == 2:
 			# self.countdown()
+			print("Starting the game loop " , self.id)
 			self.start_game_loop()
+		else:
+			print("Waiting for another player to connect ", self.id )
 
 	def refuse_connection(self):
 		self.send(json.dumps({"error": "Too many players for the game"}))
@@ -62,7 +72,7 @@ class PongGameConsumer(WebsocketConsumer):
 			i = 3
 			while i >= 0:
 				for client in connected_client_list:
-					print("valeur de i:", i)
+					#print("valeur de i:", i)
 					client.send(json.dumps({"countdown" : i}))
 				if i > 0:
 					time.sleep(1)
@@ -102,7 +112,7 @@ class PongGameConsumer(WebsocketConsumer):
 	def move_player(self, data):
 		position = data.get('position')
 		if position is not None:
-			if  0 <= position['y'] <= canvas_height - paddle_height:
+			if  0 <= position['x'] <= canvas_height - paddle_height:
 				if self.role == "left":
 						game_state['players'][1]['y'] = position['y']
 				elif self.role == "right":
@@ -169,8 +179,9 @@ class PongGameConsumer(WebsocketConsumer):
 
 	def	send_game_state(self):
 		game_data = json.dumps(game_state)
-		print(f"Sending game state: {game_data}")
+		#print(f"Sending game state: {game_data}")
 		with lock:
+			print(self.id, "updqting game state")
 			for client in connected_client_list:
 				client.send(game_data)
 	
