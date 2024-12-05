@@ -56,14 +56,6 @@ def update(self, instance, validated_data):
 
     instance.save()
     return instance
-    
-class MatchSerializer(serializers.ModelSerializer):
-    players = UserSerializer(many=True, read_only=True)
-    winner = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Match
-        fields = ['id', 'players', 'winner', 'created_at', 'duration', 'points_at_stake']
 
 class FriendshipRequestSerializer(serializers.ModelSerializer):
     from_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())

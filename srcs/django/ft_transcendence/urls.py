@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/account/', include('account.urls')),
     path('api/scoreboard/', views.ScoreboardView.as_view(), name='scoreboard'),
     path('api/tournament/', include('tournament.urls')),
-	path("pong/", include('pong.urls')),
+	path("api/pong/", include('pong.urls')),
 ]
 
 if settings.DEBUG:

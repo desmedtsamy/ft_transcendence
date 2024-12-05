@@ -47,7 +47,7 @@ async function homePage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "",
+		script: "/scripts/home.js",
 	};
 }
 

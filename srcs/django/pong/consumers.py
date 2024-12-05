@@ -3,6 +3,7 @@ from threading import Lock
 import json
 import time
 import threading
+from pong.services import getMatch
 
 connected_client_list = []
 lock = Lock()  # thread-safe operations
@@ -27,6 +28,9 @@ class PongGameConsumer(WebsocketConsumer):
 
 	def connect(self):
 		self.accept()
+		self.match = getMatch(self.scope['url_route']['kwargs']['game_id'])
+		print (self.scope['url_route']['kwargs']['game_id'])
+		print(self.match)
 		with lock:
 			left_taken = any(client.role == "left" for client in connected_client_list)
 			right_taken = any(client.role == "right" for client in connected_client_list)

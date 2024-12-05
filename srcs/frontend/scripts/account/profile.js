@@ -1,12 +1,12 @@
 let scoreChart; 
-
+let userData = null;
 async function fetchProfileData(username) {
 	try {
 		const response = await fetch(`/api/account/profile/${username}/`);
         if (response.ok) {
-			const userData = await response.json();
+			userData = await response.json();
             renderProfileInfo(userData);
-            fetchMatchesData(username);
+            // fetchMatchesData(username);
         } else {
 			profileInfo.innerHTML = '<h1>Utilisateur non trouvé</h1>';
         }
@@ -14,6 +14,22 @@ async function fetchProfileData(username) {
 		console.error('Erreur lors de la récupération des données du profil :', error);
         profileInfo.innerHTML = '<h1>Erreur lors du chargement du profil</h1>';
     }
+}
+
+function set1v1Button(user) {
+
+	const now = new Date();
+    const then = new Date(user.last_connection);
+    const diffInSeconds = Math.floor((now - then) / 1000);
+
+	if (diffInSeconds < 600) {
+		const matchButton = document.createElement('button');
+		matchButton.textContent = 'Proposer un 1v1';
+		matchButton.addEventListener('click', createMatch);
+		document.getElementById('1v1').appendChild(matchButton);
+	}else{
+		console.log(diffInSeconds)
+	}
 }
 
 function renderProfileInfo(user) {
@@ -25,10 +41,11 @@ function renderProfileInfo(user) {
 	
     profileUsername.textContent = user.username;
     profileAvatar.src = user.avatar;
-    winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
+    // winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
     profileScore.textContent = user.score;
     lastConnection.textContent = formatTimeAgo(user.last_connection);
     renderFriendActions(user);
+	set1v1Button(user);
 }
 
 function formatTimeAgo(timestamp) {
@@ -228,14 +245,42 @@ function loadScript(src, callback) {
     script.onload = callback;
     document.head.appendChild(script);
 }
+
+async function createMatch() {
+	const player1 = user.id;
+	const player2 = userData.id;
+
+	// const csrftoken = getCookie('csrftoken');
+	// const response = await fetch('/api/pong/create_match/', {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'Content-Type': 'application/x-www-form-urlencoded',
+	// 		'X-CSRFToken': csrftoken,
+	// 	},
+	// 	body: `player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}`,
+	// 	credentials: 'include',
+	// })
+	// if (response.ok) {
+	// 	const match = await response.json();
+	// 	alert('Match créé avec succès !');
+	// 	navigateTo('/pong/' + match.id);
+	// } else {
+	// 	const result = await response.json();
+	// 	alert(result.detail || 'failed');
+	// }
+	window.sendNotification(player2, 'match_request');
+}
+
+
 function onLoad(){
 	loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js',   
 	function() {
 		const username = window.location.pathname.split('/').pop();
 		fetchProfileData(username); 
 	});
-	const username = window.location.pathname.split('/').pop();
-	fetchProfileData(username);
+	// const username = window.location.pathname.split('/').pop();
+	// fetchProfileData(username);
 }
 
-export {onLoad};
+export {onLoad, createMatch};
+window.createMatch = createMatch;

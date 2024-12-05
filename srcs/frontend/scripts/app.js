@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				const data = await response.json();
 				if (data.is_authenticated) {
 					handleUserAuthenticated(data.user);
+					setNotification();
 				} else {
 					handleUserNotAuthenticated();
 					// DEBUG
@@ -77,5 +78,4 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.log('Alert:', message);
 	}
 	
-
 });

@@ -13,9 +13,8 @@ from django.conf import settings
 from django.http import JsonResponse
 from requests_oauthlib import OAuth2Session
 from .models import User, Match, FriendshipRequest, Friendship
-from .serializers import (
-	UserSerializer, MatchSerializer
-)
+from .serializers import UserSerializer
+from pong.serializers import MatchSerializer
 import os
 import requests
 
@@ -361,4 +360,5 @@ class UserMatchesListView(generics.ListAPIView):
 				return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
 			# Retrieve recent matches where the user is a player
-			return Match.objects.filter(players=user).order_by('-created_at')[:10]  # Get the last 10 matches
+			# return Match.objects.filter(players=user).order_by('-created_at')[:10]  # Get the last 10 matches
+			return Match.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-created_at')[:10]
