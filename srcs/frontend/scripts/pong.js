@@ -6,8 +6,8 @@ var canvas, ctx;
 var playerRole = '';  // Variable to store the player's role ('left' or 'right')
 var playerId = 0;
 var scores = [0,0];
-var countdown = 0;
-var active_player = 0;
+// var countdown = 0;
+// var active_player = 0;
 
 function onLoad() {
     console.log("La page charge!");
@@ -36,16 +36,19 @@ function onLoad() {
             if (playerRole === 'left')
                 playerId = 1;
             if (playerRole === 'right')
-                    playerId = 2;
-            console.log(`You are the ${playerRole} player.`);
-            console.log(`number of active player: ${data.active_player}` )
-            active_player = data.active_player
+                playerId = 2;
+            console.log("My role is: " + playerRole)
         }
 
-        if (data.countdown !== undefined) {
-            countdown = data.countdown
-        }
-        console.log("countdown " + countdown )
+        // if (data.active_player) {
+        //     active_player = data.active_player
+        //     console.log(`You are the ${playerRole} player.`);
+        //     console.log(`number of active player: ${data.active_player}` )
+        // }
+
+        // if (data.countdown !== undefined) {
+        //     countdown = data.countdown
+        // }
 
         // Handle the game state update
         if (data.scores) {
@@ -76,6 +79,22 @@ function onLoad() {
     socket.addEventListener('error', function (error) {
         console.error('WebSocket error:', error);
     });
+
+    window.addEventListener('beforeunload', function () {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log("closing socket 1")
+            socket.close(1000, 'Page refresh');
+        }
+    });
+    
+
+    window.addEventListener('unload', function () {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+                console.log("closing socket 2")
+            socket.close(1000, 'Page is refreshing');
+        }
+    });
+    
 
     // Event listener for player movement
     window.addEventListener('keydown', function (e) {
@@ -108,29 +127,30 @@ function draw() {
     ctx.fillRect(opponentPosition.x, opponentPosition.y, 10, 100);
 
     // Draw ball
-    if (countdown > 0) {
-        ctx.fillStyle = 'white';
-        ctx.font = "80px Arial";
-        ctx.fillText("" + countdown, canvas.width/2 - 40, canvas.height/2);
-    }
-    else {
+    // if (countdown > 0) {
+    //     ctx.fillStyle = 'white';
+    //     ctx.font = "80px Arial";
+    //     ctx.fillText("" + countdown, canvas.width/2 - 40, canvas.height/2);
+    // }
+    // else {
         ctx.fillStyle = 'red';
         ctx.beginPath();
         ctx.arc(ballPosition.x, ballPosition.y, 10, 0, Math.PI * 2);
         ctx.fill();
-    }
+    // }
 
     //draw score
     ctx.fillStyle = 'yellow';
     ctx.font = "20px Arial";
     ctx.fillText(scores[0] + "  |  " + scores[1], canvas.width/2 -25, 20);
 
-    if (active_player === 1) {
-        ctx.fillStyle = 'white';
-        ctx.font = "30px Arial";
-        ctx.fillText("Waiting for another player", canvas.width/2 -180, canvas.height/3);
-    }
+    // if (active_player === 1) {
+    //     ctx.fillStyle = 'white';
+    //     ctx.font = "30px Arial";
+    //     ctx.fillText("Waiting for another player", canvas.width/2 -180, canvas.height/3);
+    // }
 }
+
 
 export { onLoad }
 window.onload = onLoad;

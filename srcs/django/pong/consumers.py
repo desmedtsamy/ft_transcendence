@@ -40,10 +40,12 @@ class PongGameConsumer(WebsocketConsumer):
 				return
 
 			connected_client_list.append(self)
+			# print("connect with role: ", self.role)
+			# time.sleep(1)
 			self.send_role_to_client()
 
 		if len(connected_client_list) == 2:
-			self.countdown()
+			# self.countdown()
 			self.start_game_loop()
 
 	def refuse_connection(self):
@@ -67,10 +69,8 @@ class PongGameConsumer(WebsocketConsumer):
 		""" Send the player's role (left or right) to the client """
 		self.send(json.dumps({
 			'type': 'role',
-			'role': self.role,
-			'active_player': len(connected_client_list)
+			'role': self.role
 		}))
-
 	
 	def receive(self, text_data=None, bytes_data=None):
 		try:
@@ -92,6 +92,8 @@ class PongGameConsumer(WebsocketConsumer):
 	def handle_data(self, data):
 		if data.get('type') == 'move':
 			self.move_player(data)
+		else:
+			print("error: wrong data type")
 	
 	def move_player(self, data):
 		position = data.get('position')
@@ -105,16 +107,22 @@ class PongGameConsumer(WebsocketConsumer):
 			print("Position data missing")
 
 
-
 	def disconnect(self, code):
 		with lock:
 			if self in connected_client_list:
 				connected_client_list.remove(self)
+				self.role = None
 			if len(connected_client_list) < 2:
 				print("A player has disconnected. Pausing the game.")
+			# self.send_active_player()
+			
 
 	def update_game(self):
 		ball = game_state['ball']
+		# with lock:
+		# 	game_state['active_player'] = len(connected_client_list)
+		# 	if game_state['active_player'] < 2:
+		# 		return
 		left_player = game_state['players'][1]
 		right_player = game_state['players'][2]
 
@@ -169,6 +177,9 @@ class PongGameConsumer(WebsocketConsumer):
 				self.update_game()
 				self.send_game_state()
 				time.sleep(0.01)
+			if len(connected_client_list) < 2:
+				print("Game paused because a player disconnected.")
+				return
 		threading.Thread(target=game_loop, daemon=True).start()
 
 #TO DO : link everything together more
