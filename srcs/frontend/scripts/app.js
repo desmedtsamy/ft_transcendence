@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 	
     async function fetchUserInfo() {
+		console.log("DEBUG fetchUser")
 		try {
 			const response = await fetch('/api/account/current-user/', {
 				method: 'GET',

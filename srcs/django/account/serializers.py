@@ -10,7 +10,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'avatar', 'last_activity', 'last_connection', 'is_online', 'created_at', 'intra_id', 'is_admin', 'score', 'wins', 'losses', 'friendship_requests_sent', 'password']
+        fields = [	'id',
+                	'username',
+                    'email',
+                    'avatar',
+					'last_activity',
+					'last_connection',
+					'is_online',
+					'created_at',
+					'intra_id',
+					'is_admin',
+					'score',
+					'wins',
+					'losses',
+					'friendship_requests_sent',
+                    'is_online',
+					'password']
 
     def validate_old_password(self, value):
         user = self.context['request'].user

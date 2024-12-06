@@ -8,27 +8,21 @@ async function fetchProfileData(username) {
             renderProfileInfo(userData);
             // fetchMatchesData(username);
         } else {
-			profileInfo.innerHTML = '<h1>Utilisateur non trouvé</h1>';
+			alert('<h1>Utilisateur non trouvé</h1>');
         }
     } catch (error) {
 		console.error('Erreur lors de la récupération des données du profil :', error);
-        profileInfo.innerHTML = '<h1>Erreur lors du chargement du profil</h1>';
+        alert('<h1>Erreur lors du chargement du profil</h1>');
     }
 }
 
 function set1v1Button(user) {
 
-	const now = new Date();
-    const then = new Date(user.last_connection);
-    const diffInSeconds = Math.floor((now - then) / 1000);
-
-	if (diffInSeconds < 600) {
+	if (user.is_online) {
 		const matchButton = document.createElement('button');
 		matchButton.textContent = 'Proposer un 1v1';
 		matchButton.addEventListener('click', createMatch);
 		document.getElementById('1v1').appendChild(matchButton);
-	}else{
-		console.log(diffInSeconds)
 	}
 }
 

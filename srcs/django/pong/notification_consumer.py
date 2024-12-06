@@ -12,8 +12,6 @@ class NotificationConsumer(WebsocketConsumer):
 		print (self.scope['url_route']['kwargs']['user_id'])
 		self.user_id = int (self.scope['url_route']['kwargs']['user_id'])
 		connected_clients[self.user_id] = self
-		print(self.user_id)
-		print(connected_clients[self.user_id])
 	def disconnect(self, close_code):
 		user_id = self.scope['url_route']['kwargs']['user_id']
 		if user_id in connected_clients:

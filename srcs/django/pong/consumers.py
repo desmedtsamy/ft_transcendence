@@ -181,7 +181,6 @@ class PongGameConsumer(WebsocketConsumer):
 		game_data = json.dumps(game_state)
 		#print(f"Sending game state: {game_data}")
 		with lock:
-			print(self.id, "updqting game state")
 			for client in connected_client_list:
 				client.send(game_data)
 	
