@@ -55,6 +55,67 @@ def join_tournament(tournament_id, user_id):
 	except Exception as e:
 		return {'error': str(e)}, 500
 
+def start_tournament(tournament_id, user):
+	try:
+		tournament = Tournament.objects.get(id=tournament_id)
+		if user != tournament.creator and user.is_admin == False:
+			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
+		if tournament.players.count() != tournament.number_of_players:
+			return {'error': 'Le tournoi n\'a pas le nombre de joueurs requis'}, 400
+		if tournament.is_started:
+			return {'error': 'Le tournoi a déjà commencé'}, 400
+		tournament.is_started = True
+		tournament.save()
+		return {'status': 'success', 'message': 'Tournoi commencé'}, 200
+	except Tournament.DoesNotExist:
+		return {'error': 'Tournoi introuvable'}, 404
+	except Exception as e:
+		return {'error': str(e)}, 500
+
+def delete_tournament(tournament_id, user):
+	try:
+		tournament = Tournament.objects.get(id=tournament_id)
+		if user != tournament.creator and user.is_admin == False:
+			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
+		tournament = tournament
+		tournament.delete()
+		return {'status': 'success', 'message': 'Tournoi supprimé'}, 200
+	except Tournament.DoesNotExist:
+		return {'error': 'Tournoi introuvable'}, 404
+	except Exception as e:
+		return {'error': str(e)}, 500
+
+
+def leave_tournament(tournament_id, user_id):
+	try:
+		tournament = Tournament.objects.get(id=tournament_id)
+		user = User.objects.get(id=user_id)
+
+		if tournament.is_started:
+			return {'error': 'Le tournoi a déjà commencé'}, 400
+
+		if user not in tournament.players.all():
+			return {'error': 'Vous n\'êtes pas inscrit à ce tournoi'}, 400
+		tournament.players.remove(user)
+		# Supprimer le joueur du match 
+		for tournamentMatch in TournamentMatch.objects.filter(round__tournament=tournament):
+			match = tournamentMatch.match
+			if match.player1 == user:
+				match.player1 = None
+				match.save()
+			elif match.player2 == user:
+				match.player2 = None
+				match.save()
+
+		tournament.save()
+		return {'status': 'success', 'message': 'Désinscription réussie'}, 200
+	except Tournament.DoesNotExist:
+		return {'error': 'Tournoi introuvable'}, 404
+	except User.DoesNotExist:
+		return {'error': 'Joueur introuvable'}, 404
+	except Exception as e:
+		return {'error': str(e)}, 500
+
 def create_tournament(name, number_of_players, creator):
 	# Validation du nombre de joueurs
 	if not (number_of_players & (number_of_players - 1) == 0):
@@ -166,6 +227,7 @@ def get_tournament_details(tournament_id):
 				for round in rounds
 			],
 			'is_finished': tournament.is_finished,
+			'players' : [player.username for player in tournament.players.all()],
 			'is_started': tournament.is_started,
 			'number_of_players': tournament.number_of_players,
 			'players_count': tournament.players.count()

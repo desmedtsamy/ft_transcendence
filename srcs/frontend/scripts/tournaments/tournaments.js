@@ -30,13 +30,15 @@ async function handleCreateTournament(event) {
         });
 		
         if (response.ok) {
+			const createdTournament = await response.json();
+            console.log('Tournoi créé :', createdTournament);
 			closeModal();
-            populateTournaments();
+            populateTournaments(createdTournament.id);
             alert('Tournoi créé avec succès !');
         } else {
 			const errorData = await response.json();
-            alert('Erreur lors de la création du tournoi : ' + JSON.stringify(errorData));
-        	console.log('Erreur lors de la création du tournoi : ' + JSON.stringify(errorData));
+            alert('Erreur lors de la création du tournoi : ' + errorData.error);
+        	console.log('Erreur lors de la création du tournoi : ' + errorData.error);
         }
     } catch (error) {
 		console.error('Erreur lors de la requête :', error);
@@ -46,7 +48,8 @@ async function handleCreateTournament(event) {
 
 
 function selectTournament(element) {
-	
+	const newUrl = `/tournaments/${element.dataset.tournamentId}`;
+	window.history.pushState({}, '', newUrl);
 	document.querySelectorAll('.tournament-item.selected').forEach(item => {
 		item.classList.remove('selected');
 	});
@@ -62,7 +65,7 @@ function selectTournament(element) {
 	});
 }
 
-function populateTournaments()
+function populateTournaments(tournamentId)
 {
 	fetch('/api/tournament/getTournaments/')
 	.then(response => response.json())
@@ -80,19 +83,29 @@ function populateTournaments()
 			tournamentEl.onclick = function() {
 				selectTournament(tournamentEl);
 			}
+			if (tournamentId && tournamentId === tournament.id) {
+				selectTournament(tournamentEl);
+			}
 			tournamentList.appendChild(tournamentEl);
 		});
 	});
 }
 
+function getTournamentIdFromURL() {
+    const urlParts = window.location.pathname.split('/');
+    const tournamentId = urlParts[urlParts.length - 1];
+    return tournamentId && !isNaN(tournamentId) ? parseInt(tournamentId) : null;
+}
+
 function onLoad()
 {
-	
 	const createTournamentForm = document.getElementById('create-tournament-form');
 	if (createTournamentForm) {
 		createTournamentForm.addEventListener('submit', handleCreateTournament);
 	}
-	populateTournaments();
+	const tournamentId = getTournamentIdFromURL();
+	populateTournaments(tournamentId);
+	console.log(tournamentId);
 }
 
 export { onLoad };
@@ -103,10 +116,39 @@ window.joinTournament = joinTournament;
 window.leaveTournament = leaveTournament;
 
 async function joinTournament(){
+	if (!activeTournament)
+	{
+		alert('Aucun tournois selectionné');
+		return;
+	}
+	try {
+		const response = await fetch('/api/tournament/join_tournament/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+			body: JSON.stringify({tournamentId: activeTournament.id}),
+		});
+		
+		if (response.ok) {
+			alert('Tournois rejoint avec succès !');
+			navigateTo('/tournaments/' + activeTournament.id);
+		} else {
+			const errorData = await response.json();
+			alert('imposible de rejoindre le tournois : ' + errorData.error);
+		}
+	} catch (error) {
+		console.error('Erreur lors de la requête :', error);
+		alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+	}
+}
+
+async function leaveTournament(){
 	if (activeTournament)
 	{
 		try {
-			const response = await fetch('/api/tournament/join_tournament/', {
+			const response = await fetch('/api/tournament/leave_tournament/', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -116,11 +158,11 @@ async function joinTournament(){
 			});
 			
 			if (response.ok) {
-				alert('Tournois rejoint avec succès !');
-				navigateTo('/tournaments');
+				alert('Tournois quité avec succès !');
+				navigateTo('/tournaments/' + activeTournament.id);
 			} else {
 				const errorData = await response.json();
-				alert('imposible de rejoindre le tournois : ' + JSON.stringify(errorData));
+				alert('imposible de quité le tournois : ' + errorData.error);
 			}
 		} catch (error) {
 			console.error('Erreur lors de la requête :', error);
@@ -133,12 +175,11 @@ async function joinTournament(){
 	}
 }
 
-function leaveTournament(){
-	console.log("leaveournament")
-}
-
 
 function renderTournament(tournament) {
+	document.getElementById('button_container').innerHTML = '';
+	document.getElementById('admin_button_container').innerHTML = '';
+
 	const tournamentEl = document.getElementById('tournament');
 	tournamentEl.innerHTML = '';
 	
@@ -152,9 +193,81 @@ function renderTournament(tournament) {
 	});
 	tournamentEl.appendChild(createWinnerElement(tournament));
 	if (!tournament.is_started)
-		document.getElementById('button-container').style.display = 'block';
-	else
-		document.getElementById('button-container').style.display = 'none';
+		if (tournament.players.includes(user.username))
+			document.getElementById('button_container').appendChild(createButton('quité le tournois', leaveTournament));
+		else
+			document.getElementById('button_container').appendChild(createButton('rejoindre le tournois', joinTournament));
+		if (tournament.creator === user.username)
+		{
+			document.getElementById('admin_button_container').appendChild(createButton('Démarrer le tournois', startTournament));
+			document.getElementById('admin_button_container').appendChild(createButton('supprimer le tournois', deleteTournament));
+		}
+}
+
+function createButton(text, onClick) {
+	const button = document.createElement('button');
+	button.className = 'button';
+	button.textContent = text;
+	button.onclick = onClick;
+	return button;
+}
+
+async function startTournament(){
+	if (!activeTournament)
+	{
+		alert('Aucun tournois selectionné');
+		return;
+	}
+	try {
+		const response = await fetch('/api/tournament/start_tournament/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+			body: JSON.stringify({tournamentId: activeTournament.id}),
+		});
+		
+		if (response.ok) {
+			alert('Tournois démarré avec succès !');
+			navigateTo('/tournaments/' + activeTournament.id);
+		} else {
+			const errorData = await response.json();
+			alert('imposible de démarrer le tournois : ' + errorData.error);
+		}
+	} catch (error) {
+		console.error('Erreur lors de la requête :', error);
+		alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+	}
+}
+
+async function deleteTournament(){
+	if (!activeTournament)
+	{
+		alert('Aucun tournois selectionné');
+		return;
+	}
+	try {
+		const response = await fetch('/api/tournament/delete_tournament/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+			body: JSON.stringify({tournamentId: activeTournament.id}),
+		});
+		
+		if (response.ok) {
+			alert('Tournois supprimé avec succès !');
+			navigateTo('/tournaments/');
+		} else {
+			const errorData = await response.json();
+			alert('imposible de supprimé le tournois : ' + errorData.error);
+		}
+	} catch (error) {
+		console.error('Erreur lors de la requête :', error);
+		alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+	}
 }
 
 function createMatchElement(match) {

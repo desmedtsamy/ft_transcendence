@@ -31,7 +31,7 @@ function onLoad() {
 				handleUserAuthenticated(userData);
 			} else {
 				const errorData = await response.json();
-				alert('Erreur lors de la mise à jour des paramètres : ' + JSON.stringify(errorData));
+				alert('Erreur lors de la mise à jour des paramètres : ' + errorData.error);
 			}
 		} catch (error) {
 			console.error('Erreur lors de la requête :', error);

@@ -1,17 +1,12 @@
 # views.py
 
-from .services import create_tournament, join_tournament
+from .services import create_tournament, join_tournament, leave_tournament, get_tournament_details, delete_tournament, start_tournament
 from .models import Tournament
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, permissions
 from .serializers import TournamentSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from account.models import User
-from account.serializers import UserSerializer
-from django.http import JsonResponse
 from rest_framework.views import APIView
-from .services import get_tournament_details
 
 
 # def set_winner_view(request):
@@ -104,6 +99,36 @@ class JoinTournamentView(APIView):
 		data,status = join_tournament(tournament_id, user.id);
 		return Response(data, status=status)
 
+class startTournamentView(APIView):
+	def post(self, request):
+		data = request.data
+		user = request.user
+		tournament_id = data.get('tournamentId')
+		if not tournament_id:
+			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
+		data,status = start_tournament(tournament_id, user);
+		return Response(data, status=status)
+
+class deleteTournamentView(APIView):
+	def post(self, request):
+		data = request.data
+		user = request.user
+		tournament_id = data.get('tournamentId')
+		if not tournament_id:
+			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
+		data,status = delete_tournament(tournament_id, user);
+		return Response(data, status=status)
+
+class leaveTournamentView(APIView):
+	def post(self, request):
+		data = request.data
+		user = request.user
+		tournament_id = data.get('tournamentId')
+		if not tournament_id:
+			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
+		data,status = leave_tournament(tournament_id, user.id);
+		return Response(data, status=status)
+
 class GetTournamentsView(generics.ListAPIView):
 	permission_classes = [permissions.IsAuthenticated]
 
@@ -125,9 +150,10 @@ class CreateTournamentView(generics.CreateAPIView):
 				serializer.validated_data['number_of_players'],
 				request.user
 			)
-
 			if status_code == 200:
-				return Response(status=status.HTTP_201_CREATED)
+				tournament_data = TournamentSerializer(tournament).data
+				print (tournament_data)
+				return Response(tournament_data, status=status.HTTP_201_CREATED)
 			else:
 				return Response(tournament, status=status_code)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

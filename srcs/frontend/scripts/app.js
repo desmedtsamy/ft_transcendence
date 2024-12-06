@@ -15,7 +15,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		navigateTo(window.location.pathname);
     });
 	
+	function createLoadingSpinner() {
+		console.log("DEBUG createLoadingSpinner")
+		const app = document.getElementById('app');
+		const spinner = document.createElement('div');
+		spinner.className = 'spinner-border text-primary';
+		spinner.innerHTML = '<span>Loading...</span>';
+		app.innerHTML = '';
+		app.appendChild(spinner);
+	}
     async function fetchUserInfo() {
+		// add loading spinner
+		createLoadingSpinner();
 		console.log("DEBUG fetchUser")
 		try {
 			const response = await fetch('/api/account/current-user/', {
@@ -30,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
 					setNotification();
 				} else {
 					handleUserNotAuthenticated();
-					// DEBUG
 					console.log('User is not authenticated');
 				}
 			} else {

@@ -28,7 +28,7 @@ function onLoad() {
 				navigateTo('/');
 			} else {
 				const errorData = await response.json();
-				alert('Erreur lors de l\'inscription : ' + JSON.stringify(errorData));
+				alert('Erreur lors de l\'inscription : ' + errorData.error);
 			}
 		} catch (error) {
 			console.error('Erreur lors de la requête :', error);
