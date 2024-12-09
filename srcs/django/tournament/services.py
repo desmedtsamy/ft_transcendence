@@ -45,8 +45,7 @@ def join_tournament(tournament_id, user_id):
 				match.save()
 				break
 		if tournament.players.count() == tournament.number_of_players:
-			tournament.is_started = True
-			tournament.save()
+			tournament.set_start_tournament()
 		return {'status': 'success', 'message': 'Inscription réussie'}, 200
 	except Tournament.DoesNotExist:
 		return {'error': 'Tournoi introuvable'}, 404
@@ -55,17 +54,16 @@ def join_tournament(tournament_id, user_id):
 	except Exception as e:
 		return {'error': str(e)}, 500
 
-def start_tournament(tournament_id, user):
+def set_start_tournament(tournament_id, user):
 	try:
 		tournament = Tournament.objects.get(id=tournament_id)
 		if user != tournament.creator and user.is_admin == False:
 			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
-		if tournament.players.count() != tournament.number_of_players:
-			return {'error': 'Le tournoi n\'a pas le nombre de joueurs requis'}, 400
 		if tournament.is_started:
 			return {'error': 'Le tournoi a déjà commencé'}, 400
-		tournament.is_started = True
-		tournament.save()
+		if tournament.players.count() == 0 :
+			return {'error': 'Le tournoi est vide'}, 400
+		tournament.set_start_tournament()
 		return {'status': 'success', 'message': 'Tournoi commencé'}, 200
 	except Tournament.DoesNotExist:
 		return {'error': 'Tournoi introuvable'}, 404
@@ -77,8 +75,7 @@ def delete_tournament(tournament_id, user):
 		tournament = Tournament.objects.get(id=tournament_id)
 		if user != tournament.creator and user.is_admin == False:
 			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
-		tournament = tournament
-		tournament.delete()
+		tournament.delete_tournament()
 		return {'status': 'success', 'message': 'Tournoi supprimé'}, 200
 	except Tournament.DoesNotExist:
 		return {'error': 'Tournoi introuvable'}, 404
@@ -138,10 +135,7 @@ def create_tournament(name, number_of_players, creator):
 				current_round_matches = []
 
 				for _ in range(number_of_matches):
-					# Créer un match vide
 					match = Match.objects.create()
-
-					# Créer un TournamentMatch et le lier au Match
 					tournament_match = TournamentMatch.objects.create(round=round, match=match)
 					current_round_matches.append(tournament_match)
 
@@ -201,7 +195,7 @@ def set_winner(match_id, winner_id):
 def get_tournament_details(tournament_id):
 	try:
 		tournament = Tournament.objects.get(pk=tournament_id)
-		rounds = tournament.round_set.all()  # Utilise "round_set" pour la relation ForeignKey
+		rounds = tournament.rounds.all()
 
 		data = {
 			'id': tournament.id,
@@ -260,4 +254,4 @@ def update_match_winner(match_id, winner_id):
 	except User.DoesNotExist:
 		return {'status': 'error', 'message': 'Winner not found'}
 	except Exception as e:
-		return {'status': 'error', 'message': str(e)}
+		return {'status': 'error', 'message': str(e)}	

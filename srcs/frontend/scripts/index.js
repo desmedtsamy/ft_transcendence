@@ -39,15 +39,15 @@ window.handleUserAuthenticated = function(user) {
 	profileLink.dataset.link = '/profile/' + user.username;
 	loginLink.style.display = 'none';
 	profileMenu.style.display = 'block';
-	if (user.is_admin) {
+	// if (user.is_admin || user.is_superuser) {
 		adminLink.style.display = 'block';
-		console.log('user is Admin');
-	}
-	else
-	{
-		adminLink.style.display = 'none';
-		console.log('user is not Admin');
-	}
+	// 	console.log('user is Admin');
+	// }
+	// else
+	// {
+	// 	adminLink.style.display = 'none';
+	// 	console.log('user is not Admin');
+//	}
 }
 
 window.handleUserNotAuthenticated = function() {
