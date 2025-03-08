@@ -3,7 +3,7 @@ var playerPosition = { x: 50, y: 250 };
 var opponentPosition = { x: 750, y: 250 };
 var ballPosition = { x: 400, y: 300 };
 var canvas, ctx;
-var playerRole = '';  // Variable to store the player's role ('left' or 'right')
+var playerRole = '';  //Variable to store the player's role ('left' or 'right')
 var playerId = 0;
 var scores = [0,0];
 // var countdown = 0;

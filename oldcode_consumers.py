@@ -5,69 +5,46 @@ import time
 import threading
 from game.services import getMatch
 
-all_game = []
+connected_client_list = []
 lock = Lock()  # thread-safe operations
 
-# options a faire d'ou les variables
-velocity = 3
+# ici
+
 canvas_width = 800
 canvas_height = 600
+velocity = 3
 paddle_height = 100
 paddle_width = 10
 ball_size = 10
 
-# game
-class Game():
-	def __init__(self, id, match):
-		self.id = id
-		self.player_list = []
-		self.match = match
-		self.p1_id = match.player1.id
-		self.p2_id = match.player2.id
-	state = {
-		'players': {
-			1: {'x': 50, 'y': 250},  # left player
-			2: {'x': 750, 'y': 250}  # right player
-		},
-		'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
-		'scores': {1: 0, 2: 0}
-	}
-
+game_state = {
+	'players': {
+		1: {'x': 50, 'y': 250},  # left player
+		2: {'x': 750, 'y': 250}  # right player
+	},
+	'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
+	'scores': {1: 0, 2: 0}
+}
 
 class PongGameConsumer(WebsocketConsumer):
 
-	def getGame(self):
-		match = getMatch(self.scope['url_route']['kwargs']['game_id'])
-		id = match.id
-		for game in all_game:
-			if game.id == id:
-				return game
-		game = Game(id, match)
-		all_game.append(game)
-		return game
-
 	def connect(self):
 		self.accept()
+		self.match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 		self.id  = int (self.scope['url_route']['kwargs']['user_id'])
-		#ajouter la game
-		self.game = getGame(self)
 		with lock:
-			# verifie si le joueur a deja une connection existante
-			player_to_remove = None
-			for player in self.game.player_list:
-				if player.id == self.id:
-					print("player already connected. Disconnecting the old connection.")
-					player_to_remove = player
+			client_to_remove = None
+			for client in connected_client_list:
+				if client.id == self.id:
+					print("Client already connected. Disconnecting the old connection.")
+					client_to_remove = client
 					break
-			if player_to_remove:
-				print("Removing player from the list")
-				self.game.player_list.remove(player_to_remove)
-			# verifie si le client est un membre du match
-			if self.id != self.game.p1_id and self.id != self.game.p2_id:
-				self.refuse_connection("Player was not invited to the game, fuck off !!!")
+			if client_to_remove:
+				print("Removing client from the list")
+				connected_client_list.remove(client_to_remove)
+			print("Adding client to the list")
+			connected_client_list.append(self)
 
-			print("Adding player to the list")
-			self.game.player_list.append(self)
 			if self.id == self.match.player1.id:
 				self.role = "left"
 			elif self.id == self.match.player2.id:
@@ -76,25 +53,27 @@ class PongGameConsumer(WebsocketConsumer):
 				self.refuse_connection()
 				return
 
+			# print("connect with role: ", self.role)
+			# time.sleep(1)
 			self.send_role_to_client()
 
-		if len(self.game.player_list) == 2:
+		if len(connected_client_list) == 2:
 			# self.countdown()
 			print("Starting the game loop " , self.id)
 			self.start_game_loop()
 		else:
 			print("Waiting for another player to connect ", self.id )
 
-	def refuse_connection(self, reason="Too many players for the game"):
-		self.send(json.dumps({"error": reason}))
+	def refuse_connection(self):
+		self.send(json.dumps({"error": "Too many players for the game"}))
 		self.close()
 
 	def countdown(self):
-		self.send_state()
+		self.send_game_state()
 		with lock:
 			i = 3
 			while i >= 0:
-				for client in self.game.player_list:
+				for client in connected_client_list:
 					#print("valeur de i:", i)
 					client.send(json.dumps({"countdown" : i}))
 				if i > 0:
@@ -137,31 +116,31 @@ class PongGameConsumer(WebsocketConsumer):
 		if position is not None:
 			if  0 <= position['x'] <= canvas_height - paddle_height:
 				if self.role == "left":
-						state['players'][1]['y'] = position['y']
+						game_state['players'][1]['y'] = position['y']
 				elif self.role == "right":
-					state['players'][2]['y'] = position['y']
+					game_state['players'][2]['y'] = position['y']
 		else:
 			print("Position data missing")
 
 
 	def disconnect(self, code):
 		with lock:
-			if self in self.game.player_list:
-				self.game.player_list.remove(self)
+			if self in connected_client_list:
+				connected_client_list.remove(self)
 				self.role = None
-			if len(self.game.player_list) < 2:
+			if len(connected_client_list) < 2:
 				print("A player has disconnected. Pausing the game.")
 			# self.send_active_player()
 			
 
 	def update_game(self):
-		ball = self.game.state['ball']
+		ball = game_state['ball']
 		# with lock:
-		# 	state['active_player'] = len(connected_client_list)
-		# 	if state['active_player'] < 2:
+		# 	game_state['active_player'] = len(connected_client_list)
+		# 	if game_state['active_player'] < 2:
 		# 		return
-		left_player = self.game.state['players'][1]
-		right_player = self.game.state['players'][2]
+		left_player = game_state['players'][1]
+		right_player = game_state['players'][2]
 
 		# handle ball logic
 		ball['x'] += ball['vx']
@@ -185,9 +164,9 @@ class PongGameConsumer(WebsocketConsumer):
 		# Reset ball if it goes beyond the left or right bounds
 		if ball['x'] <= 0 or ball['x'] >= canvas_width:
 			if ball['x'] <= 0:
-				state['scores'][2] += 1  # Right player scores
+				game_state['scores'][2] += 1  # Right player scores
 			else:
-				state['scores'][1] += 1  # Left player scores
+				game_state['scores'][1] += 1  # Left player scores
 			ball['x'], ball['y'], ball['vx'], ball['vy'] = canvas_width/2, canvas_height/2, velocity, velocity
 
 	def check_collision(self, ball, paddle):
@@ -200,8 +179,8 @@ class PongGameConsumer(WebsocketConsumer):
 				ball_rect['y'] <= paddle_rect['y'] + paddle_rect['height'] and
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
-	def	send_state(self):
-		game_data = json.dumps(state)
+	def	send_game_state(self):
+		game_data = json.dumps(game_state)
 		#print(f"Sending game state: {game_data}")
 		with lock:
 			for client in connected_client_list:
@@ -211,15 +190,15 @@ class PongGameConsumer(WebsocketConsumer):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(connected_client_list) == 2:
-				if state['scores'][1] >= 5 or state['scores'][2] >= 5:
+				if game_state['scores'][1] >= 5 or game_state['scores'][2] >= 5:
 					print("Game over")
-					if state['scores'][1] >= 5:
+					if game_state['scores'][1] >= 5:
 						self.match.end(self.match.player1)
 					else:
 						self.match.end(self.match.player2)
 					return
 				self.update_game()
-				self.send_state()
+				self.send_game_state()
 				time.sleep(0.01)
 			if len(connected_client_list) < 2:
 				print("Game paused because a player disconnected.")
