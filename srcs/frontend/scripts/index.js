@@ -48,15 +48,61 @@ window.handleUserAuthenticated = function(user) {
 	// 	adminLink.style.display = 'none';
 	// 	console.log('user is not Admin');
 //	}
+	const gameSelector = document.getElementById('gameSelector');
+	console.log("search for gameSelector")
+	if (gameSelector) {
+		gameSelector.value = user.selected_game;
+		window.changeCSS(user.selected_game);
+		gameSelector.disabled = false;
+	}
 }
 
+async function setSelectedGame(game) {
+    // Store the selection in localStorage for all users
+    localStorage.setItem('selectedGame', game);
+    window.selected_game = game;
+
+    // If user is authenticated, also update the server
+    if (window.user) {
+        const csrftoken = getCookie('csrftoken');
+        const response = await fetch('/api/account/set_selected_game/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken,
+            },
+            body: `game=${game}`,
+            credentials: 'include',
+        });
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            console.log('Failed to update game selection');
+        }
+    } else {
+        // For non-authenticated users, just reload to apply changes
+        window.location.reload();
+    }
+}
+
+
 window.handleUserNotAuthenticated = function() {
-	window.user = null;
+    window.user = null;
     const loginLink = document.getElementById('login-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');
-	
-	loginLink.style.display = 'block';
-	profileMenu.style.display = 'none';
-	adminLink.style.display = 'none';
+    const gameSelector = document.getElementById('gameSelector');
+    
+    if (gameSelector) {
+        // Get the saved game from localStorage, default to 'pong' if not found
+        const savedGame = localStorage.getItem('selectedGame') || 'pong';
+        gameSelector.value = savedGame;
+        window.selected_game = savedGame;
+        window.changeCSS(savedGame);
+        gameSelector.disabled = false;
+    }
+    
+    loginLink.style.display = 'block';
+    profileMenu.style.display = 'none';
+    adminLink.style.display = 'none';
 }

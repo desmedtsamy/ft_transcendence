@@ -25,7 +25,7 @@ function setNotification() {
 		const data = JSON.parse(event.data);
 		console.log('Message from server: ', data);
 		if (data.message == "match_request")
-			matchRequest(data.name, data.id);
+			matchRequest(data.name, data.id, data.match_id);
 		if (data.message == "match_start")
 			navigateTo( '/pong/' + data.match_id);
 		else
@@ -37,11 +37,14 @@ socket.onerror = function (error) {
 };
 }
 
-function matchRequest(name, id) {
+function matchRequest(name, id, match_id) {
 	const alertsEl = document.getElementById('alerts');
 	const alertEl = document.createElement('div');
 	alertEl.className = `alert alert-normal`;
-	alertEl.textContent = "Vous avez une demande de match de " + name;
+	if (name == null)
+		alertEl.textContent = "un match de tournois va commencer";
+	else	
+		alertEl.textContent = "Vous avez une demande de match de " + name;
 	alertEl.style.display = 'flex';
 	alertEl.style.justifyContent = 'space-between';
 	
@@ -52,7 +55,7 @@ function matchRequest(name, id) {
 	acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
 	acceptButton.textContent = 'Accept';
 	acceptButton.addEventListener('click', function() {
-		acceptMatch(id);
+		acceptMatch(id, match_id);
 		alertsEl.innerHTML = '';
 	});
 	buttonsContainer.appendChild(acceptButton);
@@ -71,17 +74,21 @@ function matchRequest(name, id) {
 	alertsEl.appendChild(alertEl);
 }
 
-function acceptMatch(id) {
-	window.sendNotification(id, 'match_accept');
+function acceptMatch(id, match_id) {
+	window.sendNotification(id, match_id, 'match_accept');
 }
 
 function declineMatch(id) {
 	window.sendNotification(id, 'match_decline');
 }
-function sendNotification(client_id, message) {
+function sendNotification(client_id, match_id,  message) {
 	alert("message envoyé");
+	// if (client_id == null)
+	// 	client_id = 0
+	console.log ("client_id: " + client_id + " match_id: " + match_id + " message: " + message);
 	socket.send(JSON.stringify({
 		client_id: client_id,
+		match_id: match_id,
 		message: message,
 		name: window.user.username,
 		id: window.user.id

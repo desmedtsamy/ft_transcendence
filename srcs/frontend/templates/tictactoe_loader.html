@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe Loader</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a2e;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            gap: 10px;
+            width: fit-content;
+            animation: clearBoard 6s infinite;
+        }
+        .cell {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #16e0bd;
+            position: relative;
+        }
+        .cell::before {
+            content: '';
+            position: absolute;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: appear 6s infinite;
+        }
+
+        /* Simuler une partie avec une séquence spécifique */
+        .cell:nth-child(1)::before { content: 'X'; animation-delay: 0s; }
+        .cell:nth-child(5)::before { content: 'O'; animation-delay: 0.5s; }
+        .cell:nth-child(9)::before { content: 'X'; animation-delay: 1s; }
+        .cell:nth-child(3)::before { content: 'O'; animation-delay: 1.5s; }
+        .cell:nth-child(7)::before { content: 'X'; animation-delay: 2s; }
+        .cell:nth-child(4)::before { content: 'O'; animation-delay: 2.5s; }
+        .cell:nth-child(2)::before { content: 'X'; animation-delay: 3s; }
+        .cell:nth-child(6)::before { content: 'O'; animation-delay: 3.5s; }
+        .cell:nth-child(8)::before { content: 'X'; animation-delay: 4s; }
+
+        @keyframes appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            5% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes clearBoard {
+            0%, 79% {
+                opacity: 1;
+            }
+            80%, 95% {
+                opacity: 0;
+            }
+            96%, 100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+    </div>
+</body>
+</html>

@@ -33,40 +33,7 @@
     object-fit: cover; /* Pour que l'image remplisse l'espace sans être déformée */
 }
 
-.online-status, .offline-status {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid white; /* Bordure blanche pour le contraste */
-}
-
-.online-status {
-    background-color: rgb(0, 255, 0); /* Vert pour en ligne */
-}
-
-.offline-status {
-    background-color: rgb(255, 0, 0); /* Gris pour hors ligne */
-}
-
 .user_element a {
     text-decoration: none;
     color: inherit; /* Hérite de la couleur du texte parent */
-}
-
-.button {
-    padding: 8px 12px;
-    cursor: pointer;
-	border: 0.2em solid #1a1a2e;
-}
-
-.btn-danger {
-    background-color: #dc3545; /* Rouge pour les boutons "danger" */
-    color: white;
-}
-
-.btn-danger:hover {
-    color: #dc3545; /* Rouge plus foncé au survol */
 }

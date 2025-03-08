@@ -94,11 +94,11 @@ async function leaveTournament(){
 			});
 			
 			if (response.ok) {
-				alert('Tournois quité avec succès !');
+				alert('Tournois quitté avec succès !');
 				navigateTo('/tournaments/' + window.activeTournament.id);
 			} else {
 				const errorData = await response.json();
-				alert('imposible de quité le tournois : ' + errorData.error);
+				alert('imposible de quitté le tournois : ' + errorData.error);
 			}
 		} catch (error) {
 			console.error('Erreur lors de la requête :', error);
@@ -119,7 +119,6 @@ function onLoad()
 	}
 	const tournamentId = getTournamentIdFromURL();
 	populateTournaments(tournamentId);
-	console.log(tournamentId);
 }
 
 export { onLoad };

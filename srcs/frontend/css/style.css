@@ -1,32 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
-
-:root {
-	--primary-color: #16e0bd;
-	--bg-color: #1a1a2e;
-	--text-color: #16e0bd;
-	--secondary-bg: #242444;
-}
-
 html, body {
     width: 100%;
     height: 100%;
 	margin: 0;
 	padding: 0;
     font-family: 'VT323', monospace;
-    background-color: var(--bg-color);
-    color: #16e0bd;
     overflow-x: hidden;
     font-size: 1.3em;
 }
 
-/* #app {
+#app {
 	display: flex;
+	justify-content: center;
+	align-items: center;
 	margin: 0;
 	height: 100vh;
 	width: 100%;
 	flex-direction: column;
-} */
+}
 
 .header_link{
 	display:flex;
@@ -39,9 +31,6 @@ input[type="password"],
 input[type="number"],
 select,
 textarea {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
-	border: 2px solid var(--primary-color);
 	padding: 10px;
 	margin-bottom: 1em;
 	border-radius: 5px;
@@ -54,8 +43,6 @@ select{
 }
 
 button[type="submit"] {
-	background-color: var(--primary-color);
-	color: var(--bg-color);
 	padding: 12px 20px;
 	border: none;
 	border-radius: 5px;
@@ -63,20 +50,9 @@ button[type="submit"] {
 	font-family: 'VT323', monospace;
 	font-size: 1em;
 	transition: all 0.3s ease;
-	/* margin : 0em 0.3em; */
 }
 
-button[type="submit"]:hover {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
-	box-shadow: 0 0 10px var(--primary-color);
-}
-
-#content{
-	color : var(--primary-color);
-}
 a {
-	color: var(--primary-color);
 	text-decoration: none;
 }
 #profile-menu{
@@ -90,13 +66,11 @@ a {
     padding: 20px;
 }
 
-/* Navigation Bar Styling */
 nav {
-    background-color: var(--primary-color);
     padding: 15px 0px;
     box-shadow: 0 2px 10px rgba(22, 224, 189, 0.2);
-    display: flex; /* Enable flexbox for layout */
-    justify-content: space-between; /* Space items evenly */
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -108,7 +82,7 @@ nav ul {
     align-items: center;
 }
 
-nav ul:first-child { /* Push the first <ul> to the left */
+nav ul:first-child {
     margin-right: auto; 
 }
 
@@ -117,33 +91,24 @@ nav ul li {
 }
 
 nav ul li a {
-    color: var(--bg-color);
     text-decoration: none;
     font-weight: bold;
-    text-trans uppercase;
     font-size: 1.2em;
     transition: all 0.3s ease;
     padding: 10px 15px;
     border-radius: 5px;
 }
 
-nav ul li a:hover, nav ul li a.active {
-    background-color: var(--bg-color);
-    color: var(--primary-color);
-}
-
-/* Profile Menu Styling */
 .profile-menu {
     position: relative;
     display: flex;
-    align-items: center; /* Vertically align the picture and dropdown button */
+    align-items: center;
 }
 
 .avatar_xl {
     width: 420px;
     height: 420px;
     border-radius: 50%;
-    border: 5px solid var(--bg-color);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -152,38 +117,27 @@ nav ul li a:hover, nav ul li a.active {
     height: 1.3em;
     width: 1.3em;
     border-radius: 50%;
-    border: 2px solid var(--bg-color);
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.profile-pic:hover {
-    box-shadow: 0 0 10px var(--primary-color);
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
-    right: 0; /* Position to the right edge of the profile pic */
+    right: 0;
 	bottom: -6.2em;
-    background-color: var(--secondary-bg);
     min-width: 160px;
-    box-shadow: 0 8px 16px rgba(22, 224, 189, 0.2); /* Subtle box shadow */
+    box-shadow: 0 8px 16px rgba(22, 224, 189, 0.2);
     z-index: 1;
     border-radius: 5px;
 }
 
 .dropdown-content a {
-    color: var(--primary-color);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
     text-align: left;
     font-size: 0.9em;
-}
-
-.dropdown-content a:hover {
-    background-color: rgba(22, 224, 189, 0.1);
 }
 
 .profile-menu:hover .dropdown-content {
@@ -194,11 +148,9 @@ h1 {
 	font-size: 3em;
 	text-align: center;
 	margin-top: 50px;
-	text-shadow: 0 0 10px var(--primary-color);
 }
 
 .content {
-	background-color: var(--secondary-bg);
 	border-radius: 10px;
 	padding: 30px;
 	margin-top: 30px;
@@ -214,15 +166,6 @@ table {
 th, td {
 	padding: 15px;
 	text-align: left;
-	background-color: var(--secondary-bg);
-}
-td {
-	color : var(--primary-color);
-}
-
-th {
-	background-color: var(--primary-color);
-	color: var(--bg-color);
 }
 
 tr:hover td {
@@ -234,8 +177,6 @@ tr:hover td {
 	max-width: 800px;
 	height: 400px;
 	margin: 30px auto;
-	background-color: var(--secondary-bg);
-	border: 3px solid var(--primary-color);
 	border-radius: 10px;
 	box-shadow: 0 0 30px rgba(22, 224, 189, 0.2);
 }
@@ -244,7 +185,6 @@ tr:hover td {
 	text-align: center;
 	font-size: 2em;
 	margin-top: 20px;
-	color: var(--primary-color);
 }
 
 .button {
@@ -252,19 +192,11 @@ tr:hover td {
 	margin: 10px;
 	padding: 15px 30px;
 	font-size: 1em;
-	background-color: var(--primary-color);
-	color: var(--bg-color);
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
 	font-family: 'VT323', monospace;
 	transition: all 0.3s ease;
-}
-
-.button:hover {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
-	box-shadow: 0 0 15px var(--primary-color);
 }
 
 #game-buttons {
@@ -290,12 +222,7 @@ tr:hover td {
 	margin: 0.75em 1em;
 	border-radius: 5px;
 	font-weight: bold;
-	color : var(--primary-color);
 	background-color: rgba(0, 255, 213, 0.1);
-}
-
-.alert-normal {
-	color : var(--primary-color);
 }
 
 .alert-warning {
@@ -320,18 +247,25 @@ online-status i {
     position: relative;
 }
 
-.online-status i,
-.offline-status i {
+
+.online-status, .offline-status {
     position: absolute;
     bottom: 0;
-    right: 1em;
-    color: rgb(0, 255, 0);
-    font-size: 0.8em;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white; /* Bordure blanche pour le contraste */
 }
 
-.offline-status i {
-	color: red;
+.online-status {
+    background-color: rgb(0, 255, 0); /* Vert pour en ligne */
 }
+
+.offline-status {
+    background-color: rgb(255, 0, 0); /* Gris pour hors ligne */
+}
+
 .scoreboard-status {
 	bottom: -0.4em;
 	font-size: 0.5em;
@@ -339,5 +273,35 @@ online-status i {
 
 .username {
 	padding-right: 0.25em; 
-    color: var(--bg-color);
 }
+
+.button {
+    padding: 8px 12px;
+    cursor: pointer;
+	border: 0.2em solid #1a1a2e;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Rouge pour les boutons "danger" */
+    color: white;
+}
+
+.btn-danger:hover {
+    color: #dc3545; /* Rouge plus foncé au survol */
+}
+
+.spinner {
+	border-radius: 50%;
+	width: 80px;
+	height: 80px;
+	animation: spin 2s linear infinite;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+  }

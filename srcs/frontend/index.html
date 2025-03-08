@@ -16,17 +16,21 @@
 		<script src="/scripts/router.js"></script>
 		<script src="/scripts/index.js"></script>
 		<script src="/scripts/notification.js"></script>
+		<script src="/scripts/loader.js"></script>
 		<nav id="main-nav">
 			<ul> 
 				<li><a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i> Accueil</a> </li>
 				<li><a class="header_link" href="#" data-link="/scoreboard"><i class="fas fa-trophy"></i> Classement</a> </li>
 				<li><a class="header_link" href="#" data-link="/search"><i class="fa fa-search" aria-hidden="true"></i> rechercher</a></li>
 				<li><a class="header_link" href="#" data-link="/tournaments"><i class="fa fa-users"></i> Tournois</a></li>
-				<li class="header_link" id="notification-link"> <a href="#" data-link="/notification">notification</a> </li>
-				<li class="header_link" id="notification-link"> <a href="#" data-link="/pong">pong</a> </li>
-				<li class="header_link" id="admin-link"  style="display:none;"> <a href="admin/">admin</a> </li>
+				<li class="header_link" id="admin-link"  style="display:none;"> <a href="/admin/">admin</a> </li>
+			</ul>
+			<select id="gameSelector">
+				<option value="pong">Pong</option>
+				<option value="tictactoe">oxo</option>
+			</select>
+			<ul>
 				<li class="header_link" id="login-link" style="display:none;"> <a href="#" data-link="/login"><i class="fas fa-sign-in-alt"></i> Se connecter</a> </li>
-				<li class="header_link" id="logout-link" style="display:none;"> <a href="#" data-link="/logout"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a> </li>
 			</ul>
 			<div id="profile-menu" style="display:none;">
 				<ul>
@@ -42,10 +46,9 @@
 				</ul>
 			</div>
 		</nav>
-		<div id="alerts">
+		<div id="alerts" style="z-index: 100; position:relative;">
 		</div>
-		<div id="app" class="container">
+		<div id="app">
 		</div>
-
 	</body>
 </html>

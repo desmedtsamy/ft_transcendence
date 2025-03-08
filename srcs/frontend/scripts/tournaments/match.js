@@ -1,8 +1,16 @@
 
-
 export function populateTournaments(tournamentId)
 {
-	fetch('/api/tournament/getTournaments/')
+	const selectedGame = localStorage.getItem('selectedGame');
+
+    fetch('/api/tournament/getTournaments/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ selectedGame })
+    })
 	.then(response => response.json())
 	.then(data => {
 		const tournamentList = document.getElementById('tournament-list');
@@ -60,9 +68,9 @@ function renderTournament(tournament) {
 		tournamentEl.appendChild(roundEl);
 	});
 	tournamentEl.appendChild(createWinnerElement(tournament));
-	if (!tournament.is_started)
+	if (!tournament.is_started || !window.user)
 		if (tournament.players.includes(user.username))
-			document.getElementById('button_container').appendChild(createButton('quité le tournois', leaveTournament));
+			document.getElementById('button_container').appendChild(createButton('quitté le tournois', leaveTournament));
 		else
 			document.getElementById('button_container').appendChild(createButton('rejoindre le tournois', joinTournament));
 		if (tournament.creator === user.username)

@@ -23,11 +23,11 @@ async function LoginForm() {
 			navigateTo('/');
 		} else {
 			const result = await response.json();
-			console.log(result.detail || 'Login failed');
+			alert(result.error || 'Login failed');
 		}
 
     } catch (error) {
-        console.error('Error:', error);
+		alert(error || 'Login failed');
     }
 }
 
@@ -51,11 +51,11 @@ async function getClientAPI(){
 		} else {
 			link.style.display = 'none';
 			const result = await response.json();
-			console.log(result.detail || 'Login failed');
+			alert(result.error || 'Login failed');
 		}
 
     } catch (error) {
-        console.error('Error:', error);
+		alert(error || 'Login failed');
     }
 }
 

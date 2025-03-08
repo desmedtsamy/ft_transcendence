@@ -1,0 +1,195 @@
+:root {
+	--primary-color: #16e0bd;
+	--bg-color: #1a1a2e;
+	--text-color: #16e0bd;
+	--secondary-bg: #242444;
+}
+
+html, body {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+	background-color: var(--bg-color);
+	color: var(--primary-color);
+	border: 2px solid var(--primary-color);
+}
+
+button[type="submit"] {
+	background-color: var(--primary-color);
+	color: var(--bg-color);
+}
+
+button[type="submit"]:hover {
+	background-color: var(--bg-color);
+	color: var(--primary-color);
+	box-shadow: 0 0 10px var(--primary-color);
+}
+
+#content{
+	color : var(--primary-color);
+}
+a {
+	color: var(--primary-color);
+}
+
+nav {
+    background-color: var(--primary-color);
+}
+
+nav ul li a {
+    color: var(--bg-color);
+}
+
+nav ul li a:hover, nav ul li a.active {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+}
+
+.avatar_xl {
+    border: 5px solid var(--bg-color);
+}
+
+.profile-pic {
+    border: 2px solid var(--bg-color);
+}
+
+.profile-pic:hover {
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.dropdown-content {
+    background-color: var(--secondary-bg);
+}
+
+.dropdown-content a {
+    color: var(--primary-color);
+}
+
+h1 {
+	text-shadow: 0 0 10px var(--primary-color);
+}
+
+.content {
+	background-color: var(--secondary-bg);
+}
+
+th, td {
+	background-color: var(--secondary-bg);
+}
+td {
+	color : var(--primary-color);
+}
+
+th {
+	background-color: var(--primary-color);
+	color: var(--bg-color);
+}
+
+#game-canvas {
+	background-color: var(--secondary-bg);
+	border: 3px solid var(--primary-color);
+}
+
+#score {
+	color: var(--primary-color);
+}
+
+.button {
+	background-color: var(--primary-color);
+	color: var(--bg-color);
+}
+
+.button:hover {
+	background-color: var(--bg-color);
+	color: var(--primary-color);
+	box-shadow: 0 0 15px var(--primary-color);
+}
+
+.alert {
+	color : var(--primary-color);
+}
+
+.alert-normal {
+	color : var(--primary-color);
+}
+
+.alert-error {
+	color : var(--bg-color);
+}
+
+.username {
+    color: var(--bg-color);
+}
+
+.spinner {
+	border: 16px solid #f3f3f3;
+	border-top: 16px solid var(--primary-color);
+ }
+
+
+/* Pong Spinner */
+.pong-spinner {
+    width: 400px;
+    height: 200px;
+    position: relative;
+    margin: 20px auto;
+}
+
+.paddle-spinner{
+    width: 20px;
+    height: 100px;
+    background-color: #16e0bd;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.paddle-spinner-left {
+    left: 0;
+    animation: paddleLeft 1s infinite;
+}
+
+.paddle-spinner-right {
+    right: 0;
+    animation: paddleRight 1s infinite;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    background-color: #16e0bd;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ball 1s infinite linear;
+}
+
+@keyframes paddleLeft {
+    0%, 100% { transform: translateY(-50%); }
+    50% { transform: translateY(-30%); }
+}
+
+@keyframes paddleRight {
+    0%, 100% { transform: translateY(-50%); }
+    50% { transform: translateY(-70%); }
+}
+
+@keyframes ball {
+    0%, 100% {
+        left: 5%;
+        transform: translateY(-50%);
+    }
+    50% {
+        left: 90%;
+        transform: translateY(-50%);
+    }
+}

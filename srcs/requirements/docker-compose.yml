@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: postgres
     image: postgres
     volumes:
       - ../data/db:/var/lib/postgresql/data
@@ -14,7 +15,7 @@ services:
       context: ./django
     image: backend
     volumes:
-      - ../django/:/app
+      - ../backend/:/app
     ports:
       - "8000:8000"
     networks:
@@ -31,8 +32,8 @@ services:
     image: frontend
     volumes:
       - ../frontend/:/usr/share/nginx/html
-      - ../django/media/:/app/media
-      - ../django/staticfiles/:/app/staticfiles
+      - ../backend/media/:/app/media
+      - ../backend/staticfiles/:/app/staticfiles
     ports:
       - "8042:80"
     networks:

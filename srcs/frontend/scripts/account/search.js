@@ -125,19 +125,17 @@ async function handleFriendAction(actionUrl, userId) {
 				'X-CSRFToken': getCookie('csrftoken'),
 			},
 		});
-
 		if (response.ok) {
 			const data = await response.json();
+			console.log(data)
 			alert(data.success, "success");
 			searchUsers(); 
 		} else {
 			const errorData = await response.json();
 			alert('Erreur : ' + errorData.error, "error");
-			console.log('Erreur : ' + errorData.error);
 		}
 	} catch (error) {
-		console.error('Erreur lors de la requête :', error);
-		alert('Erreur : ' + errorData.error, "error");
+		alert('Erreur : ' + error, "error");
 	}
 }
 

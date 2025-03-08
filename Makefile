@@ -11,11 +11,16 @@ up: prepare build
 	@ docker compose -f srcs/requirements/docker-compose.yml -p ft_transcendence up -d
 
 clean:
-	-@ docker rm  -f django #2>/dev/null
-	-@ docker rmi django #2>/dev/null
-	-@ docker volume rm django #2>/dev/null
-	-@ docker network rm ft_transcendence #2>/dev/null
-	@ docker compose -f srcs/requirements/docker-compose.yml down -v
+	-@ docker rm  -f backend #2>/dev/null
+	-@ docker rmi backend #2>/dev/null
+	# -@ docker volume rm backend #2>/dev/null
+	-@ docker rm  -f frontend #2>/dev/null
+	-@ docker rmi frontend #2>/dev/null
+	# -@ docker volume rm frontend #2>/dev/null
+	-@ docker rm  -f postgres #2>/dev/null
+	-@ docker rmi postgres #2>/dev/null
+	# -@ docker network rm ft_transcendence #2>/dev/null
+	# @ docker compose -f srcs/requirements/docker-compose.yml down -v
 
 re: clean all
 

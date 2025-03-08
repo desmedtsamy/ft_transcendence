@@ -90,7 +90,28 @@ function renderFriendActions(user) {
     }
 }
 
-// Helper function to create buttons
+async function handleFriendAction(actionUrl, userId) {
+	try {
+		const response = await fetch(actionUrl, {
+			method: 'POST', 
+			headers: {
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+		});
+		if (response.ok) {
+			const data = await response.json();
+			console.log(data)
+			alert(data.success, "success");
+			searchUsers(); 
+		} else {
+			const errorData = await response.json();
+			alert('Erreur : ' + errorData.error, "error");
+		}
+	} catch (error) {
+		alert('Erreur : ' + error, "error");
+	}
+}
+
 function createButton(text, colorClass, actionClass, actionUrl) {
 	const button = document.createElement('button');
     button.classList.add('btn', colorClass, actionClass);
