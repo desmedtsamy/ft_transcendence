@@ -1,17 +1,36 @@
-
 <link rel="stylesheet" href="css/form.css">
 
-<h1>Login Page</h1>
-	<form id="login-form" onsubmit="LoginForm(); return false;">
-
-		<input type="text" name="username" style="position: absolute; left: -9999px;">
-		<input type="password" name="password" style="position: absolute; left: -9999px;">
-		<input class="form_elem" type="text" id="username_input" placeholder="Username" required>
-		<input class="form_elem" type="password" id="password" placeholder="Password" required>
-		<button class="form_elem" type="submit">Login</button>
-
-	<a class="submit form_elem" id="login_42" >
-		<span>sign in with </span> <img src="/img/42_logo.svg" alt="42" style="height:1em ">
-	</a>
-</form>
-	<p>Don't have an account? <a class="submit" id="sign_up" href="#" data-link="/register">Sign Up</a></p>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Login</h1>
+                    <form id="login-form" onsubmit="LoginForm(); return false;">
+                        <!-- Hidden honeypot fields -->
+                        <input type="text" name="username" style="position: absolute; left: -9999px;">
+                        <input type="password" name="password" style="position: absolute; left: -9999px;">
+                        
+                        <div class="mb-3">
+                            <input class="form-control form_elem" type="text" id="username_input" placeholder="Username" required>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control form_elem" type="password" id="password" placeholder="Password" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg form_elem" type="submit">Login</button>
+                            <a class="btn btn-outline-primary btn-lg form_elem" id="login_42">
+                                <span>Sign in with </span>
+                                <img src="/img/42_logo.svg" alt="42" style="height: 1em; vertical-align: middle;">
+                            </a>
+                        </div>
+                    </form>
+                    <p class="text-center mt-3">
+                        Don't have an account? 
+                        <a class="text-primary" id="sign_up" href="#" data-link="/register">Sign Up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

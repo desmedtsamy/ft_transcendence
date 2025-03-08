@@ -1,4 +1,24 @@
-<h1 id="neon">SCOREBOARD</h1>
+<div class="container">
+	<h1 id="neon" class="text-center mb-4">SCOREBOARD</h1>
+	<div class="card bg-dark border-primary">
+		<div class="card-body">
+			<div class="table-responsive">
+				<table id="scoreboard" class="table table-dark table-hover table-bordered border-primary">
+					<thead>
+						<tr class="bg-primary text-dark">
+							<th class="text-center" style="width: 100px">Rank</th>
+							<th class="text-center">Name</th>
+							<th class="text-center" style="width: 150px">Score</th>
+						</tr>
+					</thead>
+					<tbody id="scoreboard-body">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
 <style>
 	.avatar_scoreboard {
 		width: 30px; 
@@ -23,15 +43,22 @@
 	#scoreboard th:nth-child(2), #scoreboard td:nth-child(2) {
 		width: 200px; 
 	}
+
+	.table-dark {
+		background-color: var(--secondary-bg);
+		color: var(--primary-color);
+	}
+
+	.table-dark td, .table-dark th {
+		border-color: var(--primary-color);
+	}
+
+	.table-hover tbody tr:hover {
+		background-color: rgba(22, 224, 189, 0.1);
+		color: var(--text-color);
+	}
+
+	.bg-primary {
+		background-color: var(--primary-color) !important;
+	}
 </style>
-    <table id="scoreboard">
-        <thead>
-            <tr>
-                <th class="text-center">Rank</th>
-                <th class="text-center">Name</th>
-                <th class="text-center">Score</th>
-            </tr>
-        </thead>
-        <tbody id="scoreboard-body">
-        </tbody>
-    </table>

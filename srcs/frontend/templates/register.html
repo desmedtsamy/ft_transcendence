@@ -1,20 +1,32 @@
-<h2>Créer un compte</h2>
-
-    <form id="register-form">
-        <div>
-            <label for="username">Nom d'utilisateur:</label>
-            <input type="text" id="username" name="username" autocomplete="off" required>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Créer un compte</h2>
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nom d'utilisateur:</label>
+                            <input type="text" class="form-control" id="username" name="username" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe:</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
+                        </div>
+                        <p class="text-center mt-3">
+                            Déjà inscrit? 
+                            <a class="text-primary" href="#" data-link="/login">Se connecter</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="email">Email:</label>   
-
-            <input type="email" id="email" name="email" autocomplete="off" required>
-        </div>
-        <div>
-            <label for="password">Mot   
- de passe:</label>
-            <input type="password" id="password" name="password" autocomplete="off" required>
-        </div>
-
-        <button type="submit">S'inscrire</button>
-    </form>
+    </div>
+</div>

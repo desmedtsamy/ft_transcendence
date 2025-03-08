@@ -15,7 +15,7 @@ html, body {
 	padding: 0;
     font-family: 'VT323', monospace;
     background-color: var(--bg-color);
-    color: #16e0bd;
+    color: var(--text-color);
     overflow-x: hidden;
     font-size: 1.3em;
 }
@@ -149,10 +149,10 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .profile-pic {
-    height: 1.3em;
-    width: 1.3em;
+    height: 32px;
+    width: 32px;
     border-radius: 50%;
-    border: 2px solid var(--bg-color);
+    border: 2px solid var(--primary-color);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -340,4 +340,120 @@ online-status i {
 .username {
 	padding-right: 0.25em; 
     color: var(--bg-color);
+}
+
+/* Bootstrap Overrides */
+.navbar {
+    background-color: var(--secondary-bg) !important;
+    border-bottom: 2px solid var(--primary-color);
+    box-shadow: 0 0 15px rgba(22, 224, 189, 0.2);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    font-family: 'VT323', monospace;
+    font-size: 1.2em;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: var(--bg-color);
+    background-color: var(--primary-color);
+    text-shadow: none;
+}
+
+.navbar-toggler {
+    border: 2px solid var(--primary-color);
+    padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+}
+
+.navbar-dark .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(22, 224, 189, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.dropdown-menu {
+    background-color: var(--secondary-bg);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 15px rgba(22, 224, 189, 0.2);
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    color: var(--primary-color);
+    font-family: 'VT323', monospace;
+    font-size: 1.1em;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--primary-color);
+    opacity: 0.2;
+}
+
+/* Profile menu specific styles */
+#profile-menu .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#profile-menu .username {
+    color: var(--primary-color);
+}
+
+#profile-menu .profile-pic {
+    border: 2px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+#profile-menu .nav-link:hover .profile-pic {
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.btn {
+    font-family: 'VT323', monospace;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--bg-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.form-control {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    font-family: 'VT323', monospace;
+}
+
+.form-control:focus {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
 }

@@ -1,16 +1,103 @@
 <link rel="stylesheet" href="css/form.css">
-<h2>Profil de <span id="profile-username"></span></h2>
-        <img id="profile-avatar" alt="Profile" class="avatar_xl">
-		<div id="1v1"></div>
-        <p>Ratio victoires/défaites : <span id="win-loss-ratio"></span>%</p>
-        <p>Score : <span id="profile-score"></span></p>
-        <p>Dernière connexion : <span id="last-connection"></span></p>
-        <div class="friend-actions" id="friend-actions">
+<div class="container">
+    <div class="row">
+        <!-- Profile Header -->
+        <div class="col-lg-12 mb-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-body text-center">
+                    <img id="profile-avatar" alt="Profile" class="avatar_xl mb-3">
+                    <h2 class="mb-3">Profil de <span id="profile-username" class="text-primary"></span></h2>
+                    <div class="friend-actions mb-3" id="friend-actions">
+                    </div>
+                </div>
             </div>
+        </div>
 
-        <h3>Évolution du score</h3>
-        <canvas id="scoreChart" width="400" height="200"></canvas>
+        <!-- Stats Cards Row -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark border-primary h-100">
+                <div class="card-header bg-primary text-dark">
+                    <h5 class="mb-0">Statistiques</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Ratio victoires/défaites</h6>
+                        <div class="progress bg-secondary">
+                            <div id="win-loss-ratio" class="progress-bar bg-primary" role="progressbar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-primary">Score</h6>
+                        <h3 id="profile-score" class="mb-0"></h3>
+                    </div>
+                    <div>
+                        <h6 class="text-primary">Dernière connexion</h6>
+                        <p id="last-connection" class="mb-0"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h3>Historique des matchs récents</h3>
-        <ul id="recent-matches">
-            </ul>
+        <!-- 1v1 Stats -->
+        <div class="col-md-8 mb-4">
+            <div class="card bg-dark border-primary h-100">
+                <div class="card-header bg-primary text-dark">
+                    <h5 class="mb-0">Statistiques 1v1</h5>
+                </div>
+                <div class="card-body">
+                    <div id="1v1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Evolution Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-header bg-primary text-dark">
+                    <h5 class="mb-0">Évolution du score</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="scoreChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Matches -->
+        <div class="col-lg-4 mb-4">
+            <div class="card bg-dark border-primary">
+                <div class="card-header bg-primary text-dark">
+                    <h5 class="mb-0">Matchs récents</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush" id="recent-matches">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar_xl {
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 0 15px rgba(22, 224, 189, 0.3);
+    }
+
+    .progress {
+        height: 25px;
+    }
+
+    .progress-bar {
+        transition: width 1s ease-in-out;
+    }
+
+    .list-group-flush .list-group-item {
+        background-color: transparent;
+        border-color: var(--primary-color);
+        color: var(--text-color);
+    }
+
+    .card {
+        box-shadow: 0 0 15px rgba(22, 224, 189, 0.1);
+    }
+</style>

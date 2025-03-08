@@ -1,35 +1,71 @@
-<form id="settings-form" >
+<div class="container">
+	<div class="row justify-content-center mt-4">
+		<div class="col-md-8 col-lg-6">
+			<div class="card bg-dark border-primary">
+				<div class="card-body">
+					<h2 class="text-center mb-4">Paramètres du compte</h2>
+					<form id="settings-form">
+						<!-- Hidden fields -->
+						<input type="text" name="username_fake" style="display:none">
+						<input type="password" name="password" style="display:none">
 
-	<input type="text" name="username_fake" style="display:none">
-	<input type="password" name="password" style="display:none">
+						<!-- Profile Information -->
+						<div class="mb-4">
+							<h4 class="border-bottom border-primary pb-2">Informations du profil</h4>
+							<div class="mb-3">
+								<label for="username_input" class="form-label">Nom d'utilisateur:</label>
+								<input type="text" class="form-control" id="username_input" name="username" autocomplete="new-password">
+							</div>
+							<div class="mb-3">
+								<label for="email" class="form-label">Email:</label>
+								<input type="email" class="form-control" id="email" name="email" autocomplete="new-password">
+							</div>
+							<div class="mb-3">
+								<label for="avatar" class="form-label">Avatar:</label>
+								<input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+							</div>
+						</div>
 
-	<div>
-		<label for="username">Nom d'utilisateur:</label>
-		<input type="text" id="username_input" name="username" autocomplete="new-password"> 
-	</div>
-	<div>
-		<label for="email">Email:</label>
-		<input type="email" id="email" name="email" autocomplete="new-password">
-	</div>   
+						<!-- Password Change -->
+						<div class="mb-4">
+							<h4 class="border-bottom border-primary pb-2">Changer le mot de passe</h4>
+							<div class="mb-3">
+								<label for="old_password" class="form-label">Ancien mot de passe:</label>
+								<input type="password" class="form-control" id="old_password" name="old_password" autocomplete="new-password">
+							</div>
+							<div class="mb-3">
+								<label for="new_password1" class="form-label">Nouveau mot de passe:</label>
+								<input type="password" class="form-control" id="new_password1" name="new_password1" autocomplete="new-password">
+							</div>
+							<div class="mb-3">
+								<label for="new_password2" class="form-label">Confirmez le nouveau mot de passe:</label>
+								<input type="password" class="form-control" id="new_password2" name="new_password2" autocomplete="new-password">
+							</div>
+						</div>
 
-	<div>
-		<label for="avatar">Avatar:</label>
-		<input type="file" id="avatar" name="avatar" accept="image/*">
-	</div>
-	<div>
-		<label for="old_password">Ancien mot de passe:</label>
-		<input type="password" id="old_password" name="old_password" autocomplete="new-password">
-	</div>
-	<div>
-		<label for="new_password1">Nouveau mot de passe:</label>
-		<input type="password" id="new_password1" name="new_password1" autocomplete="new-password">
-	</div>
-	<div>
-		<label for="new_password2">Confirmez le nouveau mot de passe:</label>
-		<input type="password" id="new_password2" name="new_password2" autocomplete="new-password">   
+						<div class="d-grid gap-2">
+							<button type="submit" class="btn btn-primary btn-lg">Enregistrer les modifications</button>
+						</div>
+					</form>
 
+					<div id="message" class="alert mt-3" style="display: none;"></div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<button type="submit">Enregistrer les modifications</button>
-</form>
+</div>
 
-<div id="message"></div> 
+<style>
+	.card {
+		box-shadow: 0 0 15px rgba(22, 224, 189, 0.1);
+	}
+
+	.form-control:focus {
+		border-color: var(--primary-color);
+		box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+	}
+
+	h4 {
+		color: var(--primary-color);
+	}
+</style> 
