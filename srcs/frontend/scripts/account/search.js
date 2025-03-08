@@ -66,7 +66,7 @@ function createActionButton(user) {
 
     if (user.is_friend) {
         button.classList.add('button', 'btn-danger', 'remove-friend');
-        button.dataset.action = `/api/account/friends/${user.id}/remove/`; 
+        button.dataset.action = `/api/account/friend-requests/${user.id}/remove/`; 
         button.innerHTML = '<i class="fas fa-user-times"></i>';
 		button.title = 'Retirer de mes amis';
     } else if (user.friend_request_sent) {

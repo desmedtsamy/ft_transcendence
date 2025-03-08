@@ -6,7 +6,7 @@ from requests_oauthlib import OAuth2Session
 from .models import User, FriendshipRequest, Friendship
 from .serializers import UserSerializer
 from django.contrib.auth import login
-
+from django.db.models import Q
 def get_42_user_data(request, redirect_uri):
     client_id = settings.FORTYTWO_CLIENT_ID
     client_secret = settings.FORTYTWO_CLIENT_SECRET
@@ -77,7 +77,6 @@ def handle_42_user(request, user_data, update_existing_user=False):
 
     login(request, user)
     serializer = UserSerializer(user)
-    # Added
     return {'success': True, 'user': serializer.data}, 200
 
 
@@ -90,7 +89,11 @@ def send_friend_request(from_user, to_user):
 
 
 def remove_friend(from_user, to_user):
-    friendship = Friendship.objects.filter(user1=from_user, user2=to_user).first()
+    friendship = Friendship.objects.filter(
+        (Q(user1=from_user) & Q(user2=to_user)) | 
+        (Q(user1=to_user) & Q(user2=from_user))
+    ).first()
+    
     if not friendship:
         return {'error': 'Vous n\'êtes pas amis avec cet utilisateur.'}, 400
     friendship.delete()
@@ -102,7 +105,7 @@ def accept_friend_request(to_user, from_user):
         return {'error': 'Demande d\'ami introuvable.'}, 404
     Friendship.objects.create(user1=from_user, user2=to_user)
     friend_request.delete()
-    return {'success': 'Demande d\'ami acceptée avec succès.'}
+    return {'success': 'Demande d\'ami acceptée avec succès.'}, 200
 
 def delete_friend_request(to_user, from_user):
     friend_request = FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).first()

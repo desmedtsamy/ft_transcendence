@@ -6,7 +6,7 @@ async function fetchProfileData(username) {
         if (response.ok) {
 			userData = await response.json();
             renderProfileInfo(userData);
-            fetchMatchesData(username);
+            fetchMatchesData(userData);
         } else {
 			alert('<h1>Utilisateur non trouvé</h1>');
         }
@@ -35,7 +35,7 @@ function renderProfileInfo(user) {
 	
     profileUsername.textContent = user.username;
     profileAvatar.src = user.avatar;
-    // winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
+    winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
     profileScore.textContent = user.score;
     lastConnection.textContent = formatTimeAgo(user.last_connection);
     renderFriendActions(user);
@@ -73,7 +73,7 @@ function renderFriendActions(user) {
 	
     if (user.id !== window.user.id) { 
 		if (user.is_friend) {
-			const removeFriendButton = createButton('Supprimer de la liste d\'amis', 'btn-danger', 'remove-friend', `/api/account/friends/${user.id}/remove/`);
+			const removeFriendButton = createButton('Supprimer de la liste d\'amis', 'btn-danger', 'remove-friend', `/api/account/friend-requests/${user.id}/remove/`);
             friendActions.appendChild(removeFriendButton);
         } else if (user.friend_request_sent) {
 			const cancelRequestButton = createButton('Annuler la demande', 'btn-danger', 'cancel-friend-request', `/api/account/friend-requests/${user.id}/cancel/`);
@@ -124,14 +124,13 @@ function createButton(text, colorClass, actionClass, actionUrl) {
     return button;
 }
 
-async function fetchMatchesData(username) {
+async function fetchMatchesData(userData) {
 	try {
-		const response = await fetch(`/api/account/matches/${username}/`); 
+		const response = await fetch(`/api/account/matches/${userData.id}/`); 
         if (response.ok) {
 			const matchesData = await response.json();
-			console.log(matchesData)
 			renderRecentMatches(matchesData);
-            //renderScoreChart(matchesData); 
+            renderScoreChart(matchesData, userData); 
         } else {
 			console.error('Erreur lors de la récupération de l\'historique des matchs :', response.statusText);
         }
@@ -153,14 +152,13 @@ function renderRecentMatches(matches) {
         const player1 = match.player1;
         const player2 = match.player2;
 
-        console.log(`Player 1: ${player1}, Player 2: ${player2}`);
         
         const listItem = document.createElement('li');
         listItem.classList.add('match-item');
 
         // Date du match
         const matchDate = new Date(match.created_at);
-        const formattedDate = matchDate.toLocaleString(); // Formater la date selon les préférences locales
+        const formattedDate = matchDate.toLocaleString();
         const dateDiv = document.createElement('div');
         dateDiv.classList.add('match-date');
         dateDiv.textContent = formattedDate;
@@ -212,26 +210,34 @@ function renderRecentMatches(matches) {
 }
 
 
-function renderScoreChart(matches) {
+function renderScoreChart(matches, user) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
-    let currentScore = window.user.score; // On part du score actuel de l'utilisateur
+    let currentScore = user.scores["pong"];
     const scoreData = [currentScore];
     const labels = ['Score actuel'];
 
-	if (scoreChart) {
+    if (scoreChart) {
         scoreChart.destroy();
     }
-
+    
     for (let i = matches.length - 1; i >= 0; i--) {
         const match = matches[i];
-        const pointsChange = (match.winner && match.winner.id === window.user.id) ? match.points_at_stake : -match.points_at_stake;
-        currentScore -= pointsChange; // On soustrait le changement de score pour revenir en arrière
+        const isWinner = match.winner && match.winner === user.id;
+        
+        const pointsChange = isWinner ? 42 : 0;
+        
+        // Calcul du score historique
+        currentScore -= pointsChange;
         scoreData.push(currentScore);
+        
+        // Formatage de la date
         const matchDate = new Date(match.created_at);
         const formattedDate = matchDate.toLocaleString(); 
         labels.push(formattedDate);
     }
-
+    
+    console.log("Scores calculés:", scoreData);
+    
     // Inverser les tableaux pour avoir l'ordre chronologique
     scoreData.reverse();
     labels.reverse();

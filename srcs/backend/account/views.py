@@ -254,9 +254,9 @@ class UserMatchesListView(generics.ListAPIView):
 	permission_classes = [permissions.IsAuthenticated]
 
 	def get_queryset(self):
-		username = self.kwargs['username']
+		user_id = self.kwargs['user_id']
 		try:
-			user = User.objects.get(username=username)
+			user = User.objects.get(id=user_id)
 		except User.DoesNotExist:
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 		matches = Match.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-created_at')[:10]
