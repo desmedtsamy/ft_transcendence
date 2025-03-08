@@ -63,8 +63,6 @@ window.alert = function(message, type = 'normal') {
 	const alertEl = document.createElement('div');
 	
 	alertEl.className = `alert alert-${type}`;
-	
-	// Si c'est un objet avec des tableaux d'erreurs
 	if (typeof message === 'object' && message !== null && !Array.isArray(message)) {
 		const ul = document.createElement('ul');
 		ul.style.margin = '0';

@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 					'is_online',
 					'created_at',
 					'intra_id',
-					'is_admin',
+					'is_staff',
 					'scores',
 					'wins',
 					'losses',

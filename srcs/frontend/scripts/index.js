@@ -39,15 +39,13 @@ window.handleUserAuthenticated = function(user) {
 	profileLink.dataset.link = '/profile/' + user.username;
 	loginLink.style.display = 'none';
 	profileMenu.style.display = 'block';
-	// if (user.is_admin || user.is_superuser) {
+	if (user.is_staff) {
 		adminLink.style.display = 'block';
-	// 	console.log('user is Admin');
-	// }
-	// else
-	// {
-	// 	adminLink.style.display = 'none';
-	// 	console.log('user is not Admin');
-//	}
+	}
+	else
+	{
+		adminLink.style.display = 'none';
+	}
 	const gameSelector = document.getElementById('gameSelector');
 	console.log("search for gameSelector")
 	if (gameSelector) {

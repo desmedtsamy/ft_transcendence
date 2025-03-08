@@ -6,7 +6,7 @@ async function fetchProfileData(username) {
         if (response.ok) {
 			userData = await response.json();
             renderProfileInfo(userData);
-            // fetchMatchesData(username);
+            fetchMatchesData(username);
         } else {
 			alert('<h1>Utilisateur non trouvé</h1>');
         }
@@ -129,8 +129,9 @@ async function fetchMatchesData(username) {
 		const response = await fetch(`/api/account/matches/${username}/`); 
         if (response.ok) {
 			const matchesData = await response.json();
+			console.log(matchesData)
 			renderRecentMatches(matchesData);
-            renderScoreChart(matchesData); 
+            //renderScoreChart(matchesData); 
         } else {
 			console.error('Erreur lors de la récupération de l\'historique des matchs :', response.statusText);
         }
@@ -148,7 +149,12 @@ function renderRecentMatches(matches) {
         return;
     }
 
-    for (const match of matches) {
+    matches.forEach(match => {
+        const player1 = match.player1;
+        const player2 = match.player2;
+
+        console.log(`Player 1: ${player1}, Player 2: ${player2}`);
+        
         const listItem = document.createElement('li');
         listItem.classList.add('match-item');
 
@@ -160,51 +166,49 @@ function renderRecentMatches(matches) {
         dateDiv.textContent = formattedDate;
         listItem.appendChild(dateDiv);
 
-        // Durée du match
-        const durationDiv = document.createElement('div');
-        durationDiv.classList.add('match-duration');
-        durationDiv.textContent = `Durée: ${match.duration} secondes`;
-        listItem.appendChild(durationDiv);
-
         // Joueurs et scores
         const playersDiv = document.createElement('div');
         playersDiv.classList.add('match-players');
 
-        for (const player of match.players) {
-            const playerDiv = document.createElement('div');
-            playerDiv.classList.add('player');
+        const player1Div = document.createElement('div');
+        player1Div.classList.add('player');
 
-            const playerLink = document.createElement('a');
-			playerLink.href = `#`;
-			playerLink.dataset.link = `/profile/${player.username}`;
-            playerLink.textContent = player.username;
-            playerDiv.appendChild(playerLink);
+        const player1Link = document.createElement('a');
+		player1Link.href = `#`;
+		player1Link.dataset.link = `/profile/${player1.id}`;
+        player1Link.textContent = player1.username;
+        player1Div.appendChild(player1Link);
 
-            const scoreChangeSpan = document.createElement('span');
-            scoreChangeSpan.classList.add('score-change');
-            if (match.winner && match.winner.id === player.id) {
-                scoreChangeSpan.textContent = `+${match.points_at_stake}`;
-                scoreChangeSpan.style.color = 'green';
-            } else {
-                scoreChangeSpan.textContent = `-${match.points_at_stake}`;
-                scoreChangeSpan.style.color = 'red';
-            }
-            playerDiv.appendChild(scoreChangeSpan);
+        const scoreChangeSpan1 = document.createElement('span');
+        scoreChangeSpan1.classList.add('score-change');
+        player1Div.appendChild(scoreChangeSpan1);
 
-            playersDiv.appendChild(playerDiv);
+        playersDiv.appendChild(player1Div);
 
-            // Ajouter "VS" entre les joueurs si nécessaire
-            if (match.players.length === 2 && player !== match.players[match.players.length - 1]) {
-                const versusDiv = document.createElement('div');
-                versusDiv.classList.add('versus');
-                versusDiv.textContent = 'VS';
-                playersDiv.appendChild(versusDiv);
-            }
-        }
+        const versusDiv = document.createElement('div');
+        versusDiv.classList.add('versus');
+        versusDiv.textContent = 'VS';
+        playersDiv.appendChild(versusDiv);
+
+        const player2Div = document.createElement('div');
+        player2Div.classList.add('player');
+
+        const player2Link = document.createElement('a');
+		player2Link.href = `#`;
+		player2Link.dataset.link = `/profile/${player2.id}`;
+        player2Link.textContent = player2.username;
+        player2Div.appendChild(player2Link);
+
+        const scoreChangeSpan2 = document.createElement('span');
+        scoreChangeSpan2.classList.add('score-change');
+        
+        player2Div.appendChild(scoreChangeSpan2);
+
+        playersDiv.appendChild(player2Div);
 
         listItem.appendChild(playersDiv);
         recentMatchesList.appendChild(listItem);
-    }
+    });
 }
 
 
