@@ -137,9 +137,9 @@ class PongGameConsumer(WebsocketConsumer):
 		if position is not None:
 			if  0 <= position['x'] <= canvas_height - paddle_height:
 				if self.role == "left":
-						state['players'][1]['y'] = position['y']
+						self.game.state['players'][1]['y'] = position['y']
 				elif self.role == "right":
-					state['players'][2]['y'] = position['y']
+					self.game.state['players'][2]['y'] = position['y']
 		else:
 			print("Position data missing")
 
@@ -185,9 +185,9 @@ class PongGameConsumer(WebsocketConsumer):
 		# Reset ball if it goes beyond the left or right bounds
 		if ball['x'] <= 0 or ball['x'] >= canvas_width:
 			if ball['x'] <= 0:
-				state['scores'][2] += 1  # Right player scores
+				self.game.state['scores'][2] += 1  # Right player scores
 			else:
-				state['scores'][1] += 1  # Left player scores
+				self.game.state['scores'][1] += 1  # Left player scores
 			ball['x'], ball['y'], ball['vx'], ball['vy'] = canvas_width/2, canvas_height/2, velocity, velocity
 
 	def check_collision(self, ball, paddle):
@@ -201,7 +201,7 @@ class PongGameConsumer(WebsocketConsumer):
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
 	def	send_state(self):
-		game_data = json.dumps(state)
+		game_data = json.dumps(self.game.state)
 		#print(f"Sending game state: {game_data}")
 		with lock:
 			for client in connected_client_list:
@@ -211,9 +211,9 @@ class PongGameConsumer(WebsocketConsumer):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(connected_client_list) == 2:
-				if state['scores'][1] >= 5 or state['scores'][2] >= 5:
+				if self.game.state['scores'][1] >= 5 or self.game.state['scores'][2] >= 5:
 					print("Game over")
-					if state['scores'][1] >= 5:
+					if self.game.state['scores'][1] >= 5:
 						self.match.end(self.match.player1)
 					else:
 						self.match.end(self.match.player2)
