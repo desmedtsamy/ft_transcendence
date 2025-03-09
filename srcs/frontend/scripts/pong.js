@@ -6,7 +6,7 @@ var canvas, ctx;
 var playerRole = '';  //Variable to store the player's role ('left' or 'right')
 var playerId = 0;
 var scores = [0,0];
-// var countdown = 0;
+var countdown = 0;
 // var active_player = 0;
 
 function onLoad() {
@@ -50,9 +50,9 @@ function onLoad() {
         //     console.log(`number of active player: ${data.active_player}` )
         // }
 
-        // if (data.countdown !== undefined) {
-        //     countdown = data.countdown
-        // }
+        if (data.countdown !== undefined) {
+            countdown = data.countdown
+        }
 
         // Handle the game state update
         if (data.scores) {
@@ -131,17 +131,17 @@ function draw() {
     ctx.fillRect(opponentPosition.x, opponentPosition.y, 10, 100);
 
     // Draw ball
-    // if (countdown > 0) {
-    //     ctx.fillStyle = 'white';
-    //     ctx.font = "80px Arial";
-    //     ctx.fillText("" + countdown, canvas.width/2 - 40, canvas.height/2);
-    // }
-    // else {
+    if (countdown > 0) {
+        ctx.fillStyle = 'white';
+        ctx.font = "80px Arial";
+        ctx.fillText("" + countdown, canvas.width/2 - 40, canvas.height/2);
+    }
+    else {
         ctx.fillStyle = 'red';
         ctx.beginPath();
         ctx.arc(ballPosition.x, ballPosition.y, 10, 0, Math.PI * 2);
         ctx.fill();
-    // }
+    }
 
     //draw score
     ctx.fillStyle = 'yellow';

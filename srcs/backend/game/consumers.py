@@ -39,6 +39,7 @@ class PongGameConsumer(WebsocketConsumer):
 	def getGame(self):
 		match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 		id = match.id
+		print("l'id du match:", id)
 		for game in all_game:
 			if game.id == id:
 				return game
@@ -50,7 +51,7 @@ class PongGameConsumer(WebsocketConsumer):
 		self.accept()
 		self.id  = int (self.scope['url_route']['kwargs']['user_id'])
 		#ajouter la game
-		self.game = getGame(self)
+		self.game = self.getGame()
 		with lock:
 			# verifie si le joueur a deja une connection existante
 			player_to_remove = None
@@ -62,15 +63,13 @@ class PongGameConsumer(WebsocketConsumer):
 			if player_to_remove:
 				print("Removing player from the list")
 				self.game.player_list.remove(player_to_remove)
-			# verifie si le client est un membre du match
-			if self.id != self.game.p1_id and self.id != self.game.p2_id:
-				self.refuse_connection("Player was not invited to the game, fuck off !!!")
-
+			
+			# verifie si le client est un membre du match et l'ajoute
 			print("Adding player to the list")
 			self.game.player_list.append(self)
-			if self.id == self.match.player1.id:
+			if self.id == self.game.p1_id:
 				self.role = "left"
-			elif self.id == self.match.player2.id:
+			elif self.id == self.game.p2_id:
 				self.role = "right"
 			else:
 				self.refuse_connection()
@@ -79,7 +78,7 @@ class PongGameConsumer(WebsocketConsumer):
 			self.send_role_to_client()
 
 		if len(self.game.player_list) == 2:
-			# self.countdown()
+			self.countdown()
 			print("Starting the game loop " , self.id)
 			self.start_game_loop()
 		else:
@@ -113,7 +112,7 @@ class PongGameConsumer(WebsocketConsumer):
 		try:
 			if text_data:
 				data = json.loads(text_data)
-				print(f"Received data: {data}")
+				# print(f"Received data: {data}")
 				self.handle_data(data)
 			elif bytes_data:
 				print(f"Received bytes data: {bytes_data}")
@@ -135,11 +134,13 @@ class PongGameConsumer(WebsocketConsumer):
 	def move_player(self, data):
 		position = data.get('position')
 		if position is not None:
-			if  0 <= position['x'] <= canvas_height - paddle_height:
+			if  0 <= position['y'] <= canvas_height - paddle_height:
 				if self.role == "left":
-						self.game.state['players'][1]['y'] = position['y']
+					self.game.state['players'][1]['y'] = position['y']
+					print("updating player 1")
 				elif self.role == "right":
 					self.game.state['players'][2]['y'] = position['y']
+					print("updating player 2")
 		else:
 			print("Position data missing")
 
@@ -204,24 +205,24 @@ class PongGameConsumer(WebsocketConsumer):
 		game_data = json.dumps(self.game.state)
 		#print(f"Sending game state: {game_data}")
 		with lock:
-			for client in connected_client_list:
+			for client in self.game.player_list:
 				client.send(game_data)
 	
 	def start_game_loop(self):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
-			while len(connected_client_list) == 2:
-				if self.game.state['scores'][1] >= 5 or self.game.state['scores'][2] >= 5:
-					print("Game over")
-					if self.game.state['scores'][1] >= 5:
-						self.match.end(self.match.player1)
-					else:
-						self.match.end(self.match.player2)
-					return
+			while len(self.game.player_list) == 2:
+				# if self.game.state['scores'][1] >= 5 or self.game.state['scores'][2] >= 5:
+				# 	print("Game over")
+				# 	if self.game.state['scores'][1] >= 5:
+				# 		self.game.match.end(self.game.match.player1)
+				# 	else:
+				# 		self.game.match.end(self.game.match.player2)
+				# 	return
 				self.update_game()
 				self.send_state()
 				time.sleep(0.01)
-			if len(connected_client_list) < 2:
+			if len(self.game.player_list) < 2:
 				print("Game paused because a player disconnected.")
 				return
 		threading.Thread(target=game_loop, daemon=True).start()
