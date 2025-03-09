@@ -27,7 +27,11 @@ function setNotification() {
 		const data = JSON.parse(event.data);
 		console.log('Message from server: ', data);
 		if (data.message == "match_request")
+		{
+			console.log(data)
+			console.log("match_request " + data.name + " " + window.user.id + " " + data.match_id);
 			matchRequest(data.name, window.user.id, data.match_id);
+		}
 		else if (data.message == "match_start")
 			if (data.game_type == "pong")
 				navigateTo( '/pong/' + data.match_id);

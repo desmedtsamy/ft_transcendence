@@ -119,30 +119,32 @@ function updateBall() {
 		  navigateTo('/matchmaking/');
 		}
 		function onLoad() {
-			if (!initCanvas()) {
-				console.error('Failed to initialize canvas');
-				return;
-			}
+			// if (!initCanvas()) {
+			// 	console.error('Failed to initialize canvas');
+			// 	return;
+			// }
 			
-			// Reset ball position
-			ball.x = canvas.width / 2;
-			ball.y = canvas.height / 2;
-			ball.dx = 5;
-			ball.dy = 5;
+			// // Reset ball position
+			// ball.x = canvas.width / 2;
+			// ball.y = canvas.height / 2;
+			// ball.dx = 5;
+			// ball.dy = 5;
 			
-			// Reset paddle positions
-			leftPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
-			rightPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
-			rightPaddle.x = canvas.width - 25 - PADDLE_WIDTH;
+			// // Reset paddle positions
+			// leftPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+			// rightPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+			// rightPaddle.x = canvas.width - 25 - PADDLE_WIDTH;
 			
-			// Start the game loop
-			gameLoop();
+			// // Start the game loop
+			// gameLoop();
 			
-			// Initialize play button
-			const playButton = document.getElementById('play_button');
-			if (playButton) {
-				playButton.addEventListener('click', handlePlayClick);
-			}
+			// // Initialize play button
+			// const playButton = document.getElementById('play_button');
+			// if (playButton) {
+			// 	playButton.addEventListener('click', handlePlayClick);
+			// }
+
+			set1v1Button();
 		}
 		
 		function onUnload() {
@@ -162,5 +164,40 @@ function updateBall() {
 			canvas = null;
 			ctx = null;
 		}
-		
-		export { onLoad, onUnload };
+		async function start_game() {
+			const player1 = user.id;
+			const player2 = 1;
+
+			const csrftoken = getCookie('csrftoken');
+			const response = await fetch('/api/pong/create_match/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken,
+				},
+				body: JSON.stringify({
+					player1: 2,
+					player2: 1
+				}),
+				credentials: 'include',
+			})
+			if (response.ok) {
+				const match = await response.json();
+				alert('Match créé avec succès !');
+				console.log(match);
+				console.log(match.id);
+				window.sendNotification(1,match.id, 'match_request');
+				navigateTo('/pong/' + match.id);
+			} else {
+				const result = await response.json();
+				alert(result.detail || 'failed');
+			}
+		}
+
+	function set1v1Button() {
+		const matchButton = document.createElement('button');
+		matchButton.textContent = 'Proposer un 1v1';
+		matchButton.addEventListener('click', start_game);
+		document.getElementById('1v1').appendChild(matchButton);
+	}
+	export { onLoad, onUnload };

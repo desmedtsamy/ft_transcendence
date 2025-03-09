@@ -47,9 +47,10 @@ class NotificationConsumer(WebsocketConsumer):
 					'message': message,
 					'name': name,
 					"id": id,
+					"match_id": match_id,
 					"game_type": game_type
 				}))
-				print(f"Message sent to client: {client_id}")
+				print(f"Message sent to client: {client_id} {match_id}")
 			else:
 				print(f"Client ID {client_id} not found in connected_clients")
 				print("Currently connected clients:")
@@ -99,12 +100,10 @@ class NotificationConsumer(WebsocketConsumer):
 			connected_clients[player1].send(text_data=json.dumps({
 				'message': "match_request",
 				"match_id": match_id,
-				"id": player2
 			}))
 			connected_clients[player2].send(text_data=json.dumps({
 				'message': "match_request",
 				"match_id": match_id,
-				"id": player2
 			}))
 		elif player1 in connected_clients:
 			print("le joueur 1 est connecté")
