@@ -24,14 +24,14 @@ class Game():
 		self.match = match
 		self.p1_id = match.player1.id
 		self.p2_id = match.player2.id
-	state = {
-		'players': {
-			1: {'x': 50, 'y': 250},  # left player
-			2: {'x': 750, 'y': 250}  # right player
-		},
-		'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
-		'scores': {1: 0, 2: 0}
-	}
+		self.state = {
+			'players': {
+				1: {'x': 50, 'y': 250},  # left player
+				2: {'x': 750, 'y': 250}  # right player
+			},
+			'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
+			'scores': {1: 0, 2: 0}
+		}
 
 
 class PongGameConsumer(WebsocketConsumer):
@@ -39,12 +39,14 @@ class PongGameConsumer(WebsocketConsumer):
 	def getGame(self):
 		match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 		id = match.id
-		print("l'id du match:", id)
+		print(f"l'id dr la game{id} ")
 		for game in all_game:
 			if game.id == id:
+				print(f"le score de la game {game.id} quand elle existe deja {game.state}")
 				return game
 		game = Game(id, match)
 		all_game.append(game)
+		print(f"le score de la game {game.id} quand je la creer {game.state}")
 		return game
 
 	def connect(self):
@@ -150,8 +152,12 @@ class PongGameConsumer(WebsocketConsumer):
 			if self in self.game.player_list:
 				self.game.player_list.remove(self)
 				self.role = None
-			if len(self.game.player_list) < 2:
-				print("A player has disconnected. Pausing the game.")
+			if len(self.game.player_list) == 0:
+				print(f"No players left in game {self.game.id}. Removing from all_game.")
+				if self.game in all_game:
+					all_game.remove(self.game)
+			elif len(self.game.player_list) < 2:
+				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 			# self.send_active_player()
 			
 
