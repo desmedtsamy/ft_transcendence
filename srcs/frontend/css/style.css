@@ -2,10 +2,15 @@
 
 
 :root {
-	--primary-color: #16e0bd;
-	--bg-color: #1a1a2e;
-	--text-color: #16e0bd;
-	--secondary-bg: #242444;
+	--primary-color: #6a4cff;
+	--bg-color: #121225;
+	--text-color: #6a4cff;
+	--secondary-bg: #1e1e3a;
+	--accent-color: #ff4c8b;
+	--success-color: #4cff8b;
+	--warning-color: #ffb74c;
+	--error-color: #ff4c4c;
+	--neutral-color: #a9b7c6;
 }
 
 html, body {
@@ -15,7 +20,7 @@ html, body {
 	padding: 0;
     font-family: 'VT323', monospace;
     background-color: var(--bg-color);
-    color: #16e0bd;
+    color: var(--text-color);
     overflow-x: hidden;
     font-size: 1.3em;
 }
@@ -40,13 +45,24 @@ input[type="number"],
 select,
 textarea {
 	background-color: var(--bg-color);
-	color: var(--primary-color);
+	color: var(--text-color);
 	border: 2px solid var(--primary-color);
 	padding: 10px;
 	margin-bottom: 1em;
 	border-radius: 5px;
 	font-family: 'VT323', monospace;
 	font-size: 1.5em;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	box-shadow: 0 0 8px var(--accent-color);
 }
 
 select{
@@ -67,9 +83,9 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
-	box-shadow: 0 0 10px var(--primary-color);
+	background-color: var(--accent-color);
+	color: var(--bg-color);
+	box-shadow: 0 0 10px var(--accent-color);
 }
 
 #content{
@@ -78,7 +94,14 @@ button[type="submit"]:hover {
 a {
 	color: var(--primary-color);
 	text-decoration: none;
+	transition: color 0.3s ease;
 }
+
+a:hover {
+	color: var(--accent-color);
+	text-decoration: none;
+}
+
 #profile-menu{
 	display: flex;
     justify-content: flex-end;	
@@ -92,9 +115,9 @@ a {
 
 /* Navigation Bar Styling */
 nav {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-bg);
     padding: 15px 0px;
-    box-shadow: 0 2px 10px rgba(22, 224, 189, 0.2);
+    box-shadow: 0 2px 10px rgba(106, 76, 255, 0.2);
     display: flex; /* Enable flexbox for layout */
     justify-content: space-between; /* Space items evenly */
     align-items: center;
@@ -117,10 +140,10 @@ nav ul li {
 }
 
 nav ul li a {
-    color: var(--bg-color);
+    color: var(--text-color);
     text-decoration: none;
     font-weight: bold;
-    text-trans uppercase;
+    text-transform: uppercase;
     font-size: 1.2em;
     transition: all 0.3s ease;
     padding: 10px 15px;
@@ -128,8 +151,8 @@ nav ul li a {
 }
 
 nav ul li a:hover, nav ul li a.active {
-    background-color: var(--bg-color);
-    color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--bg-color);
 }
 
 /* Profile Menu Styling */
@@ -143,7 +166,7 @@ nav ul li a:hover, nav ul li a.active {
     width: 420px;
     height: 420px;
     border-radius: 50%;
-    border: 5px solid var(--bg-color);
+    border: 5px solid var(--accent-color);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -152,13 +175,13 @@ nav ul li a:hover, nav ul li a.active {
     height: 1.3em;
     width: 1.3em;
     border-radius: 50%;
-    border: 2px solid var(--bg-color);
+    border: 2px solid var(--accent-color);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .profile-pic:hover {
-    box-shadow: 0 0 10px var(--primary-color);
+    box-shadow: 0 0 10px var(--accent-color);
 }
 
 .dropdown-content {
@@ -168,13 +191,13 @@ nav ul li a:hover, nav ul li a.active {
 	bottom: -6.2em;
     background-color: var(--secondary-bg);
     min-width: 160px;
-    box-shadow: 0 8px 16px rgba(22, 224, 189, 0.2); /* Subtle box shadow */
+    box-shadow: 0 8px 16px rgba(106, 76, 255, 0.2); /* Subtle box shadow */
     z-index: 1;
     border-radius: 5px;
 }
 
 .dropdown-content a {
-    color: var(--primary-color);
+    color: var(--text-color);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -183,7 +206,8 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .dropdown-content a:hover {
-    background-color: rgba(22, 224, 189, 0.1);
+    background-color: rgba(106, 76, 255, 0.1);
+    color: var(--accent-color);
 }
 
 .profile-menu:hover .dropdown-content {
@@ -195,6 +219,7 @@ h1 {
 	text-align: center;
 	margin-top: 50px;
 	text-shadow: 0 0 10px var(--primary-color);
+	color: var(--primary-color);
 }
 
 .content {
@@ -202,7 +227,7 @@ h1 {
 	border-radius: 10px;
 	padding: 30px;
 	margin-top: 30px;
-	box-shadow: 0 0 20px rgba(22, 224, 189, 0.1);
+	box-shadow: 0 0 20px rgba(106, 76, 255, 0.1);
 }
 
 table {
@@ -216,8 +241,9 @@ th, td {
 	text-align: left;
 	background-color: var(--secondary-bg);
 }
+
 td {
-	color : var(--primary-color);
+	color: var(--text-color);
 }
 
 th {
@@ -226,7 +252,7 @@ th {
 }
 
 tr:hover td {
-	background-color: rgba(22, 224, 189, 0.1);
+	background-color: rgba(106, 76, 255, 0.1);
 }
 
 #game-canvas {
@@ -237,7 +263,7 @@ tr:hover td {
 	background-color: var(--secondary-bg);
 	border: 3px solid var(--primary-color);
 	border-radius: 10px;
-	box-shadow: 0 0 30px rgba(22, 224, 189, 0.2);
+	box-shadow: 0 0 30px rgba(106, 76, 255, 0.2);
 }
 
 #score {
@@ -290,31 +316,37 @@ tr:hover td {
 	margin: 0.75em 1em;
 	border-radius: 5px;
 	font-weight: bold;
-	color : var(--primary-color);
-	background-color: rgba(0, 255, 213, 0.1);
+	color: var(--text-color);
+	background-color: rgba(106, 76, 255, 0.1);
 }
 
 .alert-normal {
-	color : var(--primary-color);
+	color: var(--text-color);
 }
 
 .alert-warning {
-    background-color: #e0ad16;
+    background-color: var(--warning-color);
+    color: var(--bg-color);
 }
+
 .alert-error {
-    background-color: #e01616;
-	color : var(--bg-color);
+    background-color: var(--error-color);
+    color: var(--bg-color);
 }
 
 .alert-successful {
-    background-color: #16e056;
+    background-color: var(--success-color);
+    color: var(--bg-color);
 }
 
-online-status i {
-    color: rgb(0, 255, 0);
+.online-status i,
+.offline-status i {
     margin-left: 5px;
 }
 
+.online-status i {
+    color: var(--success-color);
+}
 
 .avatar-container {
     position: relative;
@@ -340,4 +372,34 @@ online-status i {
 .username {
 	padding-right: 0.25em; 
     color: var(--bg-color);
+}
+
+/* Bootstrap Overrides */
+.dropdown-menu {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--primary-color);
+}
+
+.dropdown-item {
+    color: var(--text-color);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    color: var(--accent-color);
+    background-color: rgba(106, 76, 255, 0.1);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--primary-color);
+    opacity: 0.2;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
 }

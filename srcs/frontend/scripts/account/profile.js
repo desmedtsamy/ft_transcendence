@@ -163,10 +163,10 @@ function renderRecentMatches(matches) {
             scoreChangeSpan.classList.add('score-change');
             if (match.winner && match.winner.id === player.id) {
                 scoreChangeSpan.textContent = `+${match.points_at_stake}`;
-                scoreChangeSpan.style.color = 'green';
+                scoreChangeSpan.style.color = '#4cff8b';
             } else {
                 scoreChangeSpan.textContent = `-${match.points_at_stake}`;
-                scoreChangeSpan.style.color = 'red';
+                scoreChangeSpan.style.color = '#ff4c4c';
             }
             playerDiv.appendChild(scoreChangeSpan);
 

@@ -41,6 +41,12 @@ function callback() {
 		});
 }
 
+// Add event listener for browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+	const path = window.location.pathname;
+	render(path);
+});
+
 function navigateTo(path) {
 	const currentPath = window.location.pathname;
 	const absolutePath = path.startsWith('/')
@@ -51,8 +57,10 @@ function navigateTo(path) {
 		callback();
 	}
 	else {
-		
-		window.history.pushState({}, '', absolutePath);
+		// Only push state if we're not responding to a popstate event
+		if (!window.history.state || window.history.state.path !== absolutePath) {
+			window.history.pushState({ path: absolutePath }, '', absolutePath);
+		}
 		render(absolutePath);
 	}
 }

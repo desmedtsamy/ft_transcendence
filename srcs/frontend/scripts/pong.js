@@ -123,11 +123,11 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw player
-    ctx.fillStyle = 'green';
+    ctx.fillStyle = '#6a4cff';
     ctx.fillRect(playerPosition.x, playerPosition.y, 10, 100);
 
     // Draw opponent
-    ctx.fillStyle = 'blue';
+    ctx.fillStyle = '#ff4c8b';
     ctx.fillRect(opponentPosition.x, opponentPosition.y, 10, 100);
 
     // Draw ball

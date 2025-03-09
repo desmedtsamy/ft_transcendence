@@ -1,8 +1,13 @@
 :root {
-	--primary-color: #16e0bd;
-    --bg-color: #1a1a2e;
-    --text-color: #16e0bd;
-    --secondary-bg: #242444;
+	--primary-color: #6a4cff;
+    --bg-color: #121225;
+    --text-color: #6a4cff;
+    --secondary-bg: #1e1e3a;
+    --accent-color: #ff4c8b;
+    --success-color: #4cff8b;
+    --warning-color: #ffb74c;
+    --error-color: #ff4c4c;
+    --neutral-color: #a9b7c6;
 }
 
 form{
@@ -23,7 +28,7 @@ form{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #40E0D0; 
+    background-color: var(--primary-color); 
     overflow: hidden; 
 	margin: 1em 0;
 	padding: 0.5em 1em;
@@ -35,9 +40,9 @@ form{
 }
 #login_42:hover {
 	background-color: var(--bg-color);
-	color: #40E0D0; 
-	box-shadow: 0 0 10px #40E0D0; 
-
+	color: var(--primary-color); 
+	box-shadow: 0 0 10px var(--primary-color); 
+}
 #login_42 img {
     height: 0.8em; 
 	filter: invert(1);
@@ -45,22 +50,22 @@ form{
 /* .submit {
 	display: block;
 	width: 100%;
-	color: #00FFFF;
+	color: var(--primary-color);
 	background-color: transparent;
 	font-size: 1.2em;
 	font-weight: bold;
 	padding: 14px 13px 12px 13px;
 	margin-top: 1.5em;
 	border: 0;
-	outline: 1px solid #00FFFF;
+	outline: 1px solid var(--primary-color);
 	border-radius: 8px;
 	line-height: 1;
 	cursor: pointer;
   }
 .submit:hover {
 	transition: all ease-in-out .3s;
-	background-color: #00FFFF;
-	color: #161616;
+	background-color: var(--primary-color);
+	color: var(--bg-color);
 	cursor: pointer;
 } */
 .fields{
