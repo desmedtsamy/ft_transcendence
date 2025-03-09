@@ -24,7 +24,7 @@ game_state = {
 	'scores': {1: 0, 2: 0}
 }
 
-class PongGameConsumer(WebsocketConsumer):
+class Consumer(WebsocketConsumer):
 
 	def connect(self):
 		self.accept()
@@ -93,7 +93,7 @@ class PongGameConsumer(WebsocketConsumer):
 				print(f"Received data: {data}")
 				self.handle_data(data)
 			elif bytes_data:
-				print(f"Received bytes data: {bytes_data}")
+				print(f"Received bytes data: {bytes_data} {self.id}")
 			else:
 				print("No valid data received")
 		except json.JSONDecodeError as e:
@@ -112,11 +112,15 @@ class PongGameConsumer(WebsocketConsumer):
 	def move_player(self, data):
 		position = data.get('position')
 		if position is not None:
-			if  0 <= position['x'] <= canvas_height - paddle_height:
+			# if  0 <= position['x'] <= canvas_height - paddle_height:
 				if self.role == "left":
-						game_state['players'][1]['y'] = position['y']
+					print("move_player left")
+					game_state['players'][1]['y'] = position['y']
 				elif self.role == "right":
+					print("move_player right")
 					game_state['players'][2]['y'] = position['y']
+			# else:
+			# 	print("error: wrong position")
 		else:
 			print("Position data missing")
 
@@ -188,9 +192,9 @@ class PongGameConsumer(WebsocketConsumer):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(connected_client_list) == 2:
-				if game_state['scores'][1] >= 5 or game_state['scores'][2] >= 5:
+				if game_state['scores'][1] >= 15 or game_state['scores'][2] >= 15:
 					print("Game over")
-					if game_state['scores'][1] >= 5:
+					if game_state['scores'][1] >= 15:
 						self.match.end(self.match.player1)
 					else:
 						self.match.end(self.match.player2)

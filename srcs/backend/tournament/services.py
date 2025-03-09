@@ -30,20 +30,17 @@ def join_tournament(tournament_id, user_id):
 		matchs = TournamentMatch.objects.filter(
 			round__tournament=tournament,
 			round__number=1
-		).filter(Q(match__player1=None) | Q(match__player2=None))
+		).filter(Q(match__player1=None) | Q(match__player2=None)).order_by('id')
 
 		if not matchs:
 			return {'error': 'Le tournoi est complet'}, 400
-		for tournamentMatch in matchs:
-			match = tournamentMatch.match
-			if match.player1 == None:
-				match.player1 = user
-				match.save()
-				break
-			elif match.player2 == None:
-				match.player2 = user
-				match.save()
-				break
+
+		# Prendre le premier match disponible
+		tournamentMatch = matchs.first()
+		match = tournamentMatch.match
+		match.set_player(user)
+		match.save()
+
 		if tournament.players.count() == tournament.number_of_players:
 			tournament.set_start_tournament()
 		return {'status': 'success', 'message': 'Inscription réussie'}, 200
@@ -97,12 +94,8 @@ def leave_tournament(tournament_id, user_id):
 		# Supprimer le joueur du match 
 		for tournamentMatch in TournamentMatch.objects.filter(round__tournament=tournament):
 			match = tournamentMatch.match
-			if match.player1 == user:
-				match.player1 = None
-				match.save()
-			elif match.player2 == user:
-				match.player2 = None
-				match.save()
+			match.delete_player(user)
+			
 
 		tournament.save()
 		return {'status': 'success', 'message': 'Désinscription réussie'}, 200
@@ -114,6 +107,7 @@ def leave_tournament(tournament_id, user_id):
 		return {'error': str(e)}, 500
 
 def create_tournament(name, number_of_players, creator):
+	game_type = creator.selected_game
 	# Validation du nombre de joueurs
 	if not (number_of_players & (number_of_players - 1) == 0):
 		return {'error': 'Le nombre de joueurs doit être une puissance de 2'}, 400
@@ -123,7 +117,7 @@ def create_tournament(name, number_of_players, creator):
 			# Créer le tournoi
 			tournament = Tournament.objects.create(name=name,
 							number_of_players=number_of_players, creator=creator,
-							  selected_game=creator.selected_game)
+							  selected_game=game_type)
 
 			# Calculer le nombre de rounds (log2 du nombre de joueurs)
 			num_rounds = int(math.log2(number_of_players))
@@ -137,7 +131,7 @@ def create_tournament(name, number_of_players, creator):
 				current_round_matches = []
 
 				for _ in range(number_of_matches):
-					match = Match.objects.create()
+					match = Match.objects.create(game_type=game_type)
 					tournament_match = TournamentMatch.objects.create(round=round, match=match)
 					current_round_matches.append(tournament_match)
 

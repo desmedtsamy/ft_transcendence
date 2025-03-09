@@ -253,15 +253,20 @@ class UserMatchesListView(generics.ListAPIView):
 	serializer_class = MatchSerializer
 	permission_classes = [permissions.IsAuthenticated]
 
-	def get_queryset(self):
+	def post(self, request, *args, **kwargs):
 		user_id = self.kwargs['user_id']
+		selected_game = request.data.get('selectedGame')
 		try:
 			user = User.objects.get(id=user_id)
 		except User.DoesNotExist:
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
-		matches = Match.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-created_at')[:10]
-		return matches
-
+		
+		matches = Match.objects.filter(Q(player1=user) | Q(player2=user), game_type=selected_game).order_by('-created_at')[:10]
+		
+		# Sérialiser les objets Match avant de les retourner
+		serializer = self.get_serializer(matches, many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+	
 class setSelectedGameView(APIView):
 	permission_classes = [IsAuthenticated]
 

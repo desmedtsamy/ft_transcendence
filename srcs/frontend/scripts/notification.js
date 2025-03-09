@@ -1,4 +1,6 @@
 var socket;
+const game_type = localStorage.getItem('selectedGame');
+
 function setNotification() {
 
 	var id = 0;
@@ -25,10 +27,12 @@ function setNotification() {
 		const data = JSON.parse(event.data);
 		console.log('Message from server: ', data);
 		if (data.message == "match_request")
-			matchRequest(data.name, data.id, data.match_id);
-		if (data.message == "match_start")
-			navigateTo( '/pong/' + data.match_id);
-		else
+			matchRequest(data.name, window.user.id, data.match_id);
+		else if (data.message == "match_start")
+			if (data.game_type == "pong")
+				navigateTo( '/pong/' + data.match_id);
+			else
+				navigateTo( '/tictactoe/' + data.match_id);
 	alert(data.message);
 });
 
@@ -42,14 +46,17 @@ function matchRequest(name, id, match_id) {
 	const alertEl = document.createElement('div');
 	alertEl.className = `alert alert-normal`;
 	if (name == null)
-		alertEl.textContent = "un match de tournois va commencer";
+		alertEl.textContent = "Un match de tournoi va commencer";
 	else	
 		alertEl.textContent = "Vous avez une demande de match de " + name;
 	alertEl.style.display = 'flex';
 	alertEl.style.justifyContent = 'space-between';
+	alertEl.style.flexDirection = 'column';
 	
 	const buttonsContainer = document.createElement('div');
 	buttonsContainer.style.display = 'flex';
+	buttonsContainer.style.justifyContent = 'space-between';
+	buttonsContainer.style.marginTop = '10px';
 	
 	const acceptButton = document.createElement('button');
 	acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
@@ -57,6 +64,7 @@ function matchRequest(name, id, match_id) {
 	acceptButton.addEventListener('click', function() {
 		acceptMatch(id, match_id);
 		alertsEl.innerHTML = '';
+		clearInterval(timerInterval);
 	});
 	buttonsContainer.appendChild(acceptButton);
 	
@@ -64,34 +72,95 @@ function matchRequest(name, id, match_id) {
 	declineButton.classList.add('button', 'btn-danger', 'cancel-friend-request');
 	declineButton.textContent = 'Decline';
 	declineButton.addEventListener('click', function() {
-		declineMatch(id);
+		declineMatch(id, match_id);
 		alertsEl.innerHTML = '';
+		clearInterval(timerInterval);
 	});
 	buttonsContainer.appendChild(declineButton);
 	
-	alertEl.appendChild(buttonsContainer);
+	// Créer le container pour le timer
+	const timerContainer = document.createElement('div');
+	timerContainer.style.marginTop = '10px';
+	timerContainer.style.textAlign = 'center';
 	
+	// Créer l'élément pour le texte du timer
+	const timerText = document.createElement('div');
+	timerText.style.fontWeight = 'bold';
+	timerText.style.marginBottom = '5px';
+	
+	// Créer la barre de progression
+	const progressBar = document.createElement('div');
+	progressBar.style.width = '100%';
+	progressBar.style.backgroundColor = '#eee';
+	progressBar.style.borderRadius = '5px';
+	progressBar.style.overflow = 'hidden';
+	
+	const progressFill = document.createElement('div');
+	progressFill.style.height = '10px';
+	progressFill.style.width = '100%';
+	progressFill.style.backgroundColor = '#4CAF50';
+	progressFill.style.transition = 'width 1s linear';
+	
+	progressBar.appendChild(progressFill);
+	timerContainer.appendChild(timerText);
+	timerContainer.appendChild(progressBar);
+	
+	alertEl.appendChild(buttonsContainer);
+	alertEl.appendChild(timerContainer);
 	alertsEl.appendChild(alertEl);
+	
+	// Configurer le timer
+	let timeLeft = 60;
+	timerText.textContent = `${timeLeft} secondes restantes`;
+	
+	const timerInterval = setInterval(function() {
+		timeLeft--;
+		timerText.textContent = `${timeLeft} secondes restantes`;
+		
+		// Mettre à jour la barre de progression
+		const percentLeft = (timeLeft / 60) * 100;
+		progressFill.style.width = `${percentLeft}%`;
+		
+		// Changer la couleur en fonction du temps restant
+		if (timeLeft <= 10) {
+			progressFill.style.backgroundColor = '#f44336'; // Rouge quand peu de temps
+		} else if (timeLeft <= 30) {
+			progressFill.style.backgroundColor = '#ff9800'; // Orange quand temps modéré
+		}
+		
+		if (timeLeft <= 0) {
+			clearInterval(timerInterval);
+			declineMatch(id, match_id);
+			alertsEl.innerHTML = '';
+		}
+	}, 1000);
+	
+	setTimeout(function() {
+		clearInterval(timerInterval);
+		if (alertsEl.contains(alertEl)) {
+			declineMatch(id, match_id);
+			alertsEl.innerHTML = '';
+		}
+	}, 60000);
 }
 
 function acceptMatch(id, match_id) {
 	window.sendNotification(id, match_id, 'match_accept');
 }
 
-function declineMatch(id) {
-	window.sendNotification(id, 'match_decline');
+function declineMatch(id, match_id) {
+	window.sendNotification(id, match_id, 'match_decline');
 }
 function sendNotification(client_id, match_id,  message) {
 	alert("message envoyé");
-	// if (client_id == null)
-	// 	client_id = 0
 	console.log ("client_id: " + client_id + " match_id: " + match_id + " message: " + message);
 	socket.send(JSON.stringify({
 		client_id: client_id,
 		match_id: match_id,
 		message: message,
 		name: window.user.username,
-		id: window.user.id
+		id: window.user.id,
+		game_type: game_type
 	}));
 }
 

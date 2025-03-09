@@ -12,6 +12,7 @@ const routes = {
 	'/settings': settingsPage,
 	'/matchmaking': matchmakingPage,
 	'/pong': pongPage,
+	'/tictactoe': tictactoePage,
 };
 
 function sync_42() {

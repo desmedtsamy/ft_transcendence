@@ -55,6 +55,18 @@ async function pongPage() {
 		script: "/scripts/pong.js",
 	};
 }
+async function tictactoePage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
+	const response = await fetch('/templates/tictactoe.html');
+	const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/tictactoe.js",
+	};
+}
 
 async function homePage() {
 	if ( window.selected_game === "tictactoe") {

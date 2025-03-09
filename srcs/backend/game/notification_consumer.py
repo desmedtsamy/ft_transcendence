@@ -6,6 +6,8 @@ from django.dispatch import receiver
 from game.services import create_match
 from .models import Match
 from .signals import match_started
+import random
+from .models import TournamentMatch
 connected_clients = {}
 
 
@@ -31,24 +33,21 @@ class NotificationConsumer(WebsocketConsumer):
 	def receive(self, text_data):
 		try:
 			data_json = json.loads(text_data)
-
-			print(data_json)
-			print("pipi")
 			if(data_json['client_id']):
 				client_id = int(data_json['client_id'])
-			print("caca")
 			match_id = data_json['match_id']
+			game_type = data_json['game_type']
 			message = data_json['message']
 			name = data_json['name']
 			id = data_json['id']
 
-			print("caca")
 			# Vérification de l'existence du client dans connected_clients
 			if client_id in connected_clients:
 				connected_clients[client_id].send(text_data=json.dumps({
 					'message': message,
 					'name': name,
-					"id": id
+					"id": id,
+					"game_type": game_type
 				}))
 				print(f"Message sent to client: {client_id}")
 			else:
@@ -58,28 +57,45 @@ class NotificationConsumer(WebsocketConsumer):
 					print(f"Client ID: {client_id}, Consumer: {consumer}")
 			if message == "match_accept":
 				if match_id == 0:
-					match_id = create_match(id, client_id)
-					print (match_id)
+					match_id = create_match(id, client_id, game_type)
 					if match_id == -1:
 						return
 				# match = Match.objects.get(id=match_id)
 				# match.start()
 				connected_clients[client_id].send(text_data=json.dumps({
 					'message': "match_start",
-					'match_id' : str(match_id)
+					'match_id' : str(match_id),
+					'game_type': game_type
 				}))
-				connected_clients[id].send(text_data=json.dumps({
-					'message': "match_start",
-					'match_id' : str(match_id)
-				}))
+				# connected_clients[id].send(text_data=json.dumps({
+				# 	'message': "match_start",
+				# 	'match_id' : str(match_id)
+				# }))
+			elif message == "match_decline":
+				print("le mec a dit non")
+				tournament_match = tournament_match.objects.get(match_id=match_id)
+				print("on trouve pas le match de tournoi")
+				if tournament_match:
+					print("et c'est un match de tournoi")
+					opponent = tournament_match.player2 if client_id == tournament_match.player1.id else tournament_match.player1
+					Match.objects.get(id=match_id).end(opponent)
+				else:
+					print("et c'est un match normal")
+					Match.objects.get(id=match_id).delete()
+			else:
+				print("message invalide " + message)
 		except json.JSONDecodeError as e:
 			print(f"JSON decoding error: {e}")
 		except Exception as e:
 			print(f"Error in receive method: {e}")
 	@staticmethod
 	def start_match(player1, player2, match_id):
+		match = Match.objects.get(id=match_id)
+		print("player 1 : " + str(player1))
+		print("player 2 : " + str(player2))
+		print("connected_clients : " + str(connected_clients))
 		if player1 in connected_clients and player2 in connected_clients:
-			print(f"Starting match between {player1} and {player2}")
+			print("les deux joueurs sont connectés")
 			connected_clients[player1].send(text_data=json.dumps({
 				'message': "match_request",
 				"match_id": match_id,
@@ -90,8 +106,30 @@ class NotificationConsumer(WebsocketConsumer):
 				"match_id": match_id,
 				"id": player2
 			}))
+		elif player1 in connected_clients:
+			print("le joueur 1 est connecté")
+			if player2 in connected_clients:
+				print("le joueur 2 est aussi connecté donc il est pas possible d'arriver ici je suis vraiment le pire des dev mdr")
+			for client in connected_clients:
+				print(client)
+			#set player1 as winner
+			match.end(match.player1)
+			connected_clients[player1].send(text_data=json.dumps({
+				'message': "you win by default",
+				"winner": player1
+			}))
+		elif player2 in connected_clients:
+			print("le joueur 2 est connecté")
+			if player1 in connected_clients:
+				print("le joueur 1 est aussi connecté donc il est pas possible d'arriver ici je suis vraiment le pire des dev mdr")
+			for client in connected_clients:
+				print(client)
+			match.end(match.player2)
+			connected_clients[player2].send(text_data=json.dumps({
+				'message': "you win by default",
+				"winner": player2
+			}))
 		else:
-			print(f"Player {player1} or {player2} not connected")
-			print("Currently connected clients:")
-			for client_id, consumer in connected_clients.items():
-				print(f"Client ID: {client_id}, Consumer: {consumer}")
+			print("aucun joueur n'est connecté")
+			match.end(random.choice([match.player1, match.player2]))
+

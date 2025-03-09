@@ -1,3 +1,4 @@
+const selectedGame = localStorage.getItem('selectedGame');
 let scoreChart; 
 let userData = null;
 async function fetchProfileData(username) {
@@ -126,8 +127,16 @@ function createButton(text, colorClass, actionClass, actionUrl) {
 
 async function fetchMatchesData(userData) {
 	try {
-		const response = await fetch(`/api/account/matches/${userData.id}/`); 
+		const response = await fetch(`/api/account/matches/${userData.id}/`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': getCookie('csrftoken'),
+			},
+			body: JSON.stringify({ selectedGame })
+		}); 
         if (response.ok) {
+			console.log(response)
 			const matchesData = await response.json();
 			renderRecentMatches(matchesData);
             renderScoreChart(matchesData, userData); 
@@ -212,7 +221,8 @@ function renderRecentMatches(matches) {
 
 function renderScoreChart(matches, user) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
-    let currentScore = user.scores["pong"];
+
+    let currentScore = user.scores[user.selected_game];
     const scoreData = [currentScore];
     const labels = ['Score actuel'];
 
@@ -224,7 +234,7 @@ function renderScoreChart(matches, user) {
         const match = matches[i];
         const isWinner = match.winner && match.winner === user.id;
         
-        const pointsChange = isWinner ? 42 : 0;
+        const pointsChange = isWinner ? 42 : -21;
         
         // Calcul du score historique
         currentScore -= pointsChange;

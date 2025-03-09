@@ -29,7 +29,8 @@ class Tournament(models.Model):
 			tournament_matches = round.tournament_matches.all()
 			for tournament_match in tournament_matches:
 				if tournament_match.match:
-					tournament_match.match.delete()
+					if tournament_match.match.player1 == None and tournament_match.match.player2 == None:
+						tournament_match.match.delete()
 				tournament_match.delete()
 			round.delete()
 		self.delete()
@@ -46,6 +47,7 @@ class TournamentMatch(models.Model):
 
 	def end(self, winner):
 		if self.next_match:
+			self.next_match.match.set_player(winner)
 			self.next_match.match.start()
 		else:
 			tournament = self.round.tournament
