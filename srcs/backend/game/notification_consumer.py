@@ -73,11 +73,11 @@ class NotificationConsumer(WebsocketConsumer):
 				# }))
 			elif message == "match_decline":
 				print("le mec a dit non")
-				tournament_match = tournament_match.objects.get(match_id=match_id)
+				tournament_match = TournamentMatch.objects.get(match_id=match_id)
 				print("on trouve pas le match de tournoi")
 				if tournament_match:
 					print("et c'est un match de tournoi")
-					opponent = tournament_match.player2 if client_id == tournament_match.player1.id else tournament_match.player1
+					opponent = tournament_match.match.player2 if client_id == tournament_match.match.player1.id else tournament_match.match.player1
 					Match.objects.get(id=match_id).end(opponent)
 				else:
 					print("et c'est un match normal")
