@@ -176,8 +176,8 @@ function updateBall() {
 					'X-CSRFToken': csrftoken,
 				},
 				body: JSON.stringify({
-					player1: 2,
-					player2: 1
+					player1: player1,
+					player2: player2
 				}),
 				credentials: 'include',
 			})
