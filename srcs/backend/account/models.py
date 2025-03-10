@@ -4,8 +4,6 @@ from django.db.models import Q
 from django.utils import timezone
 from game.models import Match
 from datetime import timedelta
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.cache import cache
 from django.contrib.sessions.models import Session
 
@@ -22,14 +20,6 @@ def update_user_status():
 	# Mettre à jour le statut en une seule requête
 	inactive_users.update(is_online=False)
 
-# Signal pour mettre à jour le statut toutes les minutes
-@receiver(post_save, sender='account.User')
-def check_user_status(sender, **kwargs):
-	last_update = cache.get('last_status_update')
-	now = timezone.now()
-	if not last_update or (now - last_update).total_seconds() >= 60:
-		update_user_status()
-		cache.set('last_status_update', now)
 
 class User(AbstractUser):
 	GAME_TYPES = (
@@ -72,6 +62,14 @@ class User(AbstractUser):
 			self.scores = self.initialize_scores()
 		super().save(*args, **kwargs)
 	
+	def check_user_status():
+		print("check_user_status")
+		last_update = cache.get('last_status_update')
+		now = timezone.now()
+		if not last_update or (now - last_update).total_seconds() >= 60:
+			update_user_status()
+			cache.set('last_status_update', now)
+
 class FriendshipRequest(models.Model):
 	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_requests_sent')
 	to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_requests_received')

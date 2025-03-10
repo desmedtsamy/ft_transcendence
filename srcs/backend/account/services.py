@@ -7,6 +7,7 @@ from .models import User, FriendshipRequest, Friendship
 from .serializers import UserSerializer
 from django.contrib.auth import login
 from django.db.models import Q
+
 def get_42_user_data(request, redirect_uri):
     client_id = settings.FORTYTWO_CLIENT_ID
     client_secret = settings.FORTYTWO_CLIENT_SECRET
