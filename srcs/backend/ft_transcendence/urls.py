@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/account/', include('account.urls')),
     path('api/scoreboard/', views.ScoreboardView.as_view(), name='scoreboard'),
     path('api/tournament/', include('tournament.urls')),
-	path("api/pong/", include('game.urls')),
+	path("api/game/", include('game.urls')),
 	path('api/update_activity/', views.UpdateLastActivityView.as_view(), name='last_activity'),
 ]
 

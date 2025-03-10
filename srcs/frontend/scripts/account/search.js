@@ -9,6 +9,7 @@ function searchUsers() {
 		})
 		.then(data => {
 			renderSearchResults(data);
+			console.log(data);
 		})
 		.catch(error => {
 			console.error('Erreur AJAX :', error);

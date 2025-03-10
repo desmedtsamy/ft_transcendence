@@ -20,6 +20,10 @@ function setNotification() {
 	});
 	socket.addEventListener('close', function (event) {
 		console.log('WebSocket is close.');
+		// wait 5 seconds before reconnecting
+		setTimeout(function() {
+			setNotification();
+		}, 2000);
 	});
 
 	// Écoutez l'événement 'message' qui est déclenché lorsque des données sont reçues du serveur.

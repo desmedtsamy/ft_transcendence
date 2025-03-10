@@ -13,6 +13,7 @@ const routes = {
 	'/matchmaking': matchmakingPage,
 	'/pong': pongPage,
 	'/tictactoe': tictactoePage,
+	'/friends': friendsPage,
 };
 
 function sync_42() {

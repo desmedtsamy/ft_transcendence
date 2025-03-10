@@ -3,6 +3,7 @@
     list-style: none; /* Supprimer les puces par défaut */
     padding: 0;
     margin: 20px 0; /* Ajouter un peu d'espace autour de la liste */
+	width: 100%;
 }
 
 .user_element {
@@ -37,3 +38,11 @@
     text-decoration: none;
     color: inherit; /* Hérite de la couleur du texte parent */
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+	width: 100%;
+}
+

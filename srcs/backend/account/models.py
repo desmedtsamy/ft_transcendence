@@ -12,12 +12,8 @@ def update_user_status():
 	time_threshold_disconnect = timezone.now() - timedelta(minutes=15)
 
 	inactive_users = User.objects.filter(last_activity__lt=time_threshold_inactive, is_online=True)
-	# Déconnexion des utilisateurs inactifs depuis 15 minutes
 	for user in User.objects.filter(last_activity__lt=time_threshold_disconnect, is_online=True):
-		# Supprimer toutes les sessions de l'utilisateur
 		Session.objects.filter(expire_date__gte=timezone.now(), session_data__contains=str(user.id)).delete()
-
-	# Mettre à jour le statut en une seule requête
 	inactive_users.update(is_online=False)
 
 

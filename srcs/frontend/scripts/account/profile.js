@@ -286,7 +286,7 @@ async function createMatch() {
 	const player2 = userData.id;
 
 	// const csrftoken = getCookie('csrftoken');
-	// const response = await fetch('/api/pong/create_match/', {
+	// const response = await fetch('/api/game/create_match/', {
 	// 	method: 'POST',
 	// 	headers: {
 	// 		'Content-Type': 'application/x-www-form-urlencoded',

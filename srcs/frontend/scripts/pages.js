@@ -111,6 +111,20 @@ async function searchPage() {
 	};
 }
 
+async function friendsPage() {
+	if (window.user === null) {
+		alert("You must be logged in to access this page.", "error");
+		return homePage();
+	}
+	const response = await fetch('/templates/friends.html');
+    const htmlContent = await response.text();
+	return {
+		html: htmlContent,
+		script: "/scripts/account/friends.js",
+	};
+}
+
+
 async function tournamentsPage() {
 	// if (window.user === null) {
 	// 	alert("You must be logged in to access this page.", "error");

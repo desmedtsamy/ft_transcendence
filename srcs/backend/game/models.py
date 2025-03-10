@@ -28,7 +28,6 @@ class Match(models.Model):
 			self.end(self.player1)
 		else:
 			self.status = 'started'
-			# NotificationConsumer().start_match(self.player1.id, self.player2.id)
 			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match_id=self.id)
 			self.save()
 		self.save()

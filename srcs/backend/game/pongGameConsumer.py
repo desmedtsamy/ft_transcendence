@@ -218,13 +218,13 @@ class Consumer(WebsocketConsumer):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(self.game.player_list) == 2:
-				# if self.game.state['scores'][1] >= 5 or self.game.state['scores'][2] >= 5:
-				# 	print("Game over")
-				# 	if self.game.state['scores'][1] >= 5:
-				# 		self.game.match.end(self.game.match.player1)
-				# 	else:
-				# 		self.game.match.end(self.game.match.player2)
-				# 	return
+				if self.game.state['scores'][1] >= 2 or self.game.state['scores'][2] >= 2:
+					print("Game over")
+					if self.game.state['scores'][1] >= 2:
+						self.game.match.end(self.game.match.player1)
+					else:
+						self.game.match.end(self.game.match.player2)
+					return
 				self.update_game()
 				self.send_state()
 				time.sleep(0.01)

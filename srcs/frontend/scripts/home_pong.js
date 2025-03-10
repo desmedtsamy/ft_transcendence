@@ -169,7 +169,7 @@ function updateBall() {
 			const player2 = 1;
 
 			const csrftoken = getCookie('csrftoken');
-			const response = await fetch('/api/pong/create_match/', {
+			const response = await fetch('/api/game/create_match/', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -181,17 +181,6 @@ function updateBall() {
 				}),
 				credentials: 'include',
 			})
-			if (response.ok) {
-				const match = await response.json();
-				alert('Match créé avec succès !');
-				console.log(match);
-				console.log(match.id);
-				window.sendNotification(1,match.id, 'match_request');
-				navigateTo('/pong/' + match.id);
-			} else {
-				const result = await response.json();
-				alert(result.detail || 'failed');
-			}
 		}
 
 	function set1v1Button() {

@@ -43,7 +43,7 @@ class LoginViewAPI(APIView):
 	def post(self, request):
 		username = request.data.get('username')
 		password = request.data.get('password')
-		User.check_user_status()
+		User.check
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			if user.is_online:
@@ -211,6 +211,17 @@ class CancelFriendRequestView(APIView):
 		response, status = delete_friend_request(to_user, from_user)
 		return Response(response, status=status)
 
+class FriendRequestView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		friend_requests = FriendshipRequest.objects.filter(to_user=request.user)
+		friend_requests_list = []
+		for request in friend_requests:
+			friend_requests_list.append(request.from_user)
+		serializer = UserSerializer(friend_requests_list, many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UserProfileView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -237,18 +248,19 @@ class UserProfileView(APIView):
 		except User.DoesNotExist:
 			return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class UserFriendsListView(generics.ListAPIView):
-	serializer_class = UserSerializer
+class UserFriendsListView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 
-	def get_queryset(self):
+	def get(self, request, *args, **kwargs):
 		user_id = self.kwargs['user_id']
 		try:
 			user = User.objects.get(id=user_id)
+			friends = user.get_friends()
+			serializer = UserSerializer(friends, many=True)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 		except User.DoesNotExist:
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
-		return user.get_friends()
 
 class UserMatchesListView(generics.ListAPIView):
 	serializer_class = MatchSerializer
