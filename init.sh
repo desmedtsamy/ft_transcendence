@@ -27,4 +27,3 @@ if [ ! -f .env ]; then
   fi
 fi
 
-

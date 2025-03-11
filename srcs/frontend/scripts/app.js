@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	function createLoadingSpinner() {
 		console.log("DEBUG createLoadingSpinner")
 		const app = document.getElementById('app');
-		const spinner = document.createElement('div');
-		spinner.className = 'spinner-border text-primary';
-		spinner.innerHTML = '<span>Loading...</span>';
+		const loadingElement = document.createElement('div');
+		loadingElement.className = 'loading-dots';
+		loadingElement.innerHTML = '<span>Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>';
 		app.innerHTML = '';
-		app.appendChild(spinner);
+		app.appendChild(loadingElement);
 	}
     async function fetchUserInfo() {
 		// add loading spinner

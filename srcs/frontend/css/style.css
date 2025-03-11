@@ -347,15 +347,28 @@ online-status i {
     background-color: var(--secondary-bg) !important;
     border-bottom: 2px solid var(--primary-color);
     box-shadow: 0 0 15px rgba(22, 224, 189, 0.2);
+    height: 60px;
+    padding: 0 1rem;
 }
 
 .navbar-dark .navbar-nav .nav-link {
     color: var(--primary-color);
     transition: all 0.3s ease;
     font-family: 'VT323', monospace;
-    font-size: 1.2em;
+    font-size: 1em;
     padding: 0.5rem 1rem;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 40px;
+    margin: 0 0.25rem;
+}
+
+.navbar-dark .navbar-nav .nav-link i {
+    font-size: 1em;
+    width: 1.2em;
+    text-align: center;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
@@ -369,6 +382,7 @@ online-status i {
 .navbar-toggler {
     border: 2px solid var(--primary-color);
     padding: 0.5rem;
+    margin-right: 1rem;
 }
 
 .navbar-toggler:focus {
@@ -377,6 +391,27 @@ online-status i {
 
 .navbar-dark .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(22, 224, 189, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.navbar .container-fluid {
+    height: 100%;
+    padding: 0 1rem;
+}
+
+.navbar-collapse {
+    background-color: var(--secondary-bg);
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        padding: 1rem;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        border-bottom: 2px solid var(--primary-color);
+    }
 }
 
 .dropdown-menu {
@@ -456,4 +491,38 @@ online-status i {
     color: var(--primary-color);
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+}
+
+/* Loading dots animation */
+.loading-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    font-size: 1.5em;
+    color: var(--primary-color);
+}
+
+.loading-dots .dot {
+    animation: dotAnimation 1.5s infinite;
+    opacity: 0;
+}
+
+.loading-dots .dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.loading-dots .dot:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.loading-dots .dot:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes dotAnimation {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    60% { opacity: 1; }
+    100% { opacity: 0; }
 }

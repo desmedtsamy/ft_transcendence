@@ -3,9 +3,54 @@ import {createModal, closeModal} from './../modal.js';
 
 window.activeTournament = null;
 
+// Ensure getCookie function is defined
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Make getCookie available globally
+window.getCookie = getCookie;
+
+// Check if user is authenticated
+async function checkAuthentication() {
+    try {
+        const response = await fetch('/api/account/current-user/', {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.is_authenticated;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking authentication:', error);
+        return false;
+    }
+}
 
 async function handleCreateTournament(event) {
     event.preventDefault();
+
+    // Check authentication first
+    const isAuthenticated = await checkAuthentication();
+    if (!isAuthenticated) {
+        alert('Please log in to create a tournament');
+        navigateTo('/login');
+        return;
+    }
 	
     const formData = new FormData(event.target);
     const tournamentData = {};
@@ -20,6 +65,7 @@ async function handleCreateTournament(event) {
 				'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken'),
             },
+            credentials: 'include',  // Add this to include credentials
             body: JSON.stringify(tournamentData),
         });
 		
@@ -29,6 +75,9 @@ async function handleCreateTournament(event) {
 			closeModal();
             populateTournaments(createdTournament.id);
             alert('Tournoi créé avec succès !');
+        } else if (response.status === 403) {
+            alert('Session expired. Please log in again.');
+            navigateTo('/login');
         } else {
 			const errorData = await response.json();
             alert('Erreur lors de la création du tournoi : ' + errorData.error);
@@ -39,8 +88,6 @@ async function handleCreateTournament(event) {
         alert('Une erreur est survenue. Veuillez réessayer plus tard.');
     }
 }
-
-
 
 function getTournamentIdFromURL() {
     const urlParts = window.location.pathname.split('/');

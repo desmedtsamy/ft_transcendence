@@ -1,36 +1,108 @@
-<link rel="stylesheet" href="css/form.css">
-
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-10">
             <div class="card bg-dark border-primary">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Login</h1>
-                    <form id="login-form" onsubmit="LoginForm(); return false;">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Login</h2>
+                    <form id="login-form" onsubmit="LoginForm(event); return false;" class="p-0">
                         <!-- Hidden honeypot fields -->
                         <input type="text" name="username" style="position: absolute; left: -9999px;">
                         <input type="password" name="password" style="position: absolute; left: -9999px;">
                         
                         <div class="mb-3">
-                            <input class="form-control form_elem" type="text" id="username_input" placeholder="Username" required>
+                            <input class="form-control" type="text" id="username_input" placeholder="Username" required>
                         </div>
                         <div class="mb-3">
-                            <input class="form-control form_elem" type="password" id="password" placeholder="Password" required>
+                            <input class="form-control" type="password" id="password" placeholder="Password" required>
                         </div>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary btn-lg form_elem" type="submit">Login</button>
-                            <a class="btn btn-outline-primary btn-lg form_elem" id="login_42">
+                            <button type="submit" class="btn btn-outline-primary btn-lg">Login</button>
+                            <a class="btn btn-outline-primary btn-lg" id="login_42">
                                 <span>Sign in with </span>
                                 <img src="/img/42_logo.svg" alt="42" style="height: 1em; vertical-align: middle;">
                             </a>
+                            <a class="btn btn-outline-primary btn-lg" data-link="/register">Sign Up</a>
                         </div>
                     </form>
-                    <p class="text-center mt-3">
-                        Don't have an account? 
-                        <a class="text-primary" id="sign_up" href="#" data-link="/register">Sign Up</a>
-                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+:root {
+    --primary-color: #16e0bd;
+    --bg-color: #1a1a2e;
+    --text-color: #16e0bd;
+    --secondary-bg: #242444;
+}
+
+.card {
+    background-color: var(--secondary-bg) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(22, 224, 189, 0.1);
+}
+
+.card-body {
+    background-color: var(--secondary-bg);
+}
+
+h2 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.form-control {
+    background-color: var(--secondary-bg);
+    border: 1px solid rgba(22, 224, 189, 0.3);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    background-color: var(--secondary-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+    color: var(--text-color);
+}
+
+.form-control::placeholder {
+    color: rgba(22, 224, 189, 0.5);
+}
+
+/* Override Bootstrap button styles to ensure consistency */
+.btn-outline-primary {
+    border: 1px solid #40E0D0 !important;
+    color: var(--bg-color) !important;
+    background-color: #40E0D0 !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: normal !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: transparent !important;
+    color: #40E0D0 !important;
+    border: 1px solid #40E0D0 !important;
+}
+
+/* Remove any button-specific styling */
+button.btn-outline-primary {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    border: 1px solid #40E0D0 !important;
+    outline: none !important;
+}
+
+/* Focus state should match hover */
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    box-shadow: none !important;
+    background-color: transparent !important;
+    color: #40E0D0 !important;
+    border: 1px solid #40E0D0 !important;
+}
+</style>

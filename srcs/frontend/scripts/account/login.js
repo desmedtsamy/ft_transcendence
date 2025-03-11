@@ -1,5 +1,4 @@
-
-async function LoginForm() {
+async function LoginForm(event) {
 	const username = document.getElementById('username_input').value;
     const password = document.getElementById('password').value;
 	
@@ -24,10 +23,12 @@ async function LoginForm() {
 		} else {
 			const result = await response.json();
 			console.log(result.detail || 'Login failed');
+			alert('Login failed: ' + (result.detail || 'Invalid credentials'));
 		}
 
     } catch (error) {
         console.error('Error:', error);
+        alert('An error occurred during login. Please try again.');
     }
 }
 

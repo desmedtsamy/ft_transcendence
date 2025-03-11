@@ -1,28 +1,71 @@
-
+function getStatusClass(tournament) {
+	if (tournament.is_finished) return 'status-finished';
+	if (tournament.is_started) return 'status-active';
+	return 'status-pending';
+}
 
 export function populateTournaments(tournamentId)
 {
 	fetch('/api/tournament/getTournaments/')
-	.then(response => response.json())
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		return response.json();
+	})
 	.then(data => {
 		const tournamentList = document.getElementById('tournament-list');
 		tournamentList.innerHTML = '';
-		data["tournaments"].forEach(tournament => {
-			const tournamentEl = document.createElement('div');
-			tournamentEl.className = 'tournament-item';
-			tournamentEl.textContent = tournament.name;
-			tournamentEl.textContent += " " + tournament.players_count;
-			tournamentEl.textContent += "/" + tournament.number_of_players;
-			
-			tournamentEl.dataset.tournamentId = tournament.id;
-			tournamentEl.onclick = function() {
-				selectTournament(tournamentEl);
-			}
-			if (tournamentId && tournamentId === tournament.id) {
-				selectTournament(tournamentEl);
-			}
-			tournamentList.appendChild(tournamentEl);
-		});
+		
+		if (data && data.tournaments && Array.isArray(data.tournaments)) {
+			data.tournaments.forEach(tournament => {
+				const tournamentEl = document.createElement('div');
+				tournamentEl.className = 'tournament-item';
+				
+				const infoDiv = document.createElement('div');
+				infoDiv.className = 'tournament-info';
+				
+				const nameDiv = document.createElement('div');
+				nameDiv.className = 'tournament-name';
+				nameDiv.textContent = tournament.name;
+				
+				const playersDiv = document.createElement('div');
+				playersDiv.className = 'tournament-players';
+				playersDiv.textContent = `${tournament.players_count}/${tournament.number_of_players} joueurs`;
+				
+				const statusDiv = document.createElement('div');
+				statusDiv.className = `tournament-status ${getStatusClass(tournament)}`;
+				
+				infoDiv.appendChild(nameDiv);
+				infoDiv.appendChild(playersDiv);
+				tournamentEl.appendChild(infoDiv);
+				tournamentEl.appendChild(statusDiv);
+				
+				tournamentEl.dataset.tournamentId = tournament.id;
+				tournamentEl.onclick = function() {
+					document.querySelectorAll('.tournament-item').forEach(item => {
+						item.classList.remove('selected');
+					});
+					tournamentEl.classList.add('selected');
+					selectTournament(tournamentEl);
+				}
+				
+				if (tournamentId && tournamentId === tournament.id) {
+					tournamentEl.classList.add('selected');
+					selectTournament(tournamentEl);
+				}
+				
+				tournamentList.appendChild(tournamentEl);
+			});
+		} else {
+			console.error('Invalid tournament data format:', data);
+			tournamentList.innerHTML = '<div class="text-center p-3">Aucun tournoi disponible ou vous devez vous connecter.</div>';
+		}
+	})
+	.catch(error => {
+		console.error('Error fetching tournaments:', error);
+		const tournamentList = document.getElementById('tournament-list');
+		tournamentList.innerHTML = '<div class="text-center p-3">Erreur lors du chargement des tournois. Veuillez vous connecter ou réessayer plus tard.</div>';
 	});
 }
 

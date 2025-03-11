@@ -1,32 +1,109 @@
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-8 col-lg-6">
             <div class="card bg-dark border-primary">
-                <div class="card-body">
+                <div class="card-body p-4">
                     <h2 class="text-center mb-4">Créer un compte</h2>
                     <form id="register-form">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Nom d'utilisateur:</label>
-                            <input type="text" class="form-control" id="username" name="username" autocomplete="off" required>
+                        <div class="mb-4">
+                            <label for="username" class="form-label h5">Nom d'utilisateur</label>
+                            <input type="text" class="form-control form-control-lg" id="username" name="username" autocomplete="off" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
-                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                        <div class="mb-4">
+                            <label for="email" class="form-label h5">Email</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" autocomplete="off" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mot de passe:</label>
-                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
+                        <div class="mb-4">
+                            <label for="password" class="form-label h5">Mot de passe</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" autocomplete="off" required>
                         </div>
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-2 mt-5">
                             <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
                         </div>
-                        <p class="text-center mt-3">
-                            Déjà inscrit? 
-                            <a class="text-primary" href="#" data-link="/login">Se connecter</a>
-                        </p>
+                        <div class="text-center mt-4">
+                            <span class="text-light">Déjà inscrit?</span>
+                            <a class="btn btn-outline-primary ms-2" href="#" data-link="/login">Se connecter</a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+:root {
+    --primary-color: #16e0bd;
+    --bg-color: #1a1a2e;
+    --text-color: #ffffff;
+    --secondary-bg: #242444;
+}
+
+.card {
+    background-color: var(--secondary-bg) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(22, 224, 189, 0.1);
+}
+
+.form-control {
+    background-color: var(--secondary-bg);
+    border: 1px solid rgba(22, 224, 189, 0.3);
+    color: var(--text-color);
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    background-color: var(--secondary-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: bold;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(22, 224, 189, 0.3);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(22, 224, 189, 0.3);
+}
+
+h2 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.form-label {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.text-light {
+    color: var(--text-color) !important;
+}
+</style>

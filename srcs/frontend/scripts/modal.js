@@ -1,28 +1,21 @@
 window.createModal = createModal;
 window.closeModal = closeModal;
 
+let modalInstance = null;
+
 export function createModal() {
-	const modalElement = document.getElementById('Modal');
-	if (modalElement) {
-		if (modalElement.bootstrapModal) {
-			// Use Bootstrap's modal method if available
-			modalElement.bootstrapModal.show();
-		} else {
-			// Fallback to direct style manipulation
-			modalElement.style.display = 'flex';
-		}
+	if (!modalInstance) {
+		const modalElement = document.getElementById('Modal');
+		modalInstance = new bootstrap.Modal(modalElement, {
+			backdrop: 'static',
+			keyboard: false
+		});
 	}
+	modalInstance.show();
 }
 
 export function closeModal() {
-	const modalElement = document.getElementById('Modal');
-	if (modalElement) {
-		if (modalElement.bootstrapModal) {
-			// Use Bootstrap's modal method if available
-			modalElement.bootstrapModal.hide();
-		} else {
-			// Fallback to direct style manipulation
-			modalElement.style.display = 'none';
-		}
+	if (modalInstance) {
+		modalInstance.hide();
 	}
 }

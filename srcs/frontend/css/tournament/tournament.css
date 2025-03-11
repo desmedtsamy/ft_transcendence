@@ -1,4 +1,3 @@
-
 :root {
 	--primary-color: #16e0bd;
     --bg-color: #1a1a2e;
@@ -15,72 +14,168 @@
 .container {
 	display: flex;
 }
+.container-fluid {
+    padding: 2rem;
+    padding-top: calc(60px + 2rem); /* Account for fixed navbar height */
+}
 .left-panel {
 	width: 25%;
-	height: 100%;
+	height: calc(100vh - 4rem);
 	display: flex;
 	flex-direction: column;
 }
 .right-panel {
 	width: 75%;
-	height: 100%;
+	height: calc(100vh - 4rem);
 	display: flex;
 	flex-direction: column;
 }
 .tournament-list {
 	overflow-y: auto;
 	width: 100%;
-	height: 20%;
+	height: calc(100% - 60px);  /* Subtract height of create button */
+	padding: 0.5rem;
+	scrollbar-width: thin;
+	scrollbar-color: var(--primary-color) var(--secondary-bg);
+}
+.tournament-list::-webkit-scrollbar {
+	width: 6px;
+}
+.tournament-list::-webkit-scrollbar-track {
+	background: var(--secondary-bg);
+	border-radius: 3px;
+}
+.tournament-list::-webkit-scrollbar-thumb {
+	background-color: var(--primary-color);
+	border-radius: 3px;
 }
 .tournament-item {
-	padding: 15px 20px;
-	border-bottom: 1px solid #ddd;
+	padding: 1rem;
+	margin-bottom: 0.75rem;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
-	font-size: 1.1em;
-	border : 0.05em solid var(--primary-color);
+	justify-content: space-between;
+	font-size: 1rem;
+	border: 1px solid var(--primary-color);
+	border-radius: 8px;
+	background-color: var(--secondary-bg);
+	transition: all 0.2s ease-in-out;
+	position: relative;
+	overflow: hidden;
 }
-
-/* Ajouter des icônes */
 .tournament-item::before {
-	content: "\f0c0"; /* Icone FontAwesome */
-	font-family: "Font Awesome 5 Free"; 
-	font-weight: 900; 
-	margin-right: 10px;
+	content: "\f0c0";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	margin-right: 1rem;
+	font-size: 1.2rem;
+	color: var(--primary-color);
+	transition: all 0.2s ease-in-out;
+}
+.tournament-item .tournament-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	flex: 1;
+}
+.tournament-item .tournament-name {
+	font-weight: bold;
+	color: var(--text-color);
+}
+.tournament-item .tournament-players {
+	font-size: 0.9rem;
+	color: rgba(22, 224, 189, 0.7);
 }
 .tournament-item.selected {
 	background-color: var(--primary-color);
-	color: black;
+	transform: translateX(5px);
+	box-shadow: 0 2px 8px rgba(22, 224, 189, 0.2);
 }
-
+.tournament-item.selected::before,
+.tournament-item.selected .tournament-name,
+.tournament-item.selected .tournament-players {
+	color: var(--bg-color);
+}
 .tournament-item:hover {
 	background-color: var(--primary-color);
-	color: black;
+	transform: translateX(5px);
+	box-shadow: 0 2px 8px rgba(22, 224, 189, 0.2);
+}
+.tournament-item:hover::before,
+.tournament-item:hover .tournament-name,
+.tournament-item:hover .tournament-players {
+	color: var(--bg-color);
 }
 .create-button {
-	padding: 20px;
+	padding: 1rem;
 	background-color: var(--primary-color);
-	color: black;
+	color: var(--bg-color);
 	border: none;
 	cursor: pointer;
-	font-size: 18px;
+	font-size: 1rem;
 	font-weight: bold;
 	text-align: center;
-	border-radius: 5px 5px 0 0;
-	border : 0.05em solid var(--primary-color);
+	border-radius: 8px;
+	margin: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	transition: all 0.2s ease-in-out;
+	border: 1px solid var(--primary-color);
 }
-
+.create-button i {
+	font-size: 1.2rem;
+}
 .create-button:hover {
-	
 	background-color: var(--bg-color);
 	color: var(--primary-color);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(22, 224, 189, 0.2);
 }
-
-#tournament-details {
-	background-color: #f9f9f9;
-	padding: 20px;
-	border-radius: 5px;
+/* Card styling */
+.card {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.card-header {
+	padding: 1rem;
+	background-color: var(--primary-color);
+	color: var(--bg-color);
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+.card-body {
+	padding: 1rem;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+/* Status indicators */
+.tournament-status {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+.status-active {
+	background-color: #2ecc71;
+	box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+}
+.status-pending {
+	background-color: #f1c40f;
+	box-shadow: 0 0 8px rgba(241, 196, 15, 0.5);
+}
+.status-finished {
+	background-color: #e74c3c;
+	box-shadow: 0 0 8px rgba(231, 76, 60, 0.5);
 }
 
 /* Styles for tournament display */
@@ -182,46 +277,90 @@
 	color: black;
 }
 
-/* Style pour la modal */
-.modal {
-    display: none; /* Caché par défaut */
-    position: fixed; 
-    z-index: 1000; /* Au-dessus des autres éléments */
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%;
-    justify-content: center; /* Centrer horizontalement */
-    align-items: center; /* Centrer verticalement */
-    background-color: rgba(0, 0, 0, 0.4); /* Couleur de fond avec opacité */
-    backdrop-filter: blur(5px); /* Appliquer le flou */
-}
-
-/* Contenu de la modal */
+/* Bootstrap Modal Overrides */
 .modal-content {
     background-color: var(--bg-color);
-    padding: 20px;
-    border: 1px solid #888;
-    width: 50%; /* Peut être ajusté */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ajouter une ombre pour l'effet de profondeur */
-    position: relative; /* Pour le positionnement du bouton de fermeture */
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
 }
 
-/* Bouton pour fermer la modal */
-.close-button {
-    color: #aaa;
-    position: absolute; /* Positionner le bouton en haut à droite */
-    top: 10px;
-    right: 10px;
-    font-size: 28px;
+.modal-header {
+    border-bottom: 1px solid rgba(22, 224, 189, 0.2);
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
     font-weight: bold;
-    cursor: pointer;
 }
 
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+/* Form styling */
+.modal .form-label {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.modal .form-control,
+.modal .form-select {
+    background-color: var(--secondary-bg);
+    border: 1px solid rgba(22, 224, 189, 0.3);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus {
+    background-color: var(--secondary-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(22, 224, 189, 0.25);
+    color: var(--text-color);
+}
+
+.modal .form-control::placeholder {
+    color: rgba(22, 224, 189, 0.5);
+}
+
+.modal .form-select option {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.modal .btn-close {
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: all 0.2s ease-in-out;
+    filter: invert(1) brightness(200%);
+}
+
+.modal .btn-close:hover {
+    opacity: 1;
+}
+
+.modal .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+.modal .btn-primary:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 224, 189, 0.2);
+}
+
+/* Add spacing between form groups */
+.modal .mb-3 {
+    margin-bottom: 1.5rem !important;
 }

@@ -1,7 +1,34 @@
+// Add necessary imports and functions
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
+
+function handleUserAuthenticated(user) {
+	window.user = user;
+	document.getElementById('login-link').style.display = 'none';
+	document.getElementById('profile-menu').style.display = 'block';
+	document.getElementById('username').textContent = user.username;
+	if (user.profile_picture) {
+		document.getElementById('profile-pic').src = user.profile_picture;
+	}
+	if (user.is_staff) {
+		document.getElementById('admin-link').style.display = 'block';
+	}
+}
 
 function onLoad() {
 	const form = document.getElementById('register-form');
-	const messageDiv = document.getElementById('message');
 
 	form.addEventListener('submit', async (event) => {
 		event.preventDefault();
@@ -36,4 +63,5 @@ function onLoad() {
 		}
 	});
 }
+
 export { onLoad };
