@@ -33,37 +33,37 @@ function onLoad() {
     // Event listener for WebSocket open event
     socket.addEventListener('open', function () {
         console.log('Connected to WebSocket server.');
-        startGameLoop()
+        startGameLoop();
     });
 
-    // Event listener for WebSocket message event
-    socket.addEventListener('message', function (event) {
-        try {
-            var data = JSON.parse(event.data);
-        } catch (e) {
-            console.error("Failed to parse JSON:", event.data);
-        }
 
+    let lastMessageTime = 0;
+    socket.addEventListener('message', function (event) {
+    const now = performance.now();
+    console.log(`Time since last message: ${(now - lastMessageTime).toFixed(2)}ms`);
+    lastMessageTime = now;
+    try {
+        var data = JSON.parse(event.data);
         // If the server sends the player's role
         if (data.type === 'role') {
             playerRole = data.role;  // Store the player's role ('left' or 'right')
-            if (playerRole === 'left')
+            if (playerRole === 'left'){
+                playerPosition.x = 50;
+                opponentPosition.x = 750;
                 playerId = 1;
-            if (playerRole === 'right')
+            }
+            if (playerRole === 'right'){
+                playerPosition.x = 750;
+                opponentPosition.x = 50;
                 playerId = 2;
-            console.log("My role is: " + playerRole)
+            }
+            console.log("My role is: " + playerRole);
         }
-
-        // if (data.active_player) {
-        //     active_player = data.active_player
-        //     console.log(`You are the ${playerRole} player.`);
-        //     console.log(`number of active player: ${data.active_player}` )
-        // }
-
+    
         if (data.countdown !== undefined) {
-            countdown = data.countdown
+            countdown = data.countdown;
         }
-
+    
         // Handle the game state update
         if (data.type === 'gamestate'){
             if (data.scores) {
@@ -72,11 +72,9 @@ function onLoad() {
             }
             if (data.players) {
                 if (playerRole === 'left') {
-                    playerPosition = data.players[1] || playerPosition;
-                    opponentPosition = data.players[2] || opponentPosition;
+                    opponentPosition.y = data.players[2].y || opponentPosition.y;
                 } else if (playerRole === 'right') {
-                    playerPosition = data.players[2] || playerPosition;
-                    opponentPosition = data.players[1] || opponentPosition;
+                    opponentPosition.y = data.players[1].y || opponentPosition.y;
                 }
             }
             if (data.ball) {
@@ -87,19 +85,24 @@ function onLoad() {
                 gameFinished = true
                 if (data.winner === window.user.id){
                     //winning screen
-                    console.log("u won wp" + data.winner + " - " + window.user.id)
+                    console.log("u won wp" + data.winner + " - " + window.user.id);
                 }
                 else {
                     //losing screen
-                    console.log("u lost" + data.winner + " - " + window.user.id)
+                    console.log("u lost" + data.winner + " - " + window.user.id);
                 }
                 //close websocket
-                socket.close()
+                socket.close();
                 //stop rendering
-
+    
                 //create a go home button
             }
         }
+        
+    } catch (e) {
+        console.error("Failed to parse JSON:", event.data);
+    }
+
     });
 
     // Event listener for WebSocket close event
@@ -151,10 +154,11 @@ function startGameLoop(){
         draw();
         requestAnimationFrame(gameLoop);
     }
-    if (gameFinished)
-        return
+    // if (gameFinished)
+    //     return
     requestAnimationFrame(gameLoop);
 }
+
 
 function update(deltaTime) {
     if (keysPressed.ArrowUp) velocity = -SPEED;
@@ -164,7 +168,7 @@ function update(deltaTime) {
     playerPosition.y += velocity * deltaTime;
     if (playerPosition.y < 0) playerPosition.y = 0;
     if (playerPosition.y > 600 - 100) playerPosition.y = 600 - 100;
-
+    
     const now = performance.now();
     if (now - lastSent >= SEND_INTERVAL) {
         sendPlayerPosition();
@@ -173,13 +177,14 @@ function update(deltaTime) {
 }
 
 // Send player position to server whenever it changes
+let lastY = playerPosition.y;
 function sendPlayerPosition() {
-    const message = {
-        type: 'move',
-        position: playerPosition
-    };
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
+    if (playerPosition.y !== lastY) {
+        const message = { type: 'move', position: playerPosition };
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(message));
+        }
+        lastY = playerPosition.y;
     }
 }
 
