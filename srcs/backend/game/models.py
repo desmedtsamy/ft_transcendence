@@ -41,7 +41,8 @@ class Match(models.Model):
 			self.winner.save()
 		self.status = 'finished'
 		self.save()
-		if self.tournament_match:
+		
+		if hasattr(self, 'tournament_match') and self.tournament_match:
 			self.tournament_match.end(winner)
 	def set_player(self, player):
 		if self.player1 == None:
@@ -57,3 +58,5 @@ class Match(models.Model):
 			self.player2 = None
 		self.save()
 
+	def is_ready(self):
+		return self.player1 != None and self.player2 != None

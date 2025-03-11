@@ -15,6 +15,7 @@ canvas_height = 600
 paddle_height = 100
 paddle_width = 10
 ball_size = 10
+MAXSCORE = 5
 
 # game
 class Game():
@@ -24,13 +25,14 @@ class Game():
 		self.match = match
 		self.p1_id = match.player1.id
 		self.p2_id = match.player2.id
-		self.state = {
+		self.state = { 'type': 'gamestate',
 			'players': {
 				1: {'x': 50, 'y': 250},  # left player
 				2: {'x': 750, 'y': 250}  # right player
 			},
 			'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
-			'scores': {1: 0, 2: 0}
+			'scores': {1: 0, 2: 0},
+			'winner': 0
 		}
 
 
@@ -139,10 +141,8 @@ class Consumer(WebsocketConsumer):
 			if  0 <= position['y'] <= canvas_height - paddle_height:
 				if self.role == "left":
 					self.game.state['players'][1]['y'] = position['y']
-					print("updating player 1")
 				elif self.role == "right":
 					self.game.state['players'][2]['y'] = position['y']
-					print("updating player 2")
 		else:
 			print("Position data missing")
 
@@ -218,11 +218,15 @@ class Consumer(WebsocketConsumer):
 		def game_loop():
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(self.game.player_list) == 2:
-				if self.game.state['scores'][1] >= 2 or self.game.state['scores'][2] >= 2:
+				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:
 					print("Game over")
-					if self.game.state['scores'][1] >= 2:
+					if self.game.state['scores'][1] >= MAXSCORE:
+						self.game.state['winner'] = self.game.p1_id
+						self.send_state()
 						self.game.match.end(self.game.match.player1)
 					else:
+						self.game.state['winner'] = self.game.p2_id
+						self.send_state()
 						self.game.match.end(self.game.match.player2)
 					return
 				self.update_game()

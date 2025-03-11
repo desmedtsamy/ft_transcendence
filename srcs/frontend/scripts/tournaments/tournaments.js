@@ -25,14 +25,12 @@ async function handleCreateTournament(event) {
 		
         if (response.ok) {
 			const createdTournament = await response.json();
-            console.log('Tournoi créé :', createdTournament);
 			closeModal();
             populateTournaments(createdTournament.id);
             alert('Tournoi créé avec succès !');
         } else {
 			const errorData = await response.json();
             alert('Erreur lors de la création du tournoi : ' + errorData.error);
-        	console.log('Erreur lors de la création du tournoi : ' + errorData.error);
         }
     } catch (error) {
 		console.error('Erreur lors de la requête :', error);

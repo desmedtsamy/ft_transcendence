@@ -9,7 +9,6 @@ function searchUsers() {
 		})
 		.then(data => {
 			renderSearchResults(data);
-			console.log(data);
 		})
 		.catch(error => {
 			console.error('Erreur AJAX :', error);
@@ -79,13 +78,13 @@ function createActionButton(user) {
     } else if (user.friend_request_received) {
         const acceptButton = document.createElement('button');
         acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
-        acceptButton.dataset.action = `/api/account/friend-requests/${user.id}/accept/`; // URL pour accepter
-        acceptButton.textContent = 'Accepter';
+        acceptButton.dataset.action = `/api/account/friend-requests/${user.id}/accept/`;
+        acceptButton.innerHTML = '<i class="fas fa-user-check"></i>';
 
         const rejectButton = document.createElement('button');
         rejectButton.classList.add('button', 'btn-danger', 'reject-friend-request');
-        rejectButton.dataset.action = `/api/account/friend-requests/${user.id}/reject/`; // URL pour refuser
-        rejectButton.textContent = 'Refuser';
+        rejectButton.dataset.action = `/api/account/friend-requests/${user.id}/reject/`;
+        rejectButton.innerHTML = '<i class="fas fa-user-times"></i>';
 
         acceptButton.addEventListener('click', (event) => {
             event.preventDefault();
@@ -129,8 +128,8 @@ async function handleFriendAction(actionUrl, userId) {
 		});
 		if (response.ok) {
 			const data = await response.json();
-			console.log(data)
 			alert(data.success, "success");
+			updateFriends();
 			searchUsers(); 
 		} else {
 			const errorData = await response.json();

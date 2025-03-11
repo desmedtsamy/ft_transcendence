@@ -11,10 +11,8 @@ var scores = [0,0];
 
 function onLoad() {
 	if (window.user === undefined) {
-		console.log('User not authenticated');
 		return;
 	}
-    console.log("La page charge!");
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
 

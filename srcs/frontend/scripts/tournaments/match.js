@@ -49,7 +49,6 @@ function selectTournament(element) {
 		window.activeTournament = data;
 		document.getElementById('tournament_name').textContent = data.name;
 		renderTournament(data);
-		console.log(data);
 	});	
 }	
 

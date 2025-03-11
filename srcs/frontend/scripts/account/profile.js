@@ -1,6 +1,7 @@
 const selectedGame = localStorage.getItem('selectedGame');
 let scoreChart; 
 let userData = null;
+
 async function fetchProfileData(username) {
 	try {
 		const response = await fetch(`/api/account/profile/${username}/`);
@@ -19,11 +20,36 @@ async function fetchProfileData(username) {
 
 function set1v1Button(user) {
 
-	if (user.is_online) {
-		const matchButton = document.createElement('button');
-		matchButton.textContent = 'Proposer un 1v1';
-		matchButton.addEventListener('click', createMatch);
-		document.getElementById('1v1').appendChild(matchButton);
+	if (user.is_online && user.id !== window.user.id) {
+		const button = document.createElement('button');
+		button.classList.add('button', 'btn-primary', 'fight');
+		button.innerHTML = '<i class="fas fa-gamepad"></i> proposer un vs';
+		button.title = 'Faire une partie';
+		button.addEventListener('click', (event) => {
+			event.preventDefault();
+			handleFightAction(user.id);
+		});
+		document.getElementById('1v1').appendChild(button);
+	}
+}
+async function handleFightAction(userId) {
+	try {
+		const response = await fetch(`/api/game/create_match/`, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': getCookie('csrftoken'),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				player1: window.user.id,
+				player2: userId
+			}),
+		});
+		if (response.ok) {
+			const data = await response.json();
+		}
+	} catch (error) {
+		console.error('Erreur AJAX :', error);
 	}
 }
 
@@ -101,7 +127,6 @@ async function handleFriendAction(actionUrl, userId) {
 		});
 		if (response.ok) {
 			const data = await response.json();
-			console.log(data)
 			alert(data.success, "success");
 			searchUsers(); 
 		} else {
@@ -136,7 +161,6 @@ async function fetchMatchesData(userData) {
 			body: JSON.stringify({ selectedGame })
 		}); 
         if (response.ok) {
-			console.log(response)
 			const matchesData = await response.json();
 			renderRecentMatches(matchesData);
             renderScoreChart(matchesData, userData); 
@@ -156,64 +180,66 @@ function renderRecentMatches(matches) {
 		recentMatchesList.innerHTML = '<p>Aucun match récent.</p>';
         return;
     }
-
     matches.forEach(match => {
-        const player1 = match.player1;
-        const player2 = match.player2;
-
+        let player1 = match.player1;
+        let player2 = match.player2;
+		if (player1 == null) {
+			player1 = {username: 'anonyme', id: null};
+		}
+		if (player2 == null) {
+			player2 = {username: 'anonyme', id: null};
+		}
+		if (player2.id == user.id) {
+			player1 = match.player2;
+			player2 = match.player1;
+		}
         
         const listItem = document.createElement('li');
         listItem.classList.add('match-item');
 
-        // Date du match
-        const matchDate = new Date(match.created_at);
-        const formattedDate = matchDate.toLocaleString();
-        const dateDiv = document.createElement('div');
-        dateDiv.classList.add('match-date');
-        dateDiv.textContent = formattedDate;
-        listItem.appendChild(dateDiv);
+        // Joueurs et scores dans une seule ligne
+        const matchInfoDiv = document.createElement('div');
+        matchInfoDiv.classList.add('match-info');
 
-        // Joueurs et scores
-        const playersDiv = document.createElement('div');
-        playersDiv.classList.add('match-players');
-
-        const player1Div = document.createElement('div');
-        player1Div.classList.add('player');
-
-        const player1Link = document.createElement('a');
-		player1Link.href = `#`;
-		player1Link.dataset.link = `/profile/${player1.id}`;
-        player1Link.textContent = player1.username;
-        player1Div.appendChild(player1Link);
-
-        const scoreChangeSpan1 = document.createElement('span');
-        scoreChangeSpan1.classList.add('score-change');
-        player1Div.appendChild(scoreChangeSpan1);
-
-        playersDiv.appendChild(player1Div);
-
-        const versusDiv = document.createElement('div');
-        versusDiv.classList.add('versus');
-        versusDiv.textContent = 'VS';
-        playersDiv.appendChild(versusDiv);
-
-        const player2Div = document.createElement('div');
-        player2Div.classList.add('player');
-
-        const player2Link = document.createElement('a');
-		player2Link.href = `#`;
-		player2Link.dataset.link = `/profile/${player2.id}`;
-        player2Link.textContent = player2.username;
-        player2Div.appendChild(player2Link);
-
-        const scoreChangeSpan2 = document.createElement('span');
-        scoreChangeSpan2.classList.add('score-change');
+        // Joueur 1
+        const player1Span = document.createElement('span');
+        player1Span.classList.add('player-name');
         
-        player2Div.appendChild(scoreChangeSpan2);
-
-        playersDiv.appendChild(player2Div);
-
-        listItem.appendChild(playersDiv);
+		player1Span.textContent = player1.username;
+		if (match.winner && player1.id == match.winner.id) {
+			player1Span.classList.add('winner');
+		} else {
+			player1Span.classList.add('loser');
+		}
+		matchInfoDiv.appendChild(player1Span);
+        // Versus
+        const versusSpan = document.createElement('span');
+        versusSpan.classList.add('versus');
+        versusSpan.textContent = ' vs ';
+        matchInfoDiv.appendChild(versusSpan);
+        
+        // Joueur 2
+        const player2Span = document.createElement('span');
+        player2Span.classList.add('player-name');
+        
+        if(player2.id) {
+			if (match.winner && player2.id == match.winner.id) {
+				player2Span.classList.add('winner');
+			} else {
+				player2Span.classList.add('loser');
+			}
+            const player2Link = document.createElement('a');
+            player2Link.href = '#';
+            player2Link.dataset.link = `/profile/${player2.id}`;
+            player2Link.textContent = player2.username;
+            player2Span.appendChild(player2Link);
+        } else {
+            player2Span.textContent = player2.username;
+        }
+        matchInfoDiv.appendChild(player2Span);
+        
+        
+        listItem.appendChild(matchInfoDiv);
         recentMatchesList.appendChild(listItem);
     });
 }

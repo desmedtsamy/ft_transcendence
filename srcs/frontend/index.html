@@ -25,7 +25,6 @@
 				<li><a class="header_link" href="#" data-link="/search"><i class="fa fa-search" aria-hidden="true"></i> rechercher</a></li>
 				<li><a class="header_link" href="#" data-link="/tournaments"><i class="fa fa-users"></i> Tournois</a></li>
 				<li><a class="header_link" href="#" data-link="/friends"><i class="fa fa-user-group"></i> Amis</a></li>
-				<li class="header_link" id="admin-link"  style="display:none;"> <a href="/admin/">admin</a> </li>
 			</ul>
 			<select id="gameSelector">
 				<option value="pong">Pong</option>
@@ -40,6 +39,7 @@
 						<span class="username" id="username"></span>
 						<img src="" alt="Profile" class="profile-pic" id="profile-pic">
 						<div class="dropdown-content">
+							<a href="/admin/" id="admin-link"  style="display:none;"> <i class="fas fa-user-shield"></i> admin</a>
 							<a href="#" data-link="/profil" id="profile-link"><i class="fa fa-user" aria-hidden="true"></i> profil</a>
 							<a href="#" data-link="/settings"><i class="fas fa-cog"></i> Réglages</a>
 							<a href="#" onclick="logout(); return false;" ><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>

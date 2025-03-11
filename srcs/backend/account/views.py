@@ -35,7 +35,8 @@ class CurrentUserViewAPI(APIView):
 			return Response({'error': 'User object is None'}, status=status.HTTP_404_NOT_FOUND)
 
 		serializer = UserSerializer(user)
-		return Response({'is_authenticated': True, 'user': serializer.data}, status=status.HTTP_200_OK)
+		friends = UserSerializer(user.get_friends(), many=True)
+		return Response({'is_authenticated': True, 'user': serializer.data, 'friends': friends.data}, status=status.HTTP_200_OK)
 
 class LoginViewAPI(APIView):
 	permission_classes = [AllowAny]
@@ -252,7 +253,7 @@ class UserFriendsListView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 
 	def get(self, request, *args, **kwargs):
-		user_id = self.kwargs['user_id']
+		user_id = request.user.id
 		try:
 			user = User.objects.get(id=user_id)
 			friends = user.get_friends()
@@ -276,7 +277,6 @@ class UserMatchesListView(generics.ListAPIView):
 		
 		matches = Match.objects.filter(Q(player1=user) | Q(player2=user), game_type=selected_game).order_by('-created_at')[:10]
 		
-		# Sérialiser les objets Match avant de les retourner
 		serializer = self.get_serializer(matches, many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	

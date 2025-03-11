@@ -7,7 +7,16 @@ var playerRole = '';  //Variable to store the player's role ('left' or 'right')
 var playerId = 0;
 var scores = [0,0];
 var countdown = 0;
+var gameFinished = false;
+
 // var active_player = 0;
+
+let keysPressed = { ArrowUp: false, ArrowDown: false };
+let velocity = 0; // Vitesse du joueur
+const SPEED = 300; // Pixels par seconde
+let lastSent = 0; // Pour le débouncing
+const SEND_INTERVAL = 16; // ms (~60 FPS)
+
 
 function onLoad() {
 	if (window.user === undefined) {
@@ -24,6 +33,7 @@ function onLoad() {
     // Event listener for WebSocket open event
     socket.addEventListener('open', function () {
         console.log('Connected to WebSocket server.');
+        startGameLoop()
     });
 
     // Event listener for WebSocket message event
@@ -39,9 +49,11 @@ function onLoad() {
             playerRole = data.role;  // Store the player's role ('left' or 'right')
             if (playerRole === 'left')
                 playerId = 1;
-            if (playerRole === 'right')
-                playerId = 2;
-            console.log("My role is: " + playerRole)
+            if (playerRole === 'right'){
+				playerPosition.x = 750
+				playerId = 2;
+			}
+			console.log("My role is: " + playerRole)
         }
 
         // if (data.active_player) {
@@ -55,23 +67,41 @@ function onLoad() {
         }
 
         // Handle the game state update
-        if (data.scores) {
-            scores[0] = data.scores[1];
-            scores[1] = data.scores[2];
-        }
-        if (data.players) {
-            if (playerRole === 'left') {
-                playerPosition = data.players[1] || playerPosition;
-                opponentPosition = data.players[2] || opponentPosition;
-            } else if (playerRole === 'right') {
-                playerPosition = data.players[2] || playerPosition;
-                opponentPosition = data.players[1] || opponentPosition;
+        if (data.type === 'gamestate'){
+            if (data.scores) {
+                scores[0] = data.scores[1];
+                scores[1] = data.scores[2];
+            }
+            if (data.players) {
+                if (playerRole === 'left') {
+                    //  playerPosition = data.players[1] || playerPosition;
+                    opponentPosition.y = data.players[2]['y'] || opponentPosition.y;
+                } else if (playerRole === 'right') {
+                    // playerPosition = data.players[2] || playerPosition;
+                    opponentPosition.y = data.players[1]['y'] || opponentPosition.y;
+                }
+            }
+            if (data.ball) {
+                ballPosition = data.ball;
+            }
+            
+            if (data.winner !== 0){
+                gameFinished = true
+                if (data.winner === window.user.id){
+                    //winning screen
+                    console.log("u won wp" + data.winner + " - " + window.user.id)
+                }
+                else {
+                    //losing screen
+                    console.log("u lost" + data.winner + " - " + window.user.id)
+                }
+                //close websocket
+                socket.close()
+                //stop rendering
+
+                //create a go home button
             }
         }
-        if (data.ball) {
-            ballPosition = data.ball;
-        }
-        draw();
     });
 
     // Event listener for WebSocket close event
@@ -102,11 +132,46 @@ function onLoad() {
 
     // Event listener for player movement
     window.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowUp') playerPosition.y -= 10;
-        if (e.key === 'ArrowDown') playerPosition.y += 10;
-        if (0 <= playerPosition.y && playerPosition.y <= 600 - 100)
-            sendPlayerPosition();
+        if (e.key === 'ArrowUp') keysPressed.ArrowUp = true;
+        if (e.key === 'ArrowDown') keysPressed.ArrowDown = true;
+        this.event.preventDefault()
     });
+    
+    window.addEventListener('keyup', function (e) {
+        if (e.key === 'ArrowUp') keysPressed.ArrowUp = false;
+        if (e.key === 'ArrowDown') keysPressed.ArrowDown = false;
+    });
+
+}
+function startGameLoop(){
+    let lastTime = 0;
+    function gameLoop(timestamp) {
+        const deltaTime = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        update(deltaTime);
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+    if (gameFinished)
+        return
+    requestAnimationFrame(gameLoop);
+}
+
+function update(deltaTime) {
+    if (keysPressed.ArrowUp) velocity = -SPEED;
+    else if (keysPressed.ArrowDown) velocity = SPEED;
+    else velocity = 0;
+    
+    playerPosition.y += velocity * deltaTime;
+    if (playerPosition.y < 0) playerPosition.y = 0;
+    if (playerPosition.y > 600 - 100) playerPosition.y = 600 - 100;
+
+    const now = performance.now();
+    if (now - lastSent >= SEND_INTERVAL) {
+        sendPlayerPosition();
+        lastSent = now;
+    }
 }
 
 // Send player position to server whenever it changes
@@ -115,7 +180,9 @@ function sendPlayerPosition() {
         type: 'move',
         position: playerPosition
     };
-    socket.send(JSON.stringify(message));
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+    }
 }
 
 // Function to draw the game state (player and ball positions)

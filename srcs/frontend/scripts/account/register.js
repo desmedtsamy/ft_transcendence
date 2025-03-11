@@ -28,7 +28,6 @@ function onLoad() {
 				navigateTo('/');
 			} else {
 				const errorData = await response.json();
-				console.log(errorData);
 				if (errorData.non_field_errors) {
 					alert(errorData.non_field_errors.join('\n'), 'error');
 				} else {

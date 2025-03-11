@@ -29,7 +29,6 @@ async function getClientAPI(){
 
 function onLoad() {
 	if (window.user === undefined) {
-		console.log('User not authenticated');
 	}
 	else {
 		document.getElementById('username_input').value = window.user.username;

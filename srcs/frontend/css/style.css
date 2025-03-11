@@ -15,7 +15,6 @@ html, body {
 	justify-content: center;
 	align-items: center;
 	margin: 0;
-	height: 100vh;
 	width: 100%;
 	flex-direction: column;
 }
@@ -103,6 +102,9 @@ nav ul li a {
     position: relative;
     display: flex;
     align-items: center;
+
+	padding-bottom: 0.5em;
+	cursor: pointer;
 }
 
 .avatar_xl {
@@ -125,7 +127,7 @@ nav ul li a {
     display: none;
     position: absolute;
     right: 0;
-	bottom: -6.2em;
+	top: 1.5em;
     min-width: 160px;
     box-shadow: 0 8px 16px rgba(22, 224, 189, 0.2);
     z-index: 1;

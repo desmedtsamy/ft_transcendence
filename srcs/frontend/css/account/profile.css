@@ -1,32 +1,53 @@
 .match-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px;
+    padding: 10px 15px;
     border-bottom: 1px solid #343a40;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
 }
 
-.match-date {
-    font-size: 0.8em;
-    color: #6c757d; /* Gris clair */
+.match-item:hover {
+    background-color: rgba(52, 58, 64, 0.1);
 }
 
-.match-players {
+.match-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    width: 100%;
 }
 
-.player {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.player-name {
+    font-weight: 500;
+}
+
+.player-name a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.player-name a:hover {
+    text-decoration: underline;
 }
 
 .versus {
+    margin: 0 10px;
+    font-weight: bold;
+    color: #6c757d;
+}
+
+.winner a {
+    color: #ffd700; /* Couleur dorée pour le gagnant */
     font-weight: bold;
 }
 
-.score-change {
-    font-size: 0.9em;
+.loser a {
+    color: #dc3545; /* Couleur rouge pour le perdant */
+}
+
+/* Enlever les puces de la liste */
+#recent-matches {
+    padding-left: 0;
+	list-style-type: none;
 }

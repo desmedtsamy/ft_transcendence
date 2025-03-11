@@ -5,12 +5,10 @@ function setNotification() {
 
 	var id = 0;
 	if (window.user === undefined) {
-		console.log('User not authenticated');
 		return;
 	} else {
 		id = window.user.id;
 	}
-	console.log("User ID: [" + id + "]");
 
 	socket = new WebSocket('ws://localhost:8042/ws/notification/' + id);
 
@@ -29,11 +27,8 @@ function setNotification() {
 	// Écoutez l'événement 'message' qui est déclenché lorsque des données sont reçues du serveur.
 	socket.addEventListener('message', function (event) {
 		const data = JSON.parse(event.data);
-		console.log('Message from server: ', data);
 		if (data.message == "match_request")
 		{
-			console.log(data)
-			console.log("match_request " + data.name + " " + window.user.id + " " + data.match_id);
 			matchRequest(data.name, window.user.id, data.match_id);
 		}
 		else if (data.message == "match_start")
@@ -41,7 +36,7 @@ function setNotification() {
 				navigateTo( '/pong/' + data.match_id);
 			else
 				navigateTo( '/tictactoe/' + data.match_id);
-	alert(data.message);
+	// alert(data.message);
 });
 
 socket.onerror = function (error) {
@@ -161,7 +156,6 @@ function declineMatch(id, match_id) {
 }
 function sendNotification(client_id, match_id,  message) {
 	alert("message envoyé");
-	console.log ("client_id: " + client_id + " match_id: " + match_id + " message: " + message);
 	socket.send(JSON.stringify({
 		client_id: client_id,
 		match_id: match_id,

@@ -14,8 +14,6 @@ async function logout() {
 			alert("Vous êtes déconnecté");
 			handleUserNotAuthenticated();
 			navigateTo('/');
-		} else {
-			console.log('Logout failed');
 		}
 
     } catch (error) {
@@ -24,9 +22,10 @@ async function logout() {
 	window.user = null;
 }
 
-window.handleUserAuthenticated = function(user) {
+window.handleUserAuthenticated = function(user, friends) {
 
 	window.user = user;
+	window.friends = friends;
     const loginLink = document.getElementById('login-link');
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');
@@ -47,7 +46,6 @@ window.handleUserAuthenticated = function(user) {
 		adminLink.style.display = 'none';
 	}
 	const gameSelector = document.getElementById('gameSelector');
-	console.log("search for gameSelector")
 	if (gameSelector) {
 		gameSelector.value = user.selected_game;
 		window.changeCSS(user.selected_game);
@@ -74,11 +72,8 @@ async function setSelectedGame(game) {
         });
         if (response.ok) {
             window.location.reload();
-        } else {
-            console.log('Failed to update game selection');
         }
     } else {
-        // For non-authenticated users, just reload to apply changes
         window.location.reload();
     }
 }
@@ -92,7 +87,6 @@ window.handleUserNotAuthenticated = function() {
     const gameSelector = document.getElementById('gameSelector');
     
     if (gameSelector) {
-        // Get the saved game from localStorage, default to 'pong' if not found
         const savedGame = localStorage.getItem('selectedGame') || 'pong';
         gameSelector.value = savedGame;
         window.selected_game = savedGame;

@@ -26,12 +26,17 @@ function displayScoreboard(data) {
         const avatarContainer = document.createElement('div');
 		avatarContainer.classList.add('avatar-container');
         avatarContainer.appendChild(avatar);
-        const statusSpan = document.createElement('span');
-		statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
-		const statusIcon = document.createElement('i');
-		statusSpan.appendChild(statusIcon);
-		avatarContainer.appendChild(statusSpan);
-        playerInfoContainer.appendChild(avatarContainer);
+
+		if (window.friends.some(friend => friend.id === user.id))
+		{
+			const statusSpan = document.createElement('span');
+			statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
+			const statusIcon = document.createElement('i');
+			statusSpan.appendChild(statusIcon);
+			avatarContainer.appendChild(statusSpan);
+		}
+		
+		playerInfoContainer.appendChild(avatarContainer);
         const usernameSpan = document.createElement('span');
         usernameSpan.textContent = user.username;
         playerInfoContainer.appendChild(usernameSpan);

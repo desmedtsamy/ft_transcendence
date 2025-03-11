@@ -43,12 +43,19 @@ class Round(models.Model):
 class TournamentMatch(models.Model):
 	round = models.ForeignKey(Round, on_delete=models.CASCADE,default=1, related_name='tournament_matches')
 	next_match = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='previous_matches')
+	winner_place = models.PositiveIntegerField(default=0)
 	match = models.OneToOneField("game.Match", on_delete=models.CASCADE, null=True, blank=True, related_name='tournament_match')
 
 	def end(self, winner):
 		if self.next_match:
-			self.next_match.match.set_player(winner)
-			self.next_match.match.start()
+			print(self.match.id, self.winner_place)
+			if self.winner_place == 1:
+				self.next_match.match.player1 = winner
+			else:
+				self.next_match.match.player2 = winner
+			self.next_match.match.save()
+			if self.next_match.match.is_ready():
+				self.next_match.match.start()
 		else:
 			tournament = self.round.tournament
 			tournament.winner = winner

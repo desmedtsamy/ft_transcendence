@@ -16,11 +16,10 @@ async function fetchUserInfo() {
 		if (response.ok) {
 			const data = await response.json();
 			if (data.is_authenticated) {
-				handleUserAuthenticated(data.user);
+				handleUserAuthenticated(data.user, data.friends);
 				setNotification();
 			} else {
 				handleUserNotAuthenticated();
-				console.log('User is not authenticated');
 			}
 		} else {
 			console.error('Failed to fetch user information');
@@ -151,7 +150,26 @@ async function updateLastActivity() {
 	} catch (error) {
 		console.error('Error updating activity:', error);
 	}
-	console.log("activity updated");
+}
+
+window.updateFriends = async function() {
+	try {
+		const response = await fetch('/api/account/friends/', {
+			method: 'GET',
+			credentials: 'include',
+		});
+		
+		if (!response.ok) {
+			throw new Error('Erreur lors de la requête : ' + response.status);
+		}
+		
+		const data = await response.json();
+		window.friends = data;
+		return data;
+	} catch (error) {
+		console.error('Erreur lors de la mise à jour des amis:', error);
+		return [];
+	}
 }
 
 setInterval(updateLastActivity, 60000);

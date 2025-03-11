@@ -27,8 +27,8 @@ function renderFriendRequests(data) {
 		listItem.dataset.userId = user.id;
 
 		const link = document.createElement('a');
-        link.href = `#`;
-        link.dataset.link = `/profile/${user.username}`;
+		link.href = `#`;
+		link.dataset.link = `/profile/${user.username}`;
 
 		const avatarContainer = document.createElement('div');
 		avatarContainer.classList.add('avatar-container');
@@ -80,7 +80,7 @@ function createRejectFriendButton(user) {
 		event.preventDefault();
 		handleRejectFriendRequest(user.id);
 		alert('demande d\'ami rejetée');
-		
+
 	});
 	return button;
 }
@@ -115,24 +115,6 @@ function handleRejectFriendRequest(userId) {
 	});
 }
 
-
-
-function getFriends() {
-	fetch('/api/account/friends/' + window.user.id) 
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Erreur lors de la requête : ' + response.status);
-			}
-			return response.json();
-		})
-		.then(data => {
-			renderSearchResults(data);
-		})
-		.catch(error => {
-			console.error('Erreur AJAX :', error);
-		});
-}
-
 function renderSearchResults(users) {
 	const searchResults = document.getElementById('search-results');
 	searchResults.innerHTML = '';
@@ -149,8 +131,8 @@ function renderSearchResults(users) {
 		listItem.dataset.userId = user.id;
 
 		const link = document.createElement('a');
-        link.href = `#`;
-        link.dataset.link = `/profile/${user.username}`;
+		link.href = `#`;
+		link.dataset.link = `/profile/${user.username}`;
 
 		const avatarContainer = document.createElement('div');
 		avatarContainer.classList.add('avatar-container');
@@ -219,10 +201,10 @@ async function handleFightAction(userId) {
 }
 
 function createRemoveFriendButton(user) {
-    const button = document.createElement('button');
+	const button = document.createElement('button');
 
 	button.classList.add('button', 'btn-danger', 'remove-friend');
-	button.dataset.action = `/api/account/friend-requests/${user.id}/remove/`; 
+	button.dataset.action = `/api/account/friend-requests/${user.id}/remove/`;
 	button.innerHTML = '<i class="fas fa-user-times"></i>';
 	button.title = 'Retirer de mes amis';
 	button.addEventListener('click', (event) => {
@@ -230,7 +212,7 @@ function createRemoveFriendButton(user) {
 		handleRemoveFriend(user.id);
 		alert('ami retiré');
 	});
-    return button; 
+	return button;
 }
 
 function handleRemoveFriend(userId) {
@@ -250,6 +232,8 @@ function handleRemoveFriend(userId) {
 
 function onLoad() {
 	getFriendRequests();
-	getFriends();
+	window.updateFriends().then(() => {
+		renderSearchResults(window.friends);
+	});
 }
-export {onLoad};
+export { onLoad };

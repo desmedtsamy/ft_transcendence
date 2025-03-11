@@ -143,6 +143,10 @@ def create_tournament(name, number_of_players, creator):
 						previous_match_2 = previous_round_matches[match_index * 2 + 1]
 						previous_match_1.next_match = tournament_match
 						previous_match_2.next_match = tournament_match
+						previous_match_1.winner_place = 1
+						previous_match_2.winner_place = 2
+						previous_match_1.save()
+						previous_match_2.save()
 
 					# Sauvegarder tous les matchs des rounds précédents avec les next_matchs assignés
 					TournamentMatch.objects.bulk_update(previous_round_matches, ['next_match'])
