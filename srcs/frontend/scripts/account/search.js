@@ -43,12 +43,13 @@ function renderSearchResults(users) {
 		avatarImg.src = user.avatar;
 		avatarImg.alt = `Avatar de ${user.username}`;
 		avatarContainer.appendChild(avatarImg);
-
-		const statusSpan = document.createElement('span');
-		statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
-		const statusIcon = document.createElement('i');
-		statusSpan.appendChild(statusIcon);
-		avatarContainer.appendChild(statusSpan);
+		if (user.is_friend) {
+			const statusSpan = document.createElement('span');
+			statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
+			const statusIcon = document.createElement('i');
+			statusSpan.appendChild(statusIcon);
+			avatarContainer.appendChild(statusSpan);
+		}
 
 		link.appendChild(avatarContainer);
 		link.appendChild(document.createTextNode(user.username));
