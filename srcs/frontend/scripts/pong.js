@@ -10,8 +10,6 @@ var countdown = 0;
 var gameFinished = false;
 var win = false;
 
-// var active_player = 0;
-
 let keysPressed = { ArrowUp: false, ArrowDown: false };
 let velocity = 0; // Vitesse du joueur
 const SPEED = 300; // Pixels par seconde
@@ -96,11 +94,6 @@ function onLoad() {
                     //losing screen
                     console.log("u lost" + data.winner + " - " + window.user.id);
                 }
-                // <a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i> Accueil</a>
-                //create a go home button
-                // const button = document.createElement('a');
-                // const div = document.getElementById('button-wrapper');
-                // div.appendChild(button);
                 document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
             }
         }
@@ -225,17 +218,11 @@ function draw() {
     ctx.fillStyle = 'yellow';
     ctx.font = "20px Arial";
     ctx.fillText(scores[0] + "  |  " + scores[1], canvas.width/2 -25, 20);
-
-    // if (active_player === 1) {
-    //     ctx.fillStyle = 'white';
-    //     ctx.font = "30px Arial";
-    //     ctx.fillText("Waiting for another player", canvas.width/2 -180, canvas.height/3);
-    // }
 }
 
 function drawEndScreen(win) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "150px Roboto";
+    ctx.font = "150px Audiowide";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     if (win) {

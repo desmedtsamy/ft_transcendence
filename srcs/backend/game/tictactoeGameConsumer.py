@@ -16,12 +16,7 @@ paddle_width = 10
 ball_size = 10
 
 game_state = {
-	'players': {
-		1: {'x': 50, 'y': 250},  # left player
-		2: {'x': 750, 'y': 250}  # right player
-	},
-	'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
-	'scores': {1: 0, 2: 0}
+	'board': {}
 }
 
 class Consumer(WebsocketConsumer):
@@ -208,3 +203,11 @@ class Consumer(WebsocketConsumer):
 		threading.Thread(target=game_loop, daemon=True).start()
 
 #TO DO : link everything together more
+
+# logique du jeu:
+# un tableau de 3x3
+# un role x un role o
+# attente des 2 J
+# 0 commence 
+# update seulement quand on recoit l'info du bon joueur
+# fctin qui verifie si un joueur gagen
