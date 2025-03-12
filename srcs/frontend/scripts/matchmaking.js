@@ -4,15 +4,33 @@ function onLoad() {
 	if (window.selected_game === "pong")
 		setPongLoader(loader);
 	else
-		setTicTacToeLoader(loader);
+	setTicTacToeLoader(loader);
+
+	socket = new WebSocket('ws://localhost:8042/ws/matchmaking/' + window.user.id);
+	socket.addEventListener('open', function () {
+		const gameType = window.selected_game || 'pong';
+		socket.send(JSON.stringify({
+			action: 'find_match',
+			game_type: gameType
+		}));
+	});
+
+	socket.addEventListener('message', function (event) {
+		const data = JSON.parse(event.data);
+		
+		if (data.action === 'match_found') {
+			window.location.href = `/${window.selected_game}/${data.match_id}`;
+		}
+	});
 }
 
 function onUnload() {
 	document.getElementById('gameSelector').disabled = false;
-	// if (window.selected_game === "pong")
-	// 	deletePongLoader();
-	// else
-	// 	deleteTicTacToeLoader();
+	if (socket && socket.readyState === WebSocket.OPEN) {
+		socket.send(JSON.stringify({
+			action: 'cancel_matchmaking'
+		}));
+	}
 }
-	
+
 export { onLoad, onUnload };

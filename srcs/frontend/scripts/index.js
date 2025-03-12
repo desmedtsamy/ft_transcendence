@@ -45,6 +45,14 @@ window.handleUserAuthenticated = function(user, friends) {
 	{
 		adminLink.style.display = 'none';
 	}
+	const friendsLink = document.getElementById('friends-link');
+	if (friends.length > 0) {
+		friendsLink.style.display = 'block';
+	}
+	else
+	{
+		friendsLink.style.display = 'none';
+	}
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
 		gameSelector.value = user.selected_game;

@@ -230,8 +230,6 @@ class UserProfileView(APIView):
 		try:
 			user = User.objects.get(username=username)
 
-			is_own_profile = user == request.user
-
 			friends = request.user.get_friends()
 			friend_requests_sent = FriendshipRequest.objects.filter(from_user=request.user).values_list('to_user', flat=True)
 			friend_requests_received = FriendshipRequest.objects.filter(to_user=request.user).values_list('from_user', flat=True)
@@ -242,7 +240,6 @@ class UserProfileView(APIView):
 			user_data['is_friend'] = user in friends
 			user_data['friend_request_sent'] = user.pk in friend_requests_sent
 			user_data['friend_request_received'] = user.pk in friend_requests_received
-			user_data['is_own_profile'] = is_own_profile
 
 			return Response(user_data, status=status.HTTP_200_OK)
 
@@ -275,7 +272,7 @@ class UserMatchesListView(generics.ListAPIView):
 		except User.DoesNotExist:
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 		
-		matches = Match.objects.filter(Q(player1=user) | Q(player2=user), game_type=selected_game).order_by('-created_at')[:10]
+		matches = Match.objects.filter(Q(player1=user) | Q(player2=user), game_type=selected_game, status='finished').order_by('-created_at')[:10]
 		
 		serializer = self.get_serializer(matches, many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)

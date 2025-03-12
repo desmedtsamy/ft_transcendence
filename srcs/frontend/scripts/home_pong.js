@@ -119,32 +119,30 @@ function updateBall() {
 		  navigateTo('/matchmaking/');
 		}
 		function onLoad() {
-			// if (!initCanvas()) {
-			// 	console.error('Failed to initialize canvas');
-			// 	return;
-			// }
+			if (!initCanvas()) {
+				console.error('Failed to initialize canvas');
+				return;
+			}
 			
-			// // Reset ball position
-			// ball.x = canvas.width / 2;
-			// ball.y = canvas.height / 2;
-			// ball.dx = 5;
-			// ball.dy = 5;
+			// Reset ball position
+			ball.x = canvas.width / 2;
+			ball.y = canvas.height / 2;
+			ball.dx = 5;
+			ball.dy = 5;
 			
-			// // Reset paddle positions
-			// leftPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
-			// rightPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
-			// rightPaddle.x = canvas.width - 25 - PADDLE_WIDTH;
+			// Reset paddle positions
+			leftPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+			rightPaddle.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+			rightPaddle.x = canvas.width - 25 - PADDLE_WIDTH;
 			
-			// // Start the game loop
-			// gameLoop();
+			// Start the game loop
+			gameLoop();
 			
-			// // Initialize play button
-			// const playButton = document.getElementById('play_button');
-			// if (playButton) {
-			// 	playButton.addEventListener('click', handlePlayClick);
-			// }
-
-			set1v1Button();
+			// Initialize play button
+			const playButton = document.getElementById('glass');
+			if (playButton) {
+				playButton.addEventListener('click', handlePlayClick);
+			}
 		}
 		
 		function onUnload() {
@@ -155,7 +153,7 @@ function updateBall() {
 			}
 			
 			// Remove event listener
-			const playButton = document.getElementById('play_button');
+			const playButton = document.getElementById('glass');
 			if (playButton) {
 				playButton.removeEventListener('click', handlePlayClick);
 			}
@@ -164,29 +162,4 @@ function updateBall() {
 			canvas = null;
 			ctx = null;
 		}
-		async function start_game() {
-			const player1 = user.id;
-			const player2 = 1;
-
-			const csrftoken = getCookie('csrftoken');
-			const response = await fetch('/api/game/create_match/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': csrftoken,
-				},
-				body: JSON.stringify({
-					player1: player1,
-					player2: player2
-				}),
-				credentials: 'include',
-			})
-		}
-
-	function set1v1Button() {
-		const matchButton = document.createElement('button');
-		matchButton.textContent = 'Proposer un 1v1';
-		matchButton.addEventListener('click', start_game);
-		document.getElementById('1v1').appendChild(matchButton);
-	}
 	export { onLoad, onUnload };

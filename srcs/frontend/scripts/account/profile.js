@@ -162,7 +162,7 @@ async function fetchMatchesData(userData) {
 		}); 
         if (response.ok) {
 			const matchesData = await response.json();
-			renderRecentMatches(matchesData);
+			renderRecentMatches(matchesData, userData);
             renderScoreChart(matchesData, userData); 
         } else {
 			console.error('Erreur lors de la récupération de l\'historique des matchs :', response.statusText);
@@ -172,7 +172,7 @@ async function fetchMatchesData(userData) {
     }
 }
 
-function renderRecentMatches(matches) {
+function renderRecentMatches(matches, userData) {
 	const recentMatchesList = document.getElementById('recent-matches');
 	recentMatchesList.innerHTML = '';
 	
@@ -189,7 +189,7 @@ function renderRecentMatches(matches) {
 		if (player2 == null) {
 			player2 = {username: 'anonyme', id: null};
 		}
-		if (player2.id == user.id) {
+		if (player2.id == userData.id) {
 			player1 = match.player2;
 			player2 = match.player1;
 		}
@@ -206,7 +206,9 @@ function renderRecentMatches(matches) {
         player1Span.classList.add('player-name');
         
 		player1Span.textContent = player1.username;
-		if (match.winner && player1.id == match.winner.id) {
+		console.log(match.winner, player1.id);
+		console.log(match)
+		if (match.winner && player1.id == match.winner) {
 			player1Span.classList.add('winner');
 		} else {
 			player1Span.classList.add('loser');
@@ -223,14 +225,14 @@ function renderRecentMatches(matches) {
         player2Span.classList.add('player-name');
         
         if(player2.id) {
-			if (match.winner && player2.id == match.winner.id) {
+			if (match.winner && player2.id == match.winner) {
 				player2Span.classList.add('winner');
 			} else {
 				player2Span.classList.add('loser');
 			}
             const player2Link = document.createElement('a');
             player2Link.href = '#';
-            player2Link.dataset.link = `/profile/${player2.id}`;
+            player2Link.dataset.link = `/profile/${player2.username}`;
             player2Link.textContent = player2.username;
             player2Span.appendChild(player2Link);
         } else {
@@ -307,41 +309,12 @@ function loadScript(src, callback) {
     document.head.appendChild(script);
 }
 
-async function createMatch() {
-	const player1 = user.id;
-	const player2 = userData.id;
-
-	// const csrftoken = getCookie('csrftoken');
-	// const response = await fetch('/api/game/create_match/', {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/x-www-form-urlencoded',
-	// 		'X-CSRFToken': csrftoken,
-	// 	},
-	// 	body: `player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}`,
-	// 	credentials: 'include',
-	// })
-	// if (response.ok) {
-	// 	const match = await response.json();
-	// 	alert('Match créé avec succès !');
-	// 	navigateTo('/pong/' + match.id);
-	// } else {
-	// 	const result = await response.json();
-	// 	alert(result.detail || 'failed');
-	// }
-	window.sendNotification(player2, 'match_request');
-}
-
-
 function onLoad(){
 	loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js',   
 	function() {
 		const username = window.location.pathname.split('/').pop();
 		fetchProfileData(username); 
 	});
-	// const username = window.location.pathname.split('/').pop();
-	// fetchProfileData(username);
 }
 
-export {onLoad, createMatch};
-window.createMatch = createMatch;
+export {onLoad};

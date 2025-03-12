@@ -37,12 +37,12 @@
     color: #6c757d;
 }
 
-.winner a {
+.winner, .winner a{
     color: #ffd700; /* Couleur dorée pour le gagnant */
     font-weight: bold;
 }
 
-.loser a {
+.loser, .loser a {
     color: #dc3545; /* Couleur rouge pour le perdant */
 }
 
