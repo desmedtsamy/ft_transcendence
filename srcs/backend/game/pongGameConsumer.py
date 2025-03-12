@@ -5,6 +5,8 @@ import time
 import threading
 from game.services import getMatch
 
+import time
+
 all_game = []
 lock = Lock()  # thread-safe operations
 
@@ -207,12 +209,18 @@ class Consumer(WebsocketConsumer):
 				ball_rect['y'] <= paddle_rect['y'] + paddle_rect['height'] and
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
-	def	send_state(self):
+	def send_state(self):
+		start = time.time()  # Record start time
 		game_data = json.dumps(self.game.state)
-		#print(f"Sending game state: {game_data}")
 		with lock:
 			for client in self.game.player_list:
 				client.send(game_data)
+		elapsed = (time.time() - start) * 1000  # Convert to milliseconds
+		if not hasattr(self, 'last_send_time'):
+			self.last_send_time = start
+		interval = (start - self.last_send_time) * 1000  # Time since last send in ms
+		print(f"Time between sends: {interval:.2f}ms, Send took: {elapsed:.2f}ms")
+		self.last_send_time = start
 	
 	def start_game_loop(self):
 		def game_loop():
@@ -231,7 +239,7 @@ class Consumer(WebsocketConsumer):
 					return
 				self.update_game()
 				self.send_state()
-				time.sleep(0.01)
+				time.sleep(0.0155)
 			if len(self.game.player_list) < 2:
 				print("Game paused because a player disconnected.")
 				return

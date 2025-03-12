@@ -9,5 +9,3 @@ websocket_urlpatterns = [
     re_path(r'ws/notification/(?P<user_id>\w+)$', notification_consumer.NotificationConsumer.as_asgi()),
 	re_path(r'ws/matchmaking/(?P<user_id>\w+)$', matchmakingConsumer.Consumer.as_asgi()),
 ]
-
-# daphne -u /tmp/daphne.sock -b 0.0.0.0 -p 8001 ft_transcendence.asgi:application
