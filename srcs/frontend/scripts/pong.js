@@ -8,6 +8,7 @@ var playerId = 0;
 var scores = [0,0];
 var countdown = 0;
 var gameFinished = false;
+var win = false;
 
 // var active_player = 0;
 
@@ -26,6 +27,7 @@ function onLoad() {
     console.log("La page charge!");
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Initialize WebSocket connection
     socket = new WebSocket('ws://localhost:8042/ws/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
@@ -39,6 +41,11 @@ function onLoad() {
     socket.addEventListener('message', function (event) {
     try {
         var data = JSON.parse(event.data);
+        if (data.type === 'redirect'){
+            socket.close();
+            console.log(data.message);
+            window.location.href = data.url;
+        }
         // If the server sends the player's role
         if (data.type === 'role') {
             playerRole = data.role;  // Store the player's role ('left' or 'right')
@@ -77,41 +84,43 @@ function onLoad() {
             }
             
             if (data.winner !== 0){
+                //close websocket
+                socket.close();
                 gameFinished = true
                 if (data.winner === window.user.id){
                     //winning screen
                     console.log("u won wp" + data.winner + " - " + window.user.id);
+                    win = true;
                 }
                 else {
                     //losing screen
                     console.log("u lost" + data.winner + " - " + window.user.id);
                 }
-                //close websocket
-                socket.close();
-                console.log("Je close la websocket cote clietn")
-
-                //stop rendering
-    
+                // <a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i> Accueil</a>
                 //create a go home button
+                // const button = document.createElement('a');
+                // const div = document.getElementById('button-wrapper');
+                // div.appendChild(button);
+                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
             }
         }
         
     } catch (e) {
         console.error("Failed to parse JSON:", event.data);
     }
-
+    
     });
 
     // Event listener for WebSocket close event
     socket.addEventListener('close', function () {
         console.log('WebSocket connection closed.');
     });
-
+    
     // Event listener for WebSocket error event
     socket.addEventListener('error', function (error) {
         console.error('WebSocket error:', error);
     });
-
+    
     window.addEventListener('beforeunload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
             console.log("closing socket 1")
@@ -119,15 +128,15 @@ function onLoad() {
         }
     });
     
-
+    
     window.addEventListener('unload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
-                console.log("closing socket 2")
+            console.log("closing socket 2")
             socket.close(1000, 'Page is refreshing');
         }
     });
     
-
+    
     // Event listener for player movement
     window.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowUp') keysPressed.ArrowUp = true;
@@ -139,25 +148,25 @@ function onLoad() {
         if (e.key === 'ArrowUp') keysPressed.ArrowUp = false;
         if (e.key === 'ArrowDown') keysPressed.ArrowDown = false;
     });
-
+    
 }
+
 function startGameLoop(){
     let lastTime = 0;
     function gameLoop(timestamp) {
+        if (gameFinished){
+            drawEndScreen(win);
+            return;
+        }
         const deltaTime = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
-
+        
         update(deltaTime);
         draw();
         requestAnimationFrame(gameLoop);
     }
-    if (gameFinished){
-        console.log("Je suis appele une fois a la fin de la game")
-        return;
-    }
     requestAnimationFrame(gameLoop);
 }
-
 
 function update(deltaTime) {
     if (keysPressed.ArrowUp) velocity = -SPEED;
@@ -224,6 +233,26 @@ function draw() {
     // }
 }
 
+function drawEndScreen(win) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "150px Roboto";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (win) {
+        ctx.fillStyle = 'gold';
+        ctx.fillText("Victory", canvas.width / 2, canvas.height / 2);
+    } else {
+        ctx.fillStyle = 'red';
+        ctx.fillText("Defeat", canvas.width / 2, canvas.height / 2);
+    }
+}
 
-export { onLoad }
+function onUnload(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameFinished = false;
+    win = false;
+    socket.close();
+}
+
+export { onLoad, onUnload }
 window.onload = onLoad;

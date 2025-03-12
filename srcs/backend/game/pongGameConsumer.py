@@ -5,8 +5,6 @@ import time
 import threading
 from game.services import getMatch
 
-import time
-
 all_game = []
 lock = Lock()  # thread-safe operations
 
@@ -17,7 +15,7 @@ canvas_height = 600
 paddle_height = 100
 paddle_width = 10
 ball_size = 10
-MAXSCORE = 5
+MAXSCORE = 2
 
 # game
 class Game():
@@ -42,6 +40,13 @@ class Consumer(WebsocketConsumer):
 
 	def getGame(self):
 		match = getMatch(self.scope['url_route']['kwargs']['game_id'])
+		if (match.status == 'finished'):
+			# redirige
+			self.send(json.dumps({
+            'type': 'redirect',
+            'message': 'Match is finished',
+            'url': '/'
+        }))
 		id = match.id
 		print(f"l'id dr la game{id} ")
 		for game in all_game:
@@ -210,17 +215,10 @@ class Consumer(WebsocketConsumer):
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
 	def send_state(self):
-		start = time.time()  # Record start time
 		game_data = json.dumps(self.game.state)
 		with lock:
 			for client in self.game.player_list:
 				client.send(game_data)
-		elapsed = (time.time() - start) * 1000  # Convert to milliseconds
-		if not hasattr(self, 'last_send_time'):
-			self.last_send_time = start
-		interval = (start - self.last_send_time) * 1000  # Time since last send in ms
-		print(f"Time between sends: {interval:.2f}ms, Send took: {elapsed:.2f}ms")
-		self.last_send_time = start
 	
 	def start_game_loop(self):
 		def game_loop():
