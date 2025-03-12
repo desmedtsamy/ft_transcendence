@@ -36,12 +36,7 @@ function onLoad() {
         startGameLoop();
     });
 
-
-    let lastMessageTime = 0;
     socket.addEventListener('message', function (event) {
-    const now = performance.now();
-    console.log(`Time since last message: ${(now - lastMessageTime).toFixed(2)}ms`);
-    lastMessageTime = now;
     try {
         var data = JSON.parse(event.data);
         // If the server sends the player's role
@@ -93,6 +88,8 @@ function onLoad() {
                 }
                 //close websocket
                 socket.close();
+                console.log("Je close la websocket cote clietn")
+
                 //stop rendering
     
                 //create a go home button
@@ -154,8 +151,10 @@ function startGameLoop(){
         draw();
         requestAnimationFrame(gameLoop);
     }
-    // if (gameFinished)
-    //     return
+    if (gameFinished){
+        console.log("Je suis appele une fois a la fin de la game")
+        return;
+    }
     requestAnimationFrame(gameLoop);
 }
 
