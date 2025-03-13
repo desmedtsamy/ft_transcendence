@@ -15,8 +15,8 @@ connected_clients = {}
 def handle_match_started(sender, **kwargs):
 	player1_id = kwargs['player1_id']
 	player2_id = kwargs['player2_id']
-	match_id = kwargs['match_id']
-	NotificationConsumer.start_match(player1_id, player2_id, match_id)
+	match= kwargs['match']
+	NotificationConsumer.start_match(player1_id, player2_id, match)
 
 class NotificationConsumer(WebsocketConsumer):
 
@@ -57,21 +57,12 @@ class NotificationConsumer(WebsocketConsumer):
 				for client_id, consumer in connected_clients.items():
 					print(f"Client ID: {client_id}, Consumer: {consumer}")
 			if message == "match_accept":
-				if match_id == 0:
-					match_id = create_match(id, client_id, game_type)
-					if match_id == -1:
-						return
-				# match = Match.objects.get(id=match_id)
-				# match.start()
+				match = Match.objects.get(id=match_id)
 				connected_clients[client_id].send(text_data=json.dumps({
 					'message': "match_start",
-					'match_id' : str(match_id),
-					'game_type': game_type
+					'match_id' : match.id,
+					'game_type': match.game_type
 				}))
-				# connected_clients[id].send(text_data=json.dumps({
-				# 	'message': "match_start",
-				# 	'match_id' : str(match_id)
-				# }))
 			elif message == "match_decline":
 				print("le mec a dit non")
 				tournament_match = TournamentMatch.objects.get(match_id=match_id)
@@ -90,11 +81,8 @@ class NotificationConsumer(WebsocketConsumer):
 		except Exception as e:
 			print(f"Error in receive method: {e}")
 	@staticmethod
-	def start_match(player1, player2, match_id):
-		match = Match.objects.get(id=match_id)
-		print("player 1 : " + str(player1))
-		print("player 2 : " + str(player2))
-		print("connected_clients : " + str(connected_clients))
+	def start_match(player1, player2, match):
+		match_id = match.id
 		if player1 in connected_clients and player2 in connected_clients:
 			print("les deux joueurs sont connectés")
 			connected_clients[player1].send(text_data=json.dumps({
@@ -107,8 +95,6 @@ class NotificationConsumer(WebsocketConsumer):
 			}))
 		elif player1 in connected_clients:
 			print("le joueur 1 est connecté")
-			if player2 in connected_clients:
-				print("le joueur 2 est aussi connecté donc il est pas possible d'arriver ici je suis vraiment le pire des dev mdr")
 			for client in connected_clients:
 				print(client)
 			#set player1 as winner
@@ -119,8 +105,6 @@ class NotificationConsumer(WebsocketConsumer):
 			}))
 		elif player2 in connected_clients:
 			print("le joueur 2 est connecté")
-			if player1 in connected_clients:
-				print("le joueur 1 est aussi connecté donc il est pas possible d'arriver ici je suis vraiment le pire des dev mdr")
 			for client in connected_clients:
 				print(client)
 			match.end(match.player2)

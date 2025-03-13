@@ -10,8 +10,7 @@ function setNotification() {
 		id = window.user.id;
 	}
 
-	socket = new WebSocket('ws://localhost:8042/ws/notification/' + id);
-
+	socket = new WebSocket('wss://' + window.location.host + '/wss/notification/' + id);
 	// Écoutez l'événement 'open' qui est déclenché lorsque la connexion est établie.
 	socket.addEventListener('open', function (event) {
 		console.log('WebSocket is open now.');
@@ -28,9 +27,7 @@ function setNotification() {
 	socket.addEventListener('message', function (event) {
 		const data = JSON.parse(event.data);
 		if (data.message == "match_request")
-		{
 			matchRequest(data.name, window.user.id, data.match_id);
-		}
 		else if (data.message == "match_start")
 			if (data.game_type == "pong")
 				navigateTo( '/pong/' + data.match_id);

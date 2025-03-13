@@ -27,15 +27,13 @@ def set_winner(match_id, winner_id):
 	except Exception as e:
 		return {'error': str(e)}, 500 
 	
-
 def create_match(player1_id, player2_id, game_type):
 	try:
 		player1 = User.objects.get(id=player1_id)
 		player2 = User.objects.get(id=player2_id)
-		print(game_type)
 		match = Match(player1=player1, player2=player2, game_type=game_type)
 		match.save()
-		return match.id
+		return match
 	except User.DoesNotExist:
 		return -1
 	except Exception as e:

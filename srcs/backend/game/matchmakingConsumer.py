@@ -3,11 +3,9 @@ from threading import Lock
 import json
 import time
 import threading
-from game.services import getMatch, create_match
+from game.services import create_match
 from account.models import User
 from django.contrib.auth import get_user_model
-from asgiref.sync import async_to_sync
-import asyncio
 
 # Queue for players waiting for a match
 waiting_players = []
@@ -125,43 +123,39 @@ class Consumer(WebsocketConsumer):
 		opponent_consumer = opponent['consumer']
 		
 		# Créer le match
-		match_id = create_match(self.id, opponent_id, game_type)
+		match = create_match(self.id, opponent_id, game_type)
 		
-		if match_id != -1:
-			# Retirer l'adversaire de la file d'attente
-			waiting_players.remove(opponent)
-			
-			# Retirer aussi le joueur actuel s'il est dans la file
-			current_player = None
-			for player in waiting_players:
-				if player['id'] == self.id:
-					current_player = player
-					break
-			
-			if current_player:
-				waiting_players.remove(current_player)
-			
-			# Annuler le timer si encore actif
-			if self.matchmaking_timer:
-				self.matchmaking_timer.cancel()
-			
-			# Notifier les deux joueurs du match
-			self.send(text_data=json.dumps({
-				'action': 'match_found',
-				'match_id': match_id,
-				'opponent_id': opponent_id
-			}))
-			
-			opponent_consumer.send(text_data=json.dumps({
-				'action': 'match_found',
-				'match_id': match_id,
-				'opponent_id': self.id
-			}))
-			
-			print(f"Match created: {match_id} between players {self.id} (score: {current_score}) and {opponent_id} (score: {opponent['score']})")
-			return True
+		waiting_players.remove(opponent)
 		
-		return False
+		# Retirer aussi le joueur actuel s'il est dans la file
+		current_player = None
+		for player in waiting_players:
+			if player['id'] == self.id:
+				current_player = player
+				break
+		
+		if current_player:
+			waiting_players.remove(current_player)
+		
+		# Annuler le timer si encore actif
+		if self.matchmaking_timer:
+			self.matchmaking_timer.cancel()
+		
+		# Notifier les deux joueurs du match
+		self.send(text_data=json.dumps({
+			'action': 'match_found',
+			'match_id': match.id,
+			'opponent_id': opponent_id
+		}))
+		
+		opponent_consumer.send(text_data=json.dumps({
+			'action': 'match_found',
+			'match_id': match.id,
+			'opponent_id': self.id
+		}))
+		
+		print(f"Match created: {match.id} between players {self.id} (score: {current_score}) and {opponent_id} (score: {opponent['score']})")
+		return True
 
 	def cancel_matchmaking(self):
 		with queue_lock:

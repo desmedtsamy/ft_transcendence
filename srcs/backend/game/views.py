@@ -11,7 +11,6 @@ import json
 
 class CreateMatch(generics.CreateAPIView):
 	serializer_class = MatchSerializer
-	# queryset = Match.objects.all()
 	permission_classes = [permissions.IsAuthenticated]
 
 	def post(self, request):

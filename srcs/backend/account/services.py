@@ -12,14 +12,11 @@ def get_42_user_data(request, redirect_uri):
     client_id = settings.FORTYTWO_CLIENT_ID
     client_secret = settings.FORTYTWO_CLIENT_SECRET
     token_url = 'https://api.intra.42.fr/oauth/token'
-    # if request.method == 'POST':
     try:
         data = request.data
         code = data.get('code')
     except json.JSONDecodeError:
         return {'error': 'Données JSON invalides.'}, 400
-    # else: 
-    # code = request.GET.get('code')
     if not code:
         return {'error': 'Code d\'autorisation manquant.'}, 400
     oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
@@ -46,7 +43,6 @@ def handle_42_user(request, user_data, update_existing_user=False):
         if user.intra_id and user.intra_id != intra_id:
             return {'error': 'Vous ne pouvez pas mettre à jour un utilisateur existant avec des données d\'un autre utilisateur.'}, 400
         if User.objects.filter(intra_id=intra_id).exclude(id=user.id).exists():
-            print("NON")
             return {'error': 'Un utilisateur avec cet ID 42 existe déjà.'}, 400
     else:
         user = User.objects.filter(intra_id=intra_id).first() or \
@@ -85,7 +81,7 @@ def send_friend_request(from_user, to_user):
     existing_request = FriendshipRequest.objects.filter(from_user=from_user, to_user=to_user).first()
     if existing_request:
         return {'error': 'Une demande d\'ami a déjà été envoyée à cet utilisateur.'}, 400
-    friend_request = FriendshipRequest.objects.create(from_user=from_user, to_user=to_user)
+    FriendshipRequest.objects.create(from_user=from_user, to_user=to_user)
     return {'success': 'Demande d\'ami envoyée avec succès.'}, 201
 
 

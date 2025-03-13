@@ -54,7 +54,7 @@ def join_tournament(tournament_id, user_id):
 def set_start_tournament(tournament_id, user):
 	try:
 		tournament = Tournament.objects.get(id=tournament_id)
-		if user != tournament.creator and user.is_admin == False:
+		if user != tournament.creator:
 			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
 		if tournament.is_started:
 			return {'error': 'Le tournoi a déjà commencé'}, 400
@@ -70,7 +70,7 @@ def set_start_tournament(tournament_id, user):
 def delete_tournament(tournament_id, user):
 	try:
 		tournament = Tournament.objects.get(id=tournament_id)
-		if user != tournament.creator and user.is_admin == False:
+		if user != tournament.creator:
 			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
 		tournament.delete_tournament()
 		return {'status': 'success', 'message': 'Tournoi supprimé'}, 200
@@ -213,7 +213,6 @@ def get_tournament_details(tournament_id):
 							'player2': tournamentMatch.match.player2.username if tournamentMatch.match.player2 else None,
 							"player2_id" : tournamentMatch.match.player2.id if tournamentMatch.match.player2 else None,
 							'winner': tournamentMatch.match.winner.username if tournamentMatch.match.winner else None,
-							'score': tournamentMatch.match.score,
 						}
 						for tournamentMatch in TournamentMatch.objects.filter(round=round).order_by('id')
 					]

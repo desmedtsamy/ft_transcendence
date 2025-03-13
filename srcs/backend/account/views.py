@@ -1,5 +1,3 @@
-from django.contrib import messages
-from requests_oauthlib import OAuth2Session
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 
@@ -11,12 +9,9 @@ from rest_framework.response import Response
 from django.contrib.auth import login, logout
 from django.conf import settings
 from django.http import JsonResponse
-from requests_oauthlib import OAuth2Session
-from .models import User, Match, FriendshipRequest, Friendship
+from .models import User, Match, FriendshipRequest
 from .serializers import UserSerializer
 from game.serializers import MatchSerializer
-import os
-import requests
 from .services import send_friend_request, remove_friend, accept_friend_request, delete_friend_request, get_42_user_data, handle_42_user
 
 
@@ -84,13 +79,17 @@ class Client42ViewAPI(APIView):
 
 	def post(self, request):
 		client_id = settings.FORTYTWO_CLIENT_ID
-		return Response({'client_id': client_id}, status=status.HTTP_200_OK)
+		redirect_uri = settings.FORTYTWO_REDIRECT_URI
+		return Response({
+			'client_id': client_id,
+			'redirect_uri': redirect_uri
+		}, status=status.HTTP_200_OK)
 
 class Callback42View(APIView):
 	permission_classes = [AllowAny]
 
 	def post(self, request):
-		redirect_uri = 'http://localhost:8042/42callback'
+		redirect_uri = settings.FORTYTWO_REDIRECT_URI
 		user_data, status = get_42_user_data(request, redirect_uri)
 		if status != 200:
 			return Response(user_data, status)
@@ -102,7 +101,7 @@ class Sync42View(APIView):
 	permission_classes = [AllowAny]
 
 	def post(self, request):
-		redirect_uri = 'http://localhost:8042/42sync' 
+		redirect_uri = settings.FORTYTWO_SYNC_URI
 		user_data, status = get_42_user_data(request, redirect_uri)
 		if status != 200:
 			return Response(user_data, status)

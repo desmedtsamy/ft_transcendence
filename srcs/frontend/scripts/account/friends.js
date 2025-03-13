@@ -192,9 +192,6 @@ async function handleFightAction(userId) {
 				player2: userId
 			}),
 		});
-		if (response.ok) {
-			const data = await response.json();
-		}
 	} catch (error) {
 		console.error('Erreur AJAX :', error);
 	}

@@ -17,7 +17,7 @@ function onLoad() {
     ctx = canvas.getContext('2d');
 
     // Initialize WebSocket connection
-    socket = new WebSocket('ws://localhost:8042/ws/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
+    socket = new WebSocket('wss://' + window.location.host + '/wss/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     // Event listener for WebSocket open event
     socket.addEventListener('open', function () {

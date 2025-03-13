@@ -30,9 +30,7 @@ class User(AbstractUser):
 	last_activity = models.DateTimeField(default=timezone.now)
 	last_connection = models.DateTimeField(auto_now=True, null=True)
 	is_online = models.BooleanField(default=False)
-	created_at = models.DateTimeField(auto_now_add=True)
 	intra_id = models.IntegerField(unique=True, null=True, blank=True)
-	is_admin = models.BooleanField(default=False)
 	scores = models.JSONField(default=dict)
 	wins = models.IntegerField(default=0)
 	losses = models.IntegerField(default=0)
@@ -59,7 +57,6 @@ class User(AbstractUser):
 		super().save(*args, **kwargs)
 	
 	def check_user_status():
-		print("check_user_status")
 		last_update = cache.get('last_status_update')
 		now = timezone.now()
 		if not last_update or (now - last_update).total_seconds() >= 60:
@@ -69,7 +66,6 @@ class User(AbstractUser):
 class FriendshipRequest(models.Model):
 	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_requests_sent')
 	to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_requests_received')
-	created_at = models.DateTimeField(auto_now_add=True)
 
 	def save(self, *args, **kwargs):
 		if FriendshipRequest.objects.filter(from_user=self.to_user, to_user=self.from_user).exists():
@@ -88,7 +84,6 @@ class FriendshipRequest(models.Model):
 class Friendship(models.Model):
 	user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships1')
 	user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships2')
-	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
 		unique_together = ('user1', 'user2') 

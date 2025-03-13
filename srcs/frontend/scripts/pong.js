@@ -28,7 +28,7 @@ function onLoad() {
     ctx = canvas.getContext('2d');
 
     // Initialize WebSocket connection
-    socket = new WebSocket('ws://localhost:8042/ws/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
+    socket = new WebSocket('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     // Event listener for WebSocket open event
     socket.addEventListener('open', function () {
@@ -225,6 +225,11 @@ function draw() {
     // }
 }
 
+function onUnload() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+    }
+}
 
-export { onLoad }
+export { onLoad, onUnload }
 window.onload = onLoad;

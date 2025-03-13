@@ -16,8 +16,6 @@ services:
     image: backend
     volumes:
       - ../backend/:/app
-    ports:
-      - "8000:8000"
     networks:
       - app-network
     env_file: ../../.env
@@ -35,7 +33,8 @@ services:
       - ../backend/media/:/app/media
       - ../backend/staticfiles/:/app/staticfiles
     ports:
-      - "8042:80"
+      - "8042:443"
+    env_file: ../../.env
     networks:
       - app-network
     depends_on:

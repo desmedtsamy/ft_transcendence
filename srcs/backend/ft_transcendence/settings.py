@@ -154,6 +154,12 @@ AUTH_USER_MODEL = 'account.User'
 
 FORTYTWO_CLIENT_ID = os.environ.get('FORTYTWO_CLIENT_ID')
 FORTYTWO_CLIENT_SECRET = os.environ.get('FORTYTWO_CLIENT_SECRET')
+
+HOST = os.environ.get('HOST', 'localhost:8042')
+
+FORTYTWO_REDIRECT_URI = f"https://{HOST}/42callback"
+FORTYTWO_SYNC_URI = f"https://{HOST}/42sync"
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -169,14 +175,10 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost',
-    'http://localhost:8042',
-	'http://frontend',
+    f"https://{HOST}",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost',
-    'http://localhost:8042',
-	'http://frontend',
+    f"https://{HOST}",
 ]
 
 # CHANNELS

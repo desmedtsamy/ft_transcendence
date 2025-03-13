@@ -1,12 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import User, Match, FriendshipRequest, Friendship
+from .models import User, FriendshipRequest, Friendship
 
 class UserSerializer(serializers.ModelSerializer):
     friendship_requests_sent = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    # old_password = serializers.CharField(write_only=True, required=False)
     password = serializers.CharField(write_only=True, required=False)
-    # new_password2 = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
@@ -17,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
 					'last_activity',
 					'last_connection',
 					'is_online',
-					'created_at',
 					'intra_id',
 					'is_staff',
 					'scores',
@@ -36,41 +33,22 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        print (data)
         password = data.get('password')
-        # new_password2 = data.get('new_password2')
-        # if password or new_password2:
-        #     if not password or not new_password2:
-        #         raise serializers.ValidationError("Les deux nouveaux mots de passe doivent être fournis.")
-        #     if password != new_password2:
-        #         raise serializers.ValidationError("Les nouveaux mots de passe ne correspondent pas.")
         validate_password(password)
         return data
 
 def update(self, instance, validated_data):
-    """
-    Met à jour une instance d'utilisateur avec les données validées.
-    """
-
-    # Mettre à jour les champs standards
     instance.username = validated_data.get('username', instance.username)
     instance.email = validated_data.get('email', instance.email)
 
-    # Gérer la mise à jour de l'avatar
     avatar = validated_data.get('avatar', None)
     if avatar:
-        # Supprimer l'ancien avatar s'il existe
         if instance.avatar:
             instance.avatar.delete()
-
-        # Enregistrer le nouvel avatar
         instance.avatar = avatar
-
-    # Mettre à jour le mot de passe si nécessaire
     password = validated_data.pop('password', None)
     if password:
         instance.set_password(password)
-
     instance.save()
     return instance
 
@@ -80,7 +58,7 @@ class FriendshipRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendshipRequest
-        fields = ['id', 'from_user', 'to_user', 'created_at']
+        fields = ['id', 'from_user', 'to_user']
 
 class FriendshipSerializer(serializers.ModelSerializer):
     user1 = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -88,4 +66,4 @@ class FriendshipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Friendship
-        fields = ['id', 'user1', 'user2', 'created_at']
+        fields = ['id', 'user1', 'user2']
