@@ -16,7 +16,7 @@ from .services import send_friend_request, remove_friend, accept_friend_request,
 
 
 class CurrentUserViewAPI(APIView):
-	permission_classes = [IsAuthenticated]
+	permission_classes = [AllowAny]
 
 	def get(self, request):
 		if not request.user.is_authenticated:
