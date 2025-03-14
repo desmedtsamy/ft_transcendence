@@ -30,20 +30,21 @@ class Consumer(WebsocketConsumer):
 		if (match.status == 'finished'):
 			# redirige
 			self.send(json.dumps({
-            'type': 'redirect',
-            'message': 'Match is finished',
-            'url': '/'
-        }))
+			'type': 'redirect',
+			'message': 'Match is finished',
+			'url': '/'
+		}))
 		id = match.id
 		print(f"l'id de la game{id} ")
-		for game in all_game:
-			if game.id == id:
-				print(f"le score de la game {game.id} quand elle existe deja {game.state}")
-				return game
-		game = Game(id, match)
-		all_game.append(game)
-		print(f"le score de la game {game.id} quand je la creer {game.state}")
-		return game
+		with lock:
+			for game in all_game:
+				if game.id == id:
+					print(f"le score de la game {game.id} quand elle existe deja {game.state}")
+					return game
+			game = Game(id, match)
+			all_game.append(game)
+			print(f"le score de la game {game.id} quand je la creer {game.state}")
+			return game
 
 	def connect(self):
 		self.accept()
@@ -73,6 +74,7 @@ class Consumer(WebsocketConsumer):
 				self.refuse_connection()
 				return
 			self.send_role_to_client()
+			# self.send(json.dumps(self.game.state))
 			self.send_state()
 		if len(self.game.player_list) < 2:
 			print("Waiting for another player to connect ", self.id )
@@ -115,6 +117,13 @@ class Consumer(WebsocketConsumer):
 				winner = self.check_winner(self.game.state['board'])
 				if winner:
 					self.game.state['winner'] = winner
+					# gestion de fin de partie
+					self.send_state()
+					if self.id == self.game.match.player1.id :
+						self.game.match.end(self.game.match.player1)
+					else:
+						self.game.match.end(self.game.match.player2)
+					return
 				else:
 					# Changer le joueur
 					self.game.state['turn'] = 'O' if self.game.state['turn'] == 'X' else 'X'
@@ -125,6 +134,13 @@ class Consumer(WebsocketConsumer):
 		else:
 			self.send(json.dumps({"error": "Wait for your turn"}))
 
+	def check_winner(self, board):
+		winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+		for combination in winning_combinations:
+			if board[combination[0]] == board[combination[1]] == board[combination[2]] != ' ':
+				return board[combination[0]]
+		return None
+	
 	def disconnect(self, code):
 		with lock:
 			if self in self.game.player_list:
@@ -135,19 +151,34 @@ class Consumer(WebsocketConsumer):
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2:
+				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
+				def end_game_timer():
+					time.sleep(60)  # Wait for 60 seconds
+					with lock:
+						if len(self.game.player_list) < 2:  # Check if opponent hasn't reconnected
+							if self.game in all_game:
+								all_game.remove(self.game)
+							# Notify remaining player that game has ended
+							self.send_msg({
+								'type': 'game_ended', 
+								'message': 'Game ended due to opponent not reconnecting'
+							})
+							if self.id == self.game.match.player1.id :
+								self.game.match.end(self.game.match.player2)
+							else:
+								self.game.match.end(self.game.match.player1)
 
-
-	def check_winner(board):
-		winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-		for combination in winning_combinations:
-			if board[combination[0]] == board[combination[1]] == board[combination[2]] != ' ':
-				return board[combination[0]]
-		return None
-
+				# Start the timer in a separate thread
+				timer_thread = threading.Thread(target=end_game_timer)
+				timer_thread.start()
 
 	def send_state(self):
 		game_data = json.dumps(self.game.state)
-		with lock:
-			for client in self.game.player_list:
-				client.send(game_data)
+		for client in self.game.player_list:
+			client.send(game_data)
+
+	def send_msg(self, msg):
+		msg_json = json.dumps(msg)
+		for client in self.game.player_list:
+			client.send(msg_json)
