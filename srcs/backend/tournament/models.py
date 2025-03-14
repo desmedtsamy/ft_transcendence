@@ -7,13 +7,16 @@ class Tournament(models.Model):
 	)
 	
 	selected_game = models.CharField(max_length=20, choices=GAME_TYPES, default='pong')
-	name = models.CharField(max_length=100, unique=True)
+	name = models.CharField(max_length=100)
 	players = models.ManyToManyField("account.User", related_name='tournaments', blank=True) 
 	number_of_players = models.PositiveIntegerField(default=4)
 	creator = models.ForeignKey("account.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='creator')
 	winner = models.ForeignKey("account.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='winner')
 	is_finished = models.BooleanField(default=False)
 	is_started = models.BooleanField(default=False)
+
+	class Meta:
+		unique_together = ('name', 'selected_game')
 
 	def set_start_tournament(self):
 		if not self.is_started:
