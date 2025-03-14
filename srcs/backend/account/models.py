@@ -34,8 +34,10 @@ class User(AbstractUser):
 	scores = models.JSONField(default=dict)
 	wins = models.IntegerField(default=0)
 	losses = models.IntegerField(default=0)
+
 	def get_matches(self):
 		return Match.objects.filter(Q(player1=self) | Q(player2=self))
+	
 	def get_friends(self):
 		friendships = Friendship.objects.filter(Q(user1=self) | Q(user2=self))
 		friends = []
@@ -45,12 +47,15 @@ class User(AbstractUser):
 			else:
 				friends.append(friendship.user1)
 		return friends
+	
 	@property
 	def friendship_requests_sent(self):
 		return FriendshipRequest.objects.filter(from_user=self)
+	
 	@staticmethod
 	def initialize_scores():
 		return {game[0]: 0 for game in User.GAME_TYPES}
+	
 	def save(self, *args, **kwargs):
 		if not self.scores:
 			self.scores = self.initialize_scores()
@@ -81,7 +86,9 @@ class FriendshipRequest(models.Model):
 
 	class Meta:
 		unique_together = ('from_user', 'to_user')
+
 class Friendship(models.Model):
+
 	user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships1')
 	user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships2')
 
@@ -92,6 +99,7 @@ class Friendship(models.Model):
 		if self.user1_id > self.user2_id:
 			self.user1, self.user2 = self.user2, self.user1
 		super().save(*args, **kwargs)
+
 	def remove_friend(self, friend):
 		if friend == self.user1:
 			self.delete()

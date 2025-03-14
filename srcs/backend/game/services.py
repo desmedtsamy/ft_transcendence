@@ -11,21 +11,6 @@ def getMatch(matchId):
 		return {'error': 'Match not found'}, 404
 	except Exception as e:
 		return {'error': str(e)}, 500
-
-def set_winner(match_id, winner_id):
-	try:
-		match = Match.objects.get(id=match_id)
-		winner = User.objects.get(id=winner_id)
-		match.winner = winner
-		match.save()
-		print ('Winner set successfully')
-		return {'status': 'success', 'message': 'Winner set successfully'}, 200
-	except Match.DoesNotExist:
-		return {'error': 'Match not found'}, 404
-	except User.DoesNotExist:
-		return {'error': 'Winner not found'}, 404
-	except Exception as e:
-		return {'error': str(e)}, 500 
 	
 def create_match(player1_id, player2_id, game_type):
 	try:
@@ -38,17 +23,3 @@ def create_match(player1_id, player2_id, game_type):
 		return -1
 	except Exception as e:
 		return -1
-	
-def set_winner(match_id, winner_id):
-	try:
-		match = Match.objects.get(id=match_id)
-		winner = User.objects.get(id=winner_id)
-		match.winner = winner
-		match.save()
-		return {'status': 'success', 'message': 'Winner set successfully'}, 200
-	except Match.DoesNotExist:
-		return {'error': 'Match not found'}, 404
-	except User.DoesNotExist:
-		return {'error': 'Winner not found'}, 404
-	except Exception as e:
-		return {'error': str(e)}, 500

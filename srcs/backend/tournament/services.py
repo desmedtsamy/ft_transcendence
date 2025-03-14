@@ -157,39 +157,6 @@ def create_tournament(name, number_of_players, creator):
 		return tournament, 200
 	except Exception as e:
 		return {'error': str(e)}, 500
-	
-def set_winner(match_id, winner_id):
-	try:
-		match = TournamentMatch.objects.get(id=match_id)
-		winner = User.objects.get(id=winner_id)
-
-		# Assigner le winner au match
-		match.winner = winner
-		match.save()
-
-		# Vérifier s'il y a un match suivant
-		if match.next_match:
-			# Si le match suivant n'a pas encore de player1, on l'assigne ici
-			if not match.next_match.player1:
-				match.next_match.player1 = winner
-			# Sinon, on l'assigne à player2
-			elif not match.next_match.player2:
-				match.next_match.player2 = winner
-			match.next_match.save()
-		else:
-			# Si pas de match suivant, assigner le winner comme winner du tournoi
-			match_round = match.round
-			tournament = match_round.tournament
-			tournament.winner = winner
-			tournament.save()
-
-		return {'status': 'success', 'message': 'Vainqueur défini avec succès.'}
-	except TournamentMatch.DoesNotExist:
-		return {'status': 'error', 'message': 'Match non trouvé.'}
-	except User.DoesNotExist:
-		return {'status': 'error', 'message': 'Joueur non trouvé.'}
-	except Exception as e:
-		return {'status': 'error', 'message': str(e)}
 
 
 def get_tournament_details(tournament_id):

@@ -16,7 +16,7 @@ from .services import send_friend_request, remove_friend, accept_friend_request,
 
 
 class CurrentUserViewAPI(APIView):
-	permission_classes = [AllowAny]
+	permission_classes = [IsAuthenticated]
 
 	def get(self, request):
 		if not request.user.is_authenticated:
@@ -25,12 +25,11 @@ class CurrentUserViewAPI(APIView):
 		if not request.user:
 			return Response({'error': 'User object is None'}, status=status.HTTP_400_BAD_REQUEST)
 
-		user = request.user
-		if user is None:
+		if request.user is None:
 			return Response({'error': 'User object is None'}, status=status.HTTP_404_NOT_FOUND)
 
-		serializer = UserSerializer(user)
-		friends = UserSerializer(user.get_friends(), many=True)
+		serializer = UserSerializer(request.user)
+		friends = UserSerializer(request.user.get_friends(), many=True)
 		return Response({'is_authenticated': True, 'user': serializer.data, 'friends': friends.data}, status=status.HTTP_200_OK)
 
 class LoginViewAPI(APIView):
@@ -77,7 +76,7 @@ class LogoutViewAPI(APIView):
 class Client42ViewAPI(APIView):
 	permission_classes = [AllowAny]
 
-	def post(self, request):
+	def post(self):
 		client_id = settings.FORTYTWO_CLIENT_ID
 		redirect_uri = settings.FORTYTWO_REDIRECT_URI
 		return Response({
@@ -98,7 +97,7 @@ class Callback42View(APIView):
 		return Response(response, status=status) 
 
 class Sync42View(APIView):
-	permission_classes = [AllowAny]
+	permission_classes = [IsAuthenticated]
 
 	def post(self, request):
 		redirect_uri = settings.FORTYTWO_SYNC_URI
@@ -225,7 +224,7 @@ class FriendRequestView(APIView):
 class UserProfileView(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def get(self, request, username, *args, **kwargs):
+	def get(self, request, username):
 		try:
 			user = User.objects.get(username=username)
 
@@ -248,7 +247,7 @@ class UserProfileView(APIView):
 class UserFriendsListView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 
-	def get(self, request, *args, **kwargs):
+	def get(self, request):
 		user_id = request.user.id
 		try:
 			user = User.objects.get(id=user_id)

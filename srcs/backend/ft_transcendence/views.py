@@ -9,10 +9,10 @@ class ScoreboardView(generics.ListAPIView):
 	permission_classes = [AllowAny]
 
 	def post(self, request):
-		selected_game = request.data.get('selectedGame')
 		users = User.objects.all() 
+		selected_game = request.user.selected_game
 
-		sorted_users = sorted(users, key=lambda user: user.scores.get(selected_game, 0), reverse=True)[:20]
+		sorted_users = sorted(users, key=lambda user: user.scores.get(selected_game, 0), reverse=True)[:10]
 
 		serializer = UserSerializer(sorted_users, many=True)	
 		return Response({'top_players': serializer.data}, status=status.HTTP_200_OK)

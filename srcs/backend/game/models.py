@@ -9,13 +9,18 @@ class Match(models.Model):
 		('pong', 'Pong'),
 		('tictactoe', 'Tic-tac-toe'),
 	)
+	GAME_STATUS = (
+		('pending', 'Pending'),
+		('started', 'Started'),
+		('finished', 'Finished'),
+	)
 	
 	game_type = models.CharField(max_length=20, choices=GAME_TYPES, default='pong')
 	player1 = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='player1_matches')
 	player2 = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='player2_matches')
 	winner  = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='won_matches')
 	created_at = models.DateTimeField(auto_now_add=True)
-	status = models.CharField(max_length=100, default='pending')
+	status = models.CharField(max_length=100, default='pending', choices=GAME_STATUS)
 
 	def start(self):
 		if self.player1 == None and self.player2 == None:

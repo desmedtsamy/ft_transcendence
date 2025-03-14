@@ -1,4 +1,6 @@
 
+const selectedGame = localStorage.getItem('selectedGame');
+
 function getFriendRequests() {
 	fetch('/api/account/friend-requests/')
 		.then(response => {
@@ -189,7 +191,8 @@ async function handleFightAction(userId) {
 			},
 			body: JSON.stringify({
 				player1: window.user.id,
-				player2: userId
+				player2: userId,
+				game_type: selectedGame,
 			}),
 		});
 	} catch (error) {
