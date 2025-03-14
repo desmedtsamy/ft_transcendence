@@ -55,7 +55,7 @@ function onLoad() {
                 }
             }
         } catch (e) {
-            console.error("Échec de l'analyse JSON:", event.data);
+            console.log("cpt ", e);
         }
     });
 
