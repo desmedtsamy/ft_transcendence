@@ -120,7 +120,8 @@ function onUnload() {
     gameFinished = false;
     win = false;
     playerTurn = false;
-    socket.close();
+    if (socket && socket.readyState === WebSocket.OPEN)
+        socket.close();
 };
 
 export { onLoad, onUnload };
