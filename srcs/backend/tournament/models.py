@@ -32,7 +32,7 @@ class Tournament(models.Model):
 			tournament_matches = round.tournament_matches.all()
 			for tournament_match in tournament_matches:
 				if tournament_match.match:
-					if tournament_match.match.player1 == None and tournament_match.match.player2 == None:
+					if tournament_match.match.status == 'pending':
 						tournament_match.match.delete()
 				tournament_match.delete()
 			round.delete()
@@ -51,7 +51,6 @@ class TournamentMatch(models.Model):
 
 	def end(self, winner):
 		if self.next_match:
-			print(self.match.id, self.winner_place)
 			if self.winner_place == 1:
 				self.next_match.match.player1 = winner
 			else:

@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		
 		window.changeCSS(gameSelector.value);
 		gameSelector.addEventListener('change', function() {
-			setSelectedGame(gameSelector.value);
+			window.setSelectedGame(gameSelector.value);
 			window.changeCSS(gameSelector.value);
 		});
 	}

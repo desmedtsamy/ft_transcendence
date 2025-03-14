@@ -29,6 +29,7 @@ function setNotification() {
 		if (data.message == "match_request")
 			matchRequest(data.name, window.user.id, data.match_id);
 		else if (data.message == "match_start")
+			window.setSelectedGame(data.game_type);
 			if (data.game_type == "pong")
 				navigateTo( '/pong/' + data.match_id);
 			else

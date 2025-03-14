@@ -61,7 +61,7 @@ window.handleUserAuthenticated = function(user, friends) {
 	}
 }
 
-async function setSelectedGame(game) {
+window.setSelectedGame = async function (game) {
     // Store the selection in localStorage for all users
     localStorage.setItem('selectedGame', game);
     window.selected_game = game;
