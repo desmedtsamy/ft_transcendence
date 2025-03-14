@@ -88,10 +88,12 @@ class NotificationConsumer(WebsocketConsumer):
 			connected_clients[player1].send(text_data=json.dumps({
 				'message': "match_request",
 				"match_id": match_id,
+				"game_type": match.game_type
 			}))
 			connected_clients[player2].send(text_data=json.dumps({
 				'message': "match_request",
 				"match_id": match_id,
+				"game_type": match.game_type
 			}))
 		elif player1 in connected_clients:
 			print("le joueur 1 est connecté")

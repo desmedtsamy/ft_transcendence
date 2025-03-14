@@ -23,18 +23,19 @@ function setNotification() {
 		}, 2000);
 	});
 
-	// Écoutez l'événement 'message' qui est déclenché lorsque des données sont reçues du serveur.
 	socket.addEventListener('message', function (event) {
 		const data = JSON.parse(event.data);
 		if (data.message == "match_request")
 			matchRequest(data.name, window.user.id, data.match_id);
 		else if (data.message == "match_start")
-			window.setSelectedGame(data.game_type);
+		{
+			if (data.game_type != game_type)
+				window.setSelectedGame(data.game_type);
 			if (data.game_type == "pong")
 				navigateTo( '/pong/' + data.match_id);
 			else
 				navigateTo( '/tictactoe/' + data.match_id);
-	// alert(data.message);
+		}
 });
 
 socket.onerror = function (error) {
