@@ -35,7 +35,6 @@ def join_tournament(tournament_id, user_id):
 		if not matchs:
 			return {'error': 'Le tournoi est complet'}, 400
 
-		# Prendre le premier match disponible
 		tournamentMatch = matchs.first()
 		match = tournamentMatch.match
 		match.set_player(user)
@@ -91,12 +90,9 @@ def leave_tournament(tournament_id, user_id):
 		if user not in tournament.players.all():
 			return {'error': 'Vous n\'êtes pas inscrit à ce tournoi'}, 400
 		tournament.players.remove(user)
-		# Supprimer le joueur du match 
 		for tournamentMatch in TournamentMatch.objects.filter(round__tournament=tournament):
 			match = tournamentMatch.match
 			match.delete_player(user)
-			
-
 		tournament.save()
 		return {'status': 'success', 'message': 'Désinscription réussie'}, 200
 	except Tournament.DoesNotExist:
@@ -108,23 +104,16 @@ def leave_tournament(tournament_id, user_id):
 
 def create_tournament(name, number_of_players, creator):
 	game_type = creator.selected_game
-	# Validation du nombre de joueurs
 	if not (number_of_players & (number_of_players - 1) == 0):
 		return {'error': 'Le nombre de joueurs doit être une puissance de 2'}, 400
 
 	try:
-		with transaction.atomic():  # Assurer que toutes les opérations de création sont atomiques
-			# Créer le tournoi
+		with transaction.atomic():
 			tournament = Tournament.objects.create(name=name,
 							number_of_players=number_of_players, creator=creator,
 							  selected_game=game_type)
-
-			# Calculer le nombre de rounds (log2 du nombre de joueurs)
 			num_rounds = int(math.log2(number_of_players))
-
-			# Stocker les matchs de chaque round
 			previous_round_matches = []
-
 			for round_number in range(1, num_rounds + 1):
 				round = Round.objects.create(tournament=tournament, number=round_number)
 				number_of_matches = number_of_players // (2 ** round_number)
@@ -135,10 +124,8 @@ def create_tournament(name, number_of_players, creator):
 					tournament_match = TournamentMatch.objects.create(round=round, match=match)
 					current_round_matches.append(tournament_match)
 
-				# Assigner les next_matchs
 				if previous_round_matches:
 					for match_index, tournament_match in enumerate(current_round_matches):
-						# Relier deux matchs du round précédent à un match du round actuel
 						previous_match_1 = previous_round_matches[match_index * 2]
 						previous_match_2 = previous_round_matches[match_index * 2 + 1]
 						previous_match_1.next_match = tournament_match
@@ -147,13 +134,8 @@ def create_tournament(name, number_of_players, creator):
 						previous_match_2.winner_place = 2
 						previous_match_1.save()
 						previous_match_2.save()
-
-					# Sauvegarder tous les matchs des rounds précédents avec les next_matchs assignés
 					TournamentMatch.objects.bulk_update(previous_round_matches, ['next_match'])
-
-				# Mettre à jour les matchs précédents pour le prochain round
 				previous_round_matches = current_round_matches
-
 		return tournament, 200
 	except Exception as e:
 		return {'error': str(e)}, 500
@@ -203,11 +185,8 @@ def update_match_winner(match_id, winner_id):
 		winner = User.objects.get(id=winner_id)
 		match.winner = winner
 		match.save()
-
-		# Si ce match a un next_match, placer le gagnant dans le prochain match
 		if match.next_match:
 			next_match = match.next_match
-			# On assigne le joueur à player1 s'il est vide, sinon à player2
 			if not next_match.player1:
 				next_match.player1 = winner
 			elif not next_match.player2:

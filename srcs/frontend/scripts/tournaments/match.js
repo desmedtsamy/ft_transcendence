@@ -68,17 +68,19 @@ function renderTournament(tournament) {
 		tournamentEl.appendChild(roundEl);
 	});
 	tournamentEl.appendChild(createWinnerElement(tournament));
-	if (!tournament.is_started || !window.user)
-		if (tournament.players.includes(user.username))
+	if (!tournament.is_started && window.user)
+	{
+		if (tournament.players.includes(window.user.username))
 			document.getElementById('button_container').appendChild(createButton('quitté le tournois', leaveTournament));
 		else
 			document.getElementById('button_container').appendChild(createButton('rejoindre le tournois', joinTournament));
-		if (tournament.creator === user.username)
+		if (tournament.creator === window.user.username)
 		{
 			if (!tournament.is_started)
 				document.getElementById('admin_button_container').appendChild(createButton('Forcé le démarage du tournois', startTournament));
 			document.getElementById('admin_button_container').appendChild(createButton('supprimer le tournois', deleteTournament));
 		}
+	}
 }
 
 function createMatchElement(match) {

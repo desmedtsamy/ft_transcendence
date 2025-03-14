@@ -10,7 +10,7 @@ class ScoreboardView(generics.ListAPIView):
 
 	def post(self, request):
 		users = User.objects.all() 
-		selected_game = request.user.selected_game
+		selected_game = request.data.get('selectedGame')
 
 		sorted_users = sorted(users, key=lambda user: user.scores.get(selected_game, 0), reverse=True)[:10]
 

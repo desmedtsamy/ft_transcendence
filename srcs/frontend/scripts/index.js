@@ -31,28 +31,24 @@ window.handleUserAuthenticated = function(user, friends) {
     const adminLink = document.getElementById('admin-link');
     const usernameSpan = document.getElementById('username');
     const profilePic = document.getElementById('profile-pic');
+    const searchLink = document.getElementById('search-link');
 	profileLink = document.getElementById('profile-link');
 	
 	usernameSpan.textContent = user.username;
 	profilePic.src = user.avatar;
 	profileLink.dataset.link = '/profile/' + user.username;
+	searchLink.style.display = 'block';
 	loginLink.style.display = 'none';
 	profileMenu.style.display = 'block';
-	if (user.is_staff) {
+	if (user.is_staff)
 		adminLink.style.display = 'block';
-	}
 	else
-	{
 		adminLink.style.display = 'none';
-	}
 	const friendsLink = document.getElementById('friends-link');
-	if (friends.length > 0) {
+	if (friends && friends.length > 0)
 		friendsLink.style.display = 'block';
-	}
 	else
-	{
 		friendsLink.style.display = 'none';
-	}
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
 		gameSelector.value = user.selected_game;
@@ -93,7 +89,9 @@ window.handleUserNotAuthenticated = function() {
     const profileMenu = document.getElementById('profile-menu');
     const adminLink = document.getElementById('admin-link');
     const gameSelector = document.getElementById('gameSelector');
-    
+    const searchLink = document.getElementById('search-link');
+	const friendsLink = document.getElementById('friends-link');
+
     if (gameSelector) {
         const savedGame = localStorage.getItem('selectedGame') || 'pong';
         gameSelector.value = savedGame;
@@ -105,4 +103,6 @@ window.handleUserNotAuthenticated = function() {
     loginLink.style.display = 'block';
     profileMenu.style.display = 'none';
     adminLink.style.display = 'none';
+	searchLink.style.display = 'none';
+	friendsLink.style.display = 'none';
 }

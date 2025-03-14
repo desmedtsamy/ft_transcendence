@@ -27,7 +27,7 @@ function displayScoreboard(data) {
 		avatarContainer.classList.add('avatar-container');
         avatarContainer.appendChild(avatar);
 
-		if (window.friends.some(friend => friend.id === user.id))
+		if (window.friends && window.friends.some(friend => friend.id === user.id))
 		{
 			const statusSpan = document.createElement('span');
 			statusSpan.classList.add(user.is_online ? 'online-status' : 'offline-status');
@@ -64,7 +64,7 @@ async function fetchScoreboardData() {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': getCookie('csrftoken'),
 			},
-			body: JSON.stringify({ selectedGame })
+			body: JSON.stringify({ selectedGame: selectedGame })
 		});
 		if (response.ok) {
 			const data = await response.json();

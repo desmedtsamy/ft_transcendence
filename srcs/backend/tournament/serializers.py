@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 class TournamentSerializer(serializers.ModelSerializer):
 	creator = serializers.ReadOnlyField(source='creator.username')
-	# numbers_of_players = serializers.IntegerField(source='number_of_players')
 	players_count = serializers.SerializerMethodField()
 	class Meta:
 		model = Tournament

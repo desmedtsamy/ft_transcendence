@@ -11,8 +11,7 @@ from rest_framework.permissions import AllowAny
 
 class TournamentDetailView(APIView):
 	permission_classes = [AllowAny]
-	# permission_classes = [permissions.IsAuthenticated]
-	def get(self, request, tournament_id):
+	def get(self, request,tournament_id):
 		data, status = get_tournament_details(tournament_id)
 		return Response(data, status=status)
 
@@ -64,7 +63,6 @@ class GetTournamentsView(generics.ListAPIView):
 	permission_classes = [AllowAny]
 	def post(self, request):
 		selected_game = request.data.get('selectedGame')
-		print(selected_game)
 		tournaments = Tournament.objects.filter(selected_game=selected_game)
 		serializer = TournamentSerializer(tournaments, many=True)
 		return Response({'tournaments': serializer.data}, status=status.HTTP_200_OK)

@@ -76,7 +76,7 @@ class LogoutViewAPI(APIView):
 class Client42ViewAPI(APIView):
 	permission_classes = [AllowAny]
 
-	def post(self):
+	def post(self, request):
 		client_id = settings.FORTYTWO_CLIENT_ID
 		redirect_uri = settings.FORTYTWO_REDIRECT_URI
 		return Response({
