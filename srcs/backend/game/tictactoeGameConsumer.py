@@ -61,9 +61,8 @@ class Consumer(WebsocketConsumer):
 			if player_to_remove:
 				print("Removing player from the list")
 				self.game.player_list.remove(player_to_remove)
+			#verifie si le client est un membre du match et l'ajoute
 			
-			# verifie si le client est un membre du match et l'ajoute
-			print("Adding player to the list")
 			self.game.player_list.append(self)
 			if self.id == self.game.p1_id:
 				self.role = "X"
@@ -137,7 +136,7 @@ class Consumer(WebsocketConsumer):
 			elif len(self.game.player_list) < 2:
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 
-
+	@staticmethod
 	def check_winner(board):
 		winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
 		for combination in winning_combinations:
@@ -148,6 +147,7 @@ class Consumer(WebsocketConsumer):
 
 	def send_state(self):
 		game_data = json.dumps(self.game.state)
-		with lock:
-			for client in self.game.player_list:
-				client.send(game_data)
+		print(f"send_state {self.game.state}")
+		for client in self.game.player_list:
+			print(f"send_state to client {client.id}")
+			client.send(game_data)

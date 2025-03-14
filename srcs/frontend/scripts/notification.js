@@ -24,6 +24,7 @@ function setNotification() {
 	});
 
 	socket.addEventListener('message', function (event) {
+		console.log(event.data);
 		const data = JSON.parse(event.data);
 		if (data.message == "match_request")
 			matchRequest(data.name, window.user.id, data.match_id);

@@ -43,8 +43,8 @@ class Match(models.Model):
 				self.winner.scores[self.game_type] = 0 
 			self.winner.scores[self.game_type] +=42
 			self.winner.wins += 1
-			if looser.scores[self.game_type] > 21:
-				looser.scores[self.game_type] -=21
+			if looser.scores[self.game_type] > 19:
+				looser.scores[self.game_type] -=19
 			else:
 				looser.scores[self.game_type] = 0
 			

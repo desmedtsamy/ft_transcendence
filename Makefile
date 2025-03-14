@@ -5,10 +5,10 @@ prepare:
 	#@ mkdir -p data/django
 	#@ echo "Creating data folder"
 build:
-	@ docker compose -f srcs/requirements/docker-compose.yml build
+	@ docker compose -f srcs/requirements/docker-compose.yml --env-file .env build
 
 up: prepare build
-	@ docker compose -f srcs/requirements/docker-compose.yml -p ft_transcendence up -d
+	@ docker compose -f srcs/requirements/docker-compose.yml  --env-file .env -p ft_transcendence up -d
 
 clean:
 	-@ docker rm  -f backend #2>/dev/null
