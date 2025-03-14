@@ -43,7 +43,7 @@ class LoginViewAPI(APIView):
 	def post(self, request):
 		username = request.data.get('username')
 		password = request.data.get('password')
-		User.check
+		User.check_user_status()
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			if user.is_online:
