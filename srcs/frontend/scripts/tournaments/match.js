@@ -74,12 +74,11 @@ function renderTournament(tournament) {
 			document.getElementById('button_container').appendChild(createButton('quitté le tournois', leaveTournament));
 		else
 			document.getElementById('button_container').appendChild(createButton('rejoindre le tournois', joinTournament));
-		if (tournament.creator === window.user.username)
-		{
-			if (!tournament.is_started)
-				document.getElementById('admin_button_container').appendChild(createButton('Forcé le démarage du tournois', startTournament));
-			document.getElementById('admin_button_container').appendChild(createButton('supprimer le tournois', deleteTournament));
-		}
+	}
+	console.log(tournament)
+	if ((!tournament.is_started || tournament.is_finished) && tournament.creator === window.user.username)
+	{
+		document.getElementById('admin_button_container').appendChild(createButton('supprimer le tournois', deleteTournament));
 	}
 }
 
