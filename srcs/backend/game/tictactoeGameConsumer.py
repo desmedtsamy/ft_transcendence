@@ -120,13 +120,13 @@ class Consumer(WebsocketConsumer):
 				# Vérifier la victoire
 				winner = self.check_winner(self.game.state['board'])
 				if winner == 'X' or winner == 'O' or winner == 'n':
+					print('winner:', winner)
 					self.game.state['winner'] = winner
-					# gestion de fin de partie
 					self.send_state()
-					if self.id == self.game.match.player1.id :
-						self.game.match.end(self.game.match.player1)
-					elif winner == 'n':
+					if winner == 'n':
 						self.game.match.end(None)
+					elif self.id == self.game.match.player1.id :
+						self.game.match.end(self.game.match.player1)
 					else:
 						self.game.match.end(self.game.match.player2)
 					return
