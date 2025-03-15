@@ -74,10 +74,14 @@ class Consumer(WebsocketConsumer):
 				self.refuse_connection()
 				return
 			self.send_role_to_client()
+			# envoyer a l'autre joueurs qu'il se co
 			# self.send(json.dumps(self.game.state))
 			self.send_state()
 		if len(self.game.player_list) < 2:
 			print("Waiting for another player to connect ", self.id )
+		if len(self.game.player_list) == 2:
+			self.send_connection()
+			self.send_opponent_connection()
 
 	def refuse_connection(self, reason="Too many players for the game"):
 		self.send(json.dumps({"error": reason}))
@@ -115,12 +119,14 @@ class Consumer(WebsocketConsumer):
 				self.game.state['board'][move] = self.game.state['turn']  # Mise à jour du tableau
 				# Vérifier la victoire
 				winner = self.check_winner(self.game.state['board'])
-				if winner:
+				if winner == 'X' or winner == 'O' or winner == 'n':
 					self.game.state['winner'] = winner
 					# gestion de fin de partie
 					self.send_state()
 					if self.id == self.game.match.player1.id :
 						self.game.match.end(self.game.match.player1)
+					elif winner == 'n':
+						self.game.match.end(None)
 					else:
 						self.game.match.end(self.game.match.player2)
 					return
@@ -139,7 +145,11 @@ class Consumer(WebsocketConsumer):
 		for combination in winning_combinations:
 			if board[combination[0]] == board[combination[1]] == board[combination[2]] != ' ':
 				return board[combination[0]]
-		return None
+		for x in board:
+			if x == ' ':
+				return None
+		print('match nul')
+		return 'n'
 	
 	def disconnect(self, code):
 		with lock:
@@ -182,3 +192,11 @@ class Consumer(WebsocketConsumer):
 		msg_json = json.dumps(msg)
 		for client in self.game.player_list:
 			client.send(msg_json)
+	
+	def send_connection(self):
+		for client in self.game.player_list:
+			if client != self:
+				client.send(json.dumps({'type' : 'opponent connected'}))
+	
+	def send_opponent_connection(self):
+		self.send(json.dumps({'type' : 'opponent connected'}))

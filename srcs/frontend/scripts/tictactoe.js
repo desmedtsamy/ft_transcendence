@@ -5,6 +5,7 @@ var gameFinished = false;
 var win = false;
 var board = ['', '', '', '', '', '', '', '', ''];
 var currentPlayer = '';  // Ajout de la variable currentPlayer
+var opponentConnected = false;
 
 function onLoad() {
     if (window.user === undefined) {
@@ -29,8 +30,13 @@ function onLoad() {
                 console.log(data.message);
                 window.location.href = data.url;
             }
+
+            if (data.type === 'opponent connected'){
+                opponentConnected = true;
+            }
             
             if (data.type === 'disconnect') {
+                opponentConnected = false;
                 handleOpponentDisconnect();
                 return;
             }
@@ -69,7 +75,11 @@ function onLoad() {
                         console.log("Vous avez gagné !");
                         win = true;
                         document.getElementById('player-turn').textContent = "Vous avez gagnez";
-                    } else {
+                    } 
+                    else if (data.winner === 'n'){
+                        document.getElementById('player-turn').textContent = "Match nul!";
+                    }
+                    else {
                         console.log("Vous avez perdu !");
                         document.getElementById('player-turn').textContent = "Vous avez perdu";
                     }
@@ -102,11 +112,11 @@ function onLoad() {
             socket.close(1000, 'Page is refreshing');
         }
     });
+    document.querySelectorAll('.cell').forEach((cell, index) => {
+        cell.addEventListener('click', () => handleCellClick(index));
+    });
 }
 
-document.querySelectorAll('.cell').forEach((cell, index) => {
-    cell.addEventListener('click', () => handleCellClick(index));
-});
 
 function handleCellClick(index) {
     console.log("je clique");
@@ -147,10 +157,11 @@ function handleOpponentDisconnect() {
         const disconnectMessage = document.getElementById('player-turn');
         const countdown = setInterval(() => {
             timeLeft--;
-            if (timeLeft >= 0 && !gameFinished) {
+            if (timeLeft >= 0 && !gameFinished && !opponentConnected) {
                 disconnectMessage.textContent = `Votre adversaire s'est déconnecté. Fin dans ${timeLeft}s`;
             } else {
                 console.log("clear");
+                disconnectMessage.textContent = "Je suis le joueur: " + playerRole;
                 clearInterval(countdown);
             }
         }, 1000);
@@ -169,6 +180,7 @@ function onUnload() {
     win = false;
     board = ['', '', '', '', '', '', '', '', ''];
     currentPlayer = '';  // Ajout de la variable currentPlayer
+    opponentConnected = false;
 };
 
 export { onLoad, onUnload };
