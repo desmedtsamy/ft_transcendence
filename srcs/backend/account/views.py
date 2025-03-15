@@ -92,7 +92,6 @@ class Callback42View(APIView):
 		user_data, status = get_42_user_data(request, redirect_uri)
 		if status != 200:
 			return Response(user_data, status)
-		print("ca passe ici")
 		response,status = handle_42_user(request, user_data)
 		return Response(response, status=status) 
 

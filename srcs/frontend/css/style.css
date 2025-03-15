@@ -130,7 +130,7 @@ nav ul li a {
 	top: 1.5em;
     min-width: 160px;
     box-shadow: 0 8px 16px rgba(22, 224, 189, 0.2);
-    z-index: 1;
+    z-index: 10;
     border-radius: 5px;
 }
 
@@ -225,6 +225,7 @@ tr:hover td {
 	border-radius: 5px;
 	font-weight: bold;
 	background-color: rgba(0, 255, 213, 0.1);
+	z-index: 2;
 }
 
 .alert-warning {

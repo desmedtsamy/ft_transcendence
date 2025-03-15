@@ -1,6 +1,6 @@
 window.user;
 window.selected_game;
-
+window.notification_socket;
 
 async function fetchUserInfo() {
 	if (window.selected_game === "pong")
@@ -17,7 +17,6 @@ async function fetchUserInfo() {
 			const data = await response.json();
 			if (data.is_authenticated) {
 				handleUserAuthenticated(data.user, data.friends);
-				setNotification();
 			} else {
 				handleUserNotAuthenticated();
 			}

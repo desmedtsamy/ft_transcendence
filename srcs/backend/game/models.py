@@ -37,8 +37,8 @@ class Match(models.Model):
 
 	def end(self, winner):
 		self.winner = winner
-		looser = self.player1 if self.player1 != winner else self.player2
 		if winner:
+			looser = self.player1 if self.player1 != winner else self.player2
 			if self.game_type not in self.winner.scores:
 				self.winner.scores[self.game_type] = 0 
 			self.winner.scores[self.game_type] +=42
