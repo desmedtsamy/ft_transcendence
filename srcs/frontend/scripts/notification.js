@@ -656,14 +656,22 @@ class NotificationManager {
 	// Fonction de refus de match
 	window.declineMatch = function(userId, matchId) {
 		notificationManager.declineMatch(userId, matchId);
-	  };
+    };
+    
+    // Fonction de déconnexion accessible depuis l'extérieur
+    window.disconnectNotifications = function() {
+      if (notificationManager && typeof notificationManager.disconnect === 'function') {
+        notificationManager.disconnect();
+        console.log('WebSocket déconnecté');
+      }
+    };
 	  
-	  // Fonction de nettoyage lors de la fermeture de la page
-	  window.onUnload = function() {
-		notificationManager.disconnect();
-	  };
-	}
-	
+    // Fonction de nettoyage lors de la fermeture de la page
+    window.onUnload = function() {
+      window.disconnectNotifications();
+    };
+  }
+  
 	// Exécuter l'initialisation des notifications
 	initializeNotifications();
 	
@@ -682,3 +690,4 @@ class NotificationManager {
 		}
 	  });
 	}
+	

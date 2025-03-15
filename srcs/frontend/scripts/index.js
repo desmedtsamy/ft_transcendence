@@ -55,7 +55,7 @@ window.handleUserAuthenticated = function(user, friends) {
 		window.changeCSS(user.selected_game);
 		gameSelector.disabled = false;
 	}
-	setNotification();
+	window.setNotification()
 }
 
 window.setSelectedGame = async function (game) {
@@ -107,9 +107,5 @@ window.handleUserNotAuthenticated = function() {
 	searchLink.style.display = 'none';
 	friendsLink.style.display = 'none';
 
-	if (window.notification_socket  != null)
-	{
-		window.notification_socket.close();
-		window.notification_socket = null;
-	}
+	window.disconnectNotifications();
 }
