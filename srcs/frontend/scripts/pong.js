@@ -16,6 +16,16 @@ const SPEED = 300; // Pixels par seconde
 let lastSent = 0; // Pour le débouncing
 const SEND_INTERVAL = 16; // ms (~60 FPS)
 
+const handleKeyDown = function (e) {
+    if (e.key === 'ArrowUp') keysPressed.ArrowUp = true;
+    if (e.key === 'ArrowDown') keysPressed.ArrowDown = true;
+    e.preventDefault();
+};
+
+const handleKeyUp = function (e) {
+    if (e.key === 'ArrowUp') keysPressed.ArrowUp = false;
+    if (e.key === 'ArrowDown') keysPressed.ArrowDown = false;
+};
 
 function onLoad() {
 	if (window.user === undefined) {
@@ -130,19 +140,9 @@ function onLoad() {
         }
     });
     
-    
     // Event listener for player movement
-    window.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowUp') keysPressed.ArrowUp = true;
-        if (e.key === 'ArrowDown') keysPressed.ArrowDown = true;
-        this.event.preventDefault()
-    });
-    
-    window.addEventListener('keyup', function (e) {
-        if (e.key === 'ArrowUp') keysPressed.ArrowUp = false;
-        if (e.key === 'ArrowDown') keysPressed.ArrowDown = false;
-    });
-    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 }
 
 function startGameLoop(){
@@ -236,6 +236,12 @@ function drawEndScreen(win) {
 }
 
 function onUnload(){
+    keysPressed = { ArrowUp: false, ArrowDown: false };
+    velocity = 0;
+
+    // Supprimer les écouteurs clavier
+    window.removeEventListener('keydown', handleKeyDown);
+    window.removeEventListener('keyup', handleKeyUp);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     gameFinished = false;
     win = false;
