@@ -27,7 +27,6 @@ SECRET_KEY = 'django-insecure-4ydt!!&!=-*jxqwv5h9=x2=bftefz*%sjibdhq4$5kr8uy3k24
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -176,11 +175,12 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    f"https://{HOST}:{PORT}",
+    f"https://{HOST}",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{HOST}:{PORT}",
+    f"https://{HOST}",
 ]
+ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', f"{HOST}"]
 
 # CHANNELS
 ASGI_APPLICATION = 'ft_transcendence.asgi.application'
