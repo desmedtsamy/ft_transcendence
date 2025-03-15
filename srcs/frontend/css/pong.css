@@ -1,5 +1,6 @@
 :root {
 	--primary-color: #16e0bd;
+	--primary-rgb: 22, 224, 189;
 	--bg-color: #1a1a2e;
 	--text-color: #16e0bd;
 	--secondary-bg: #242444;
@@ -41,14 +42,15 @@ a {
 
 nav {
     background-color: var(--primary-color);
+    padding: 0.8rem 1rem;
 }
 
 nav ul li a {
-    color: var(--bg-color);
+    color: var(--primary-color);
 }
 
 nav ul li a:hover, nav ul li a.active {
-    background-color: var(--bg-color);
+    background-color: rgba(22, 224, 189, 0.1);
     color: var(--primary-color);
 }
 
@@ -57,6 +59,9 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 .profile-pic {
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
     border: 2px solid var(--bg-color);
 }
 
@@ -192,4 +197,113 @@ th {
         left: 90%;
         transform: translateY(-50%);
     }
+}
+
+#game-menu {
+    background-color: var(--bg-color);
+    border: 1px solid var(--primary-color);
+    margin-top: 0.5rem;
+}
+
+#game-menu .dropdown-item {
+    color: var(--primary-color);
+}
+
+#game-menu .dropdown-item:hover {
+    background-color: rgba(22, 224, 189, 0.1);
+    color: var(--primary-color);
+}
+
+#game-menu .dropdown-item i {
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+}
+
+.nav-item.dropdown .nav-link {
+    color: var(--primary-color);
+}
+
+.nav-item.dropdown .nav-link:hover {
+    background-color: rgba(22, 224, 189, 0.1);
+    color: var(--primary-color);
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--bg-color) !important;
+    border-bottom: 1px solid var(--primary-color);
+    padding: 1rem 1.5rem !important;
+    min-height: 70px;
+}
+
+.navbar-brand {
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.navbar-toggler {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(22, 224, 189, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.nav-btn {
+    color: var(--primary-color) !important;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 15px 25px !important;
+    transition: all 0.3s ease;
+    font-size: 18px !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.nav-btn:hover, .nav-btn:focus {
+    background-color: rgba(22, 224, 189, 0.1);
+    color: var(--primary-color) !important;
+}
+
+.nav-btn i {
+    margin-right: 10px;
+    color: var(--primary-color);
+    font-size: 20px !important;
+}
+
+.nav-btn.dropdown-toggle::after {
+    margin-left: 8px;
+    vertical-align: middle;
+    border-top-color: var(--primary-color);
+    border-width: 6px;
+}
+
+.dropdown-menu {
+    background-color: var(--bg-color) !important;
+    border: 1px solid var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(22, 224, 189, 0.1);
+    margin-top: 8px;
+    padding: 8px;
+}
+
+.dropdown-item {
+    color: var(--primary-color) !important;
+    padding: 12px 25px !important;
+    transition: all 0.3s ease;
+    font-size: 18px !important;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: rgba(22, 224, 189, 0.1) !important;
+    color: var(--primary-color) !important;
+}
+
+.dropdown-item i {
+    width: 26px !important;
+    text-align: center;
+    margin-right: 12px !important;
 }

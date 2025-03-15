@@ -1,10 +1,17 @@
 function onLoad() {
-	document.getElementById('gameSelector').disabled = true;
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = true;
+		// Set the initial value based on the selected game
+		gameSelector.value = window.selected_game || 'pong';
+	}
+
 	let loader = document.getElementById('loader');
-	if (window.selected_game === "pong")
+	if (window.selected_game === "pong") {
 		setPongLoader(loader);
-	else
-	setTicTacToeLoader(loader);
+	} else {
+		setTicTacToeLoader(loader);
+	}
 
 	socket = new WebSocket('wss://' + window.location.host + '/wss/matchmaking/' + window.user.id);
 	socket.addEventListener('open', function () {
@@ -25,12 +32,44 @@ function onLoad() {
 }
 
 function onUnload() {
-	document.getElementById('gameSelector').disabled = false;
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = false;
+	}
+	
 	if (socket && socket.readyState === WebSocket.OPEN) {
 		socket.send(JSON.stringify({
 			action: 'cancel_matchmaking'
 		}));
 	}
+}
+
+function setPongLoader(loader) {
+	loader.innerHTML = `
+		<div class="pong-spinner">
+			<div class="paddle-spinner paddle-spinner-left"></div>
+			<div class="ball"></div>
+			<div class="paddle-spinner paddle-spinner-right"></div>
+		</div>
+	`;
+}
+
+function setTicTacToeLoader(loader) {
+	loader.innerHTML = `
+		<div class="tic-tac-toe-spinner">
+			<div class="board">
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+				<div class="cell"></div>
+			</div>
+		</div>
+	`;
 }
 
 export { onLoad, onUnload };

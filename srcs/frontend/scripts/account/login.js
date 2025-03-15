@@ -1,4 +1,4 @@
-async function LoginForm() {
+async function LoginForm(event) {
 	const username = document.getElementById('username_input').value;
     const password = document.getElementById('password').value;
 	
@@ -17,8 +17,18 @@ async function LoginForm() {
         });
 		if (response.ok) {
 			const user = await response.json();
+			// Fetch friends data
+			const friendsResponse = await fetch('/api/account/friends/', {
+				method: 'GET',
+				headers: {
+					'X-CSRFToken': csrftoken,
+				},
+				credentials: 'include',
+			});
+			const friends = friendsResponse.ok ? await friendsResponse.json() : [];
+			
 			alert("Bonjour " + user.username);
-			handleUserAuthenticated(user);
+			handleUserAuthenticated(user, friends);
 			navigateTo('/');
 		} else {
 			const result = await response.json();
@@ -45,8 +55,8 @@ async function getClientAPI(){
 		if (response.ok) {
 			const response_json = await response.json();
 			const client_id = response_json.client_id;
-			const redirect_uri = response_json.redirect_uri;
-			link.href = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&response_type=code`;
+			link.href = "https://api.intra.42.fr/oauth/authorize?client_id=" + client_id + "&redirect_uri=http%3A%2F%2Flocalhost%3A8042%2F42callback&response_type=code";
+
 		} else {
 			link.style.display = 'none';
 			const result = await response.json();

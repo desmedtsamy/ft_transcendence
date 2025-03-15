@@ -1,45 +1,117 @@
-<link rel="stylesheet" href="/css/tournament/tournament.css">
+<script type="module">
+	import { populateTournaments } from '/scripts/tournaments/match.js';
+	import { createModal } from '/scripts/tournaments/tournaments.js';
+	
+	// Make functions available globally
+	window.createModal = createModal;
+	
+	// Initialize tournaments after the template is loaded
+	window.initializeTournaments = function() {
+		// Ensure tournament CSS is loaded
+		let tournamentStylesheet = document.getElementById('tournamentStylesheet');
+		if (!tournamentStylesheet) {
+			tournamentStylesheet = document.createElement('link');
+			tournamentStylesheet.rel = 'stylesheet';
+			tournamentStylesheet.id = 'tournamentStylesheet';
+			tournamentStylesheet.href = '/css/tournament/tournament.css';
+			document.head.appendChild(tournamentStylesheet);
+		}
+		
+		// Force reload of tournament CSS
+		tournamentStylesheet.href = tournamentStylesheet.href.split('?')[0] + '?v=' + new Date().getTime();
+		
+		const tournamentList = document.getElementById('tournament-list');
+		if (tournamentList) {
+			populateTournaments();
+		}
+	};
 
+	// Call initialization when this script loads
+	window.initializeTournaments();
+</script>
 
-<div  style="display:flex;flex-direction:row;width:80%;height:80%">
-	<div class="left-panel">
-		<div class="header">
-			<h2>Liste des Tournois</h2>
-		</div>
-		<button class="create-button" onclick="createModal()">Créer un nouveau tournoi</button>
-		<div class="tournament-list" id="tournament-list">
-		</div> 
-	</div>
-	<div class="right-panel">
-		<h2 id="tournament_name"></h2>
-		<div id="tournament">
-			Sélectionner un tournoi pour afficher les détails
-		</div>
-		<div id="button_container">
-		</div>
-		<div id="admin_button_container">
-		</div>	
-	</div>
-	<div id="Modal" class="modal">
-		<div class="modal-content">
-			<span class="close-button" onclick="closeModal()">&times;</span>
-			<h2>Créer un nouveau tournoi</h2>
-			<form id="create-tournament-form">
-				<div>
-					<label for="tournament-name">Nom du tournoi:</label>
-					<input type="text" id="tournament-name" name="name" required>
+<div class="container-fluid mt-5">
+	<div class="row">
+		<!-- Left Panel -->
+		<div class="col-md-4 mb-4">
+			<div class="card h-100">
+				<div class="card-header">
+					<h2 class="mb-0">Liste des Tournois</h2>
 				</div>
-				<div>
-					<label for="number_of_players">Nombre de joueurs:</label>
-					<select id="number_of_players" name="number_of_players">
-						<option value="2">2</option>
-						<option value="4">4</option>
-						<option value="8">8</option>
-						<option value="16">16</option>
-					</select>
+				<div class="card-body">
+					<button class="btn btn-primary w-100 mb-3" onclick="createModal()">
+						<i class="fas fa-plus-circle me-2"></i>Créer un nouveau tournoi
+					</button>
+					<div class="tournament-list" id="tournament-list">
+					</div>
 				</div>
-				<button type="submit">Créer le tournoi</button>
-			</form>
+			</div>
+		</div>
+
+		<!-- Right Panel -->
+		<div class="col-md-8">
+			<div class="card h-100">
+				<div class="card-header">
+					<h2 class="mb-0" id="tournament_name"></h2>
+				</div>
+				<div class="card-body">
+					<div id="tournament" class="text-center">
+						Sélectionner un tournoi pour afficher les détails
+					</div>
+					<div id="button_container" class="mt-3 d-flex gap-2 justify-content-center">
+					</div>
+					<div id="admin_button_container" class="mt-3 d-flex gap-2 justify-content-center">
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="tournamentModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="tournamentModalLabel">
+					<i class="fas fa-trophy me-2"></i>Créer un nouveau tournoi
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="create-tournament-form">
+					<div class="mb-3">
+						<label for="tournament-name" class="form-label">Nom du tournoi</label>
+						<input type="text" class="form-control" id="tournament-name" name="name" required 
+							   placeholder="Entrez le nom du tournoi">
+					</div>
+					<div class="mb-3">
+						<label for="number_of_players" class="form-label">Nombre de joueurs</label>
+						<select class="form-select" id="number_of_players" name="number_of_players">
+							<option value="2">2 joueurs</option>
+							<option value="4">4 joueurs</option>
+							<option value="8">8 joueurs</option>
+							<option value="16">16 joueurs</option>
+						</select>
+					</div>
+					<div class="d-grid">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-plus-circle me-2"></i>Créer le tournoi
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Initialize Bootstrap modal when the page loads
+	document.addEventListener('DOMContentLoaded', function() {
+		const modalElement = document.getElementById('Modal');
+		if (modalElement) {
+			// Create a Bootstrap modal instance
+			window.tournamentModal = new bootstrap.Modal(modalElement);
+		}
+	});
+</script>

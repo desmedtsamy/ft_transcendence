@@ -94,7 +94,7 @@ function onLoad() {
                     //losing screen
                     console.log("u lost" + data.winner + " - " + window.user.id);
                 }
-                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
+                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-arrow-left"></i> Retour</a>';
             }
         }
         
@@ -232,6 +232,27 @@ function drawEndScreen(win) {
     } else {
         ctx.fillStyle = 'red';
         ctx.fillText("Defeat", canvas.width / 2, canvas.height / 2);
+    }
+    
+    // Position the button wrapper relative to the canvas
+    const buttonWrapper = document.getElementById('button-wrapper');
+    if (buttonWrapper) {
+        buttonWrapper.style.top = `${canvas.offsetTop + (canvas.height * 0.65)}px`;
+        buttonWrapper.style.width = '100%';
+        buttonWrapper.innerHTML = `
+            <a class="header_link" href="#" data-link="/"><i class="fas fa-arrow-left"></i> Retour</a>
+            <a class="header_link rematch" href="#" onclick="handleRematch(event)"><i class="fas fa-redo"></i> Revanche</a>
+        `;
+    }
+}
+
+// Add rematch handling function
+window.handleRematch = function(event) {
+    event.preventDefault();
+    const opponentId = window.location.pathname.split('/')[3]; // Get opponent ID from URL
+    if (opponentId) {
+        const rematchUrl = '/game/invite/' + opponentId;
+        window.location.href = rematchUrl;
     }
 }
 

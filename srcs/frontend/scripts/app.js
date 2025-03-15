@@ -1,12 +1,15 @@
 window.user;
 window.selected_game;
-
+window.friends;
 
 async function fetchUserInfo() {
+	createLoadingSpinner();
+	
 	if (window.selected_game === "pong")
 		setPongLoader();
 	else
 		setTicTacToeLoader();
+	
 	try {
 		const response = await fetch('/api/account/current-user/', {
 			method: 'GET',
@@ -16,18 +19,33 @@ async function fetchUserInfo() {
 		if (response.ok) {
 			const data = await response.json();
 			if (data.is_authenticated) {
+				window.friends = data.friends;
 				handleUserAuthenticated(data.user, data.friends);
 				setNotification();
 			} else {
 				handleUserNotAuthenticated();
+				console.log('User is not authenticated');
 			}
 		} else {
+			handleUserNotAuthenticated();
 			console.error('Failed to fetch user information');
 		}
 	} catch (error) {
+		handleUserNotAuthenticated();
 		console.error('Error:', error);
 	}
 }
+
+function createLoadingSpinner() {
+	console.log("DEBUG createLoadingSpinner");
+	const app = document.getElementById('app');
+	const loadingElement = document.createElement('div');
+	loadingElement.className = 'loading-dots';
+	loadingElement.innerHTML = '<span>Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>';
+	app.innerHTML = '';
+	app.appendChild(loadingElement);
+}
+
 window.changeCSS = function (game) {
 	let linkElement = document.getElementById('gameStylesheet');
 	if (!linkElement) {
@@ -42,7 +60,20 @@ window.changeCSS = function (game) {
 	} else if (game === 'tictactoe') {
 		linkElement.href = '/css/tictactoe.css';
 	}
+
+	// Always ensure tournament CSS is loaded on tournament page
+	if (window.location.pathname.startsWith('/tournaments')) {
+		let tournamentStylesheet = document.getElementById('tournamentStylesheet');
+		if (!tournamentStylesheet) {
+			tournamentStylesheet = document.createElement('link');
+			tournamentStylesheet.rel = 'stylesheet';
+			tournamentStylesheet.id = 'tournamentStylesheet';
+			document.head.appendChild(tournamentStylesheet);
+		}
+		tournamentStylesheet.href = '/css/tournament/tournament.css';
+	}
 }
+
 window.getCookie = function(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
@@ -57,6 +88,7 @@ window.getCookie = function(name) {
 	}
 	return cookieValue;
 }
+
 window.alert = function(message, type = 'normal') {
 	const alertsEl = document.getElementById('alerts');
 	const alertEl = document.createElement('div');
@@ -94,33 +126,66 @@ window.alert = function(message, type = 'normal') {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-	window.selected_game = document.getElementById('gameSelector').value;
-	await fetchUserInfo();
+	// Initialize the history state for the current page
+	window.history.replaceState({ path: window.location.pathname }, '', window.location.pathname);
 	
-	const gameSelector = document.getElementById('gameSelector');
-	if (gameSelector) {
-		// First check localStorage
-		const savedGame = localStorage.getItem('selectedGame');
-		
-		if (window.user !== null) {
-			// For authenticated users, use their server-side preference
-			gameSelector.value = window.user.selected_game;
-			window.selected_game = window.user.selected_game;
-			// Update localStorage to match server preference
-			localStorage.setItem('selectedGame', window.user.selected_game);
-		} else {
-			// For non-authenticated users, use localStorage or default to 'pong'
-			gameSelector.value = savedGame || 'pong';
-			window.selected_game = savedGame || 'pong';
-		}
-		
-		window.changeCSS(gameSelector.value);
-		gameSelector.addEventListener('change', function() {
-			window.setSelectedGame(gameSelector.value);
-			window.changeCSS(gameSelector.value);
-		});
+	// Setup game selector
+	const gameMenu = document.getElementById('game-menu');
+	const currentGameSpan = document.getElementById('current-game');
+	const gameButton = currentGameSpan.parentElement;
+	const gameIcon = gameButton.querySelector('i');
+	
+	function updateGameDisplay(game) {
+		currentGameSpan.textContent = game.charAt(0).toUpperCase() + game.slice(1);
+		gameIcon.className = game === 'pong' ? 'fas fa-table-tennis' : 'fas fa-times';
 	}
 	
+	if (gameMenu) {
+		gameMenu.addEventListener('click', async (event) => {
+			const gameLink = event.target.closest('[data-game]');
+			if (gameLink) {
+				event.preventDefault();
+				const game = gameLink.dataset.game;
+				window.selected_game = game;
+				updateGameDisplay(game);
+				localStorage.setItem('selectedGame', game);
+				
+				if (window.user) {
+					const csrftoken = getCookie('csrftoken');
+					const response = await fetch('/api/account/set_selected_game/', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+							'X-CSRFToken': csrftoken,
+						},
+						body: `game=${game}`,
+						credentials: 'include',
+					});
+					if (response.ok) {
+						window.changeCSS(game);
+						window.location.reload();
+					}
+				} else {
+					window.changeCSS(game);
+					window.location.reload();
+				}
+			}
+		});
+
+		// Set initial game selection
+		const savedGame = localStorage.getItem('selectedGame') || 'pong';
+		if (window.user && window.user.selected_game) {
+			window.selected_game = window.user.selected_game;
+			updateGameDisplay(window.user.selected_game);
+			localStorage.setItem('selectedGame', window.user.selected_game);
+		} else {
+			window.selected_game = savedGame;
+			updateGameDisplay(savedGame);
+		}
+		window.changeCSS(window.selected_game);
+	}
+	
+	// Setup event listeners
 	document.addEventListener('click', (event) => {
 		if (event.target.closest('[data-link]')) {
 			event.preventDefault();
@@ -128,10 +193,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 			navigateTo(path);
         }
     });
-    window.addEventListener('popstate', () => {
-		navigateTo(window.location.pathname);
+	
+    window.addEventListener('popstate', (event) => {
+		// If we have state and it contains a path, use that instead
+		if (event.state && event.state.path) {
+			render(event.state.path);
+		} else {
+			// Otherwise fallback to current pathname
+			navigateTo(window.location.pathname);
+		}
     });
-	navigateTo(window.location.pathname);	
+	
+	// Initialize Bootstrap components in the navbar
+	if (typeof bootstrap !== 'undefined') {
+		// Initialize navbar toggler
+		const navbarToggler = document.querySelector('.navbar-toggler');
+		if (navbarToggler) {
+			const navbarContent = document.querySelector(navbarToggler.dataset.bsTarget);
+			if (navbarContent) {
+				new bootstrap.Collapse(navbarContent, {
+					toggle: false
+				});
+			}
+		}
+		
+		// Initialize dropdowns in the navbar
+		const navbarDropdowns = document.querySelectorAll('nav .dropdown-toggle');
+		navbarDropdowns.forEach(dropdown => {
+			new bootstrap.Dropdown(dropdown);
+		});
+	}
+	
+	// Fetch user info
+	await fetchUserInfo();
+	
+	// Navigate to current path
+	navigateTo(window.location.pathname);
 });
 
 async function updateLastActivity() {

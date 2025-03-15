@@ -1,5 +1,75 @@
 <h2>Créer un compte</h2>
 
+<style>
+.card {
+    background-color: var(--secondary-bg) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.1);
+}
+
+.form-control {
+    background-color: var(--secondary-bg);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    color: var(--text-color);
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    background-color: var(--secondary-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: bold;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
+h2 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.form-label {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.text-light {
+    color: var(--text-color) !important;
+}
+</style>
+
     <form id="register-form">
         <div>
             <label for="username">Nom d'utilisateur:</label>

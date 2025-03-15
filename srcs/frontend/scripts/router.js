@@ -62,7 +62,7 @@ function callback() {
 				const json = await response.json();
 				const user = json.user;
 				alert("Bienvenue " + user.username);
-				handleUserAuthenticated(user);
+				handleUserAuthenticated(user, json.friends);
 				navigateTo('/');
 			} else {
 				console.error("Erreur lors de la synchronisation 42:", response.statusText);

@@ -23,15 +23,25 @@ function onLoad() {
 
 			if (response.ok) {
 				const user = await response.json();
+				// Fetch friends data after successful registration
+				const friendsResponse = await fetch('/api/account/friends/', {
+					method: 'GET',
+					headers: {
+						'X-CSRFToken': getCookie('csrftoken'),
+					},
+					credentials: 'include',
+				});
+				const friends = friendsResponse.ok ? await friendsResponse.json() : [];
+				
 				alert("Bonjour " + user.username);
-				handleUserAuthenticated(user);
+				handleUserAuthenticated(user, friends);
 				navigateTo('/');
 			} else {
 				const errorData = await response.json();
 				if (errorData.non_field_errors) {
 					alert(errorData.non_field_errors.join('\n'), 'error');
 				} else {
-					alert(errorData, 'error');
+					alert(errorData.error || 'Registration failed', 'error');
 				}
 			}
 		} catch (error) {

@@ -51,7 +51,10 @@
 //                     } else {
 //                         console.log("Vous avez perdu !");
 //                     }
-//                     document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
+//                     document.getElementById('button-wrapper').innerHTML = `
+//                         <a class="header_link" href="#" data-link="/"><i class="fas fa-arrow-left"></i> Retour</a>
+//                         <a class="header_link rematch" href="#" onclick="handleRematch(event)"><i class="fas fa-redo"></i> Revanche</a>
+//                     `;
 //                 }
 //             }
 //         } catch (e) {
@@ -125,3 +128,13 @@
 
 // export { onLoad, onUnload };
 // window.onload = onLoad;
+
+// Add rematch handling function
+window.handleRematch = function(event) {
+    event.preventDefault();
+    const opponentId = window.location.pathname.split('/')[3]; // Get opponent ID from URL
+    if (opponentId) {
+        const rematchUrl = '/game/invite/' + opponentId;
+        window.location.href = rematchUrl;
+    }
+}

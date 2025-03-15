@@ -22,8 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 					'losses',
 					'friendship_requests_sent',
 					'password',
-					'selected_game',
-                    'intra_id',
+					'selected_game'
                     ]
 
     def validate_old_password(self, value):

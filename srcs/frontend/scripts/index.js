@@ -23,7 +23,6 @@ async function logout() {
 }
 
 window.handleUserAuthenticated = function(user, friends) {
-
 	window.user = user;
 	window.friends = friends;
     const loginLink = document.getElementById('login-link');
@@ -32,23 +31,21 @@ window.handleUserAuthenticated = function(user, friends) {
     const usernameSpan = document.getElementById('username');
     const profilePic = document.getElementById('profile-pic');
     const searchLink = document.getElementById('search-link');
-	profileLink = document.getElementById('profile-link');
+	const profileLink = document.getElementById('profile-link');
 	
-	usernameSpan.textContent = user.username;
-	profilePic.src = user.avatar;
-	profileLink.dataset.link = '/profile/' + user.username;
-	searchLink.style.display = 'block';
-	loginLink.style.display = 'none';
-	profileMenu.style.display = 'block';
-	if (user.is_staff)
-		adminLink.style.display = 'block';
-	else
-		adminLink.style.display = 'none';
+	if (usernameSpan) usernameSpan.textContent = user.username;
+	if (profilePic) profilePic.src = user.avatar;
+	if (profileLink) profileLink.dataset.link = '/profile/' + user.username;
+	if (searchLink) searchLink.style.display = 'block';
+	if (loginLink) loginLink.style.display = 'none';
+	if (profileMenu) profileMenu.style.display = 'block';
+	if (adminLink) {
+		adminLink.style.display = user.is_staff ? 'block' : 'none';
+	}
 	const friendsLink = document.getElementById('friends-link');
-	if (friends && friends.length > 0)
-		friendsLink.style.display = 'block';
-	else
-		friendsLink.style.display = 'none';
+	if (friendsLink) {
+		friendsLink.style.display = (friends && friends.length > 0) ? 'block' : 'none';
+	}
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
 		gameSelector.value = user.selected_game;
