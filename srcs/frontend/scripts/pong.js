@@ -117,6 +117,16 @@ function onLoad() {
 
     // Event listener for WebSocket close event
     socket.addEventListener('close', function () {
+        keysPressed = { ArrowUp: false, ArrowDown: false };
+        velocity = 0;
+
+        // Supprimer les écouteurs clavier
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        gameFinished = false;
+        win = false;
+        socket.close();
         console.log('WebSocket connection closed.');
     });
     
