@@ -13,6 +13,9 @@ function onLoad() {
         return;
     }
     console.log("La page charge!");
+    
+    // Set the game type for styling
+    document.body.setAttribute('data-game', 'tictactoe');
 
     // Initialisation de la connexion WebSocket
 	socket = new WebSocket('wss://' + window.location.host + '/wss/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
@@ -84,7 +87,9 @@ function onLoad() {
                         document.getElementById('player-turn').textContent = "Vous avez perdu";
                     }
                     document.getElementById('button-wrapper').innerHTML = `
-                        <a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>
+                        <a class="header_link" href="#" data-link="/">
+                            <i class="fas fa-arrow-circle-left"></i> Back to Menu
+                        </a>
                     `;
                 }
             }

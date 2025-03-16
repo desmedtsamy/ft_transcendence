@@ -35,6 +35,10 @@ function onLoad() {
 		return;
 	}
     console.log("La page charge!");
+    
+    // Set the game type for styling
+    document.body.setAttribute('data-game', 'pong');
+
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -126,7 +130,11 @@ function onLoad() {
                     //losing screen
                     console.log("u lost" + data.winner + " - " + window.user.id);
                 }
-                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-arrow-left"></i> Retour</a>';
+                document.getElementById('button-wrapper').innerHTML = `
+                    <a class="header_link" href="#" data-link="/">
+                        <i class="fas fa-arrow-circle-left"></i> Back to Menu
+                    </a>
+                `;
             }
         }
         
@@ -217,7 +225,11 @@ function handleOpponentDisconnect() {
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.close();
                 }
-                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
+                document.getElementById('button-wrapper').innerHTML = `
+                    <a class="header_link" href="#" data-link="/">
+                        <i class="fas fa-arrow-circle-left"></i> Back to Menu
+                    </a>
+                `;
             }
         }, 1000);
     }
@@ -300,7 +312,9 @@ function drawEndScreen(win) {
         buttonWrapper.style.top = `${canvas.offsetTop + (canvas.height * 0.65)}px`;
         buttonWrapper.style.width = '100%';
         buttonWrapper.innerHTML = `
-            <a class="header_link" href="#" data-link="/"><i class="fas fa-arrow-left"></i> Retour</a>
+            <a class="header_link" href="#" data-link="/">
+                <i class="fas fa-arrow-circle-left"></i> Back to Menu
+            </a>
         `;
     }
 }

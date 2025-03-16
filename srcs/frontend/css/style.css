@@ -708,33 +708,62 @@ a {
 #button-wrapper .header_link {
 	display: inline-flex;
 	align-items: center;
-	padding: 10px 20px;
-	background-color: var(--primary-color);
+	padding: 12px 28px;
+	background: linear-gradient(135deg, var(--primary-color) 0%, #12b8a0 100%);
 	color: var(--bg-color);
 	text-decoration: none;
-	border-radius: 8px;
+	border-radius: 50px;
 	font-weight: bold;
-	transition: all 0.2s ease-in-out;
+	font-size: 1.1em;
+	transition: all 0.3s ease-in-out;
+	border: 2px solid transparent;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	box-shadow: 0 4px 15px rgba(18, 184, 160, 0.2);
+}
+
+/* Special styling for TicTacToe's return button */
+body[data-game="tictactoe"] #button-wrapper .header_link {
+	background: linear-gradient(135deg, #e01634 0%, #b31228 100%);
+	box-shadow: 0 4px 15px rgba(224, 22, 52, 0.2);
+}
+
+body[data-game="tictactoe"] #button-wrapper .header_link:hover {
+	background: var(--bg-color);
+	color: #e01634;
+	border: 2px solid #e01634;
+	box-shadow: 0 6px 20px rgba(224, 22, 52, 0.4);
 }
 
 #button-wrapper .header_link:hover {
-	background-color: var(--bg-color);
+	transform: translateY(-3px);
+	box-shadow: 0 6px 20px rgba(18, 184, 160, 0.4);
+	background: var(--bg-color);
 	color: var(--primary-color);
-	transform: translateY(-2px);
-	box-shadow: 0 4px 12px rgba(22, 224, 189, 0.2);
+	border: 2px solid var(--primary-color);
+	padding: 12px 32px;
+}
+
+#button-wrapper .header_link i {
+	margin-right: 12px;
+	font-size: 1.3em;
+	transition: transform 0.3s ease-in-out;
+}
+
+#button-wrapper .header_link:hover i {
+	transform: translateX(-4px);
 }
 
 #button-wrapper .header_link.rematch {
-	background-color: var(--bg-color);
+	background: var(--bg-color);
 	color: var(--primary-color);
 	border: 2px solid var(--primary-color);
 }
 
 #button-wrapper .header_link.rematch:hover {
-	background-color: var(--primary-color);
+	background: linear-gradient(135deg, var(--primary-color) 0%, #12b8a0 100%);
 	color: var(--bg-color);
-}
-
-#button-wrapper .header_link i {
-	margin-right: 8px;
+	border: 2px solid transparent;
+	transform: translateY(-3px);
+	box-shadow: 0 6px 20px rgba(18, 184, 160, 0.4);
 }
