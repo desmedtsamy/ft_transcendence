@@ -1,3 +1,6 @@
+let socket;
+
+
 function onLoad() {
 	document.getElementById('gameSelector').disabled = true;
 	let loader = document.getElementById('loader');
@@ -6,7 +9,7 @@ function onLoad() {
 	else
 	setTicTacToeLoader(loader);
 
-	let socket = new WebSocket('wss://' + window.location.host + '/wss/matchmaking/' + window.user.id);
+	socket = new WebSocket('wss://' + window.location.host + '/wss/matchmaking/' + window.user.id);
 	socket.addEventListener('open', function () {
 		const gameType = window.selected_game || 'pong';
 		socket.send(JSON.stringify({
