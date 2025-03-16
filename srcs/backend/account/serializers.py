@@ -34,7 +34,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         password = data.get('password')
-        validate_password(password)
+        if password :
+            print(data)
+            validate_password(password)
         return data
 
 def update(self, instance, validated_data):

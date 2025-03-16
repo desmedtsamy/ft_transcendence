@@ -12,7 +12,10 @@ async function fetchUserInfo() {
 			method: 'GET',
 			credentials: 'include',
 		});
-
+		if (window.selected_game === "pong")
+			deletePongLoader();
+		else
+			deleteTicTacToeLoader();
 		if (response.ok) {
 			const data = await response.json();
 			if (data.is_authenticated) {

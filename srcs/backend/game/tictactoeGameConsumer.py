@@ -164,9 +164,9 @@ class Consumer(WebsocketConsumer):
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 				def end_game_timer():
-					time.sleep(60)  # Wait for 60 seconds
+					time.sleep(60)
 					with lock:
-						if len(self.game.player_list) < 2:  # Check if opponent hasn't reconnected
+						if len(self.game.player_list) < 2:
 							if self.game in all_game:
 								all_game.remove(self.game)
 							# Notify remaining player that game has ended

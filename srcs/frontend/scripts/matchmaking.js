@@ -6,7 +6,7 @@ function onLoad() {
 	else
 	setTicTacToeLoader(loader);
 
-	socket = new WebSocket('wss://' + window.location.host + '/wss/matchmaking/' + window.user.id);
+	let socket = new WebSocket('wss://' + window.location.host + '/wss/matchmaking/' + window.user.id);
 	socket.addEventListener('open', function () {
 		const gameType = window.selected_game || 'pong';
 		socket.send(JSON.stringify({

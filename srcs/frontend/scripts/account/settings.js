@@ -28,20 +28,15 @@ async function getClientAPI(){
 }
 
 function onLoad() {
-	if (window.user === undefined) {
-	}
-	else {
+	if (window.user != undefined) {
 		document.getElementById('username_input').value = window.user.username;
 		document.getElementById('email').value = window.user.email;
 	}
 	const form = document.getElementById('settings-form');
-	
 	form.addEventListener('submit', async (event) => {
 		event.preventDefault();
 	
 		const formData = new FormData(form);
-	
-	
 		try {
 			const response = await fetch('/api/account/settings/',
 				{
@@ -55,7 +50,7 @@ function onLoad() {
 			if (response.ok) {
 				const userData = await response.json();
 				alert('Paramètres mis à jour avec succès !');
-				handleUserAuthenticated(userData);
+				fetchUserInfo();
 			} else {
 				const errorData = await response.json();
 				alert('Erreur lors de la mise à jour des paramètres : ' + errorData.error);

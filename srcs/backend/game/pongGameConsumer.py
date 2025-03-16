@@ -35,7 +35,6 @@ class Game():
 			'winner': 0
 		}
 
-
 class Consumer(WebsocketConsumer):
 
 	def getGame(self):
@@ -87,6 +86,7 @@ class Consumer(WebsocketConsumer):
 				return
 
 			self.send_role_to_client()
+			self.send_connection()
 
 		if len(self.game.player_list) == 2:
 			self.countdown()
@@ -110,7 +110,6 @@ class Consumer(WebsocketConsumer):
 				if i > 0:
 					time.sleep(1)
 				i -= 1
-
 
 	def send_role_to_client(self):
 		""" Send the player's role (left or right) to the client """
@@ -164,16 +163,28 @@ class Consumer(WebsocketConsumer):
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2:
+				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
-			# self.send_active_player()
-			
+				def end_game_timer():
+					time.sleep(10)  # Wait for 60 seconds
+					with lock:
+						if len(self.game.player_list) < 2:  # Check if opponent hasn't reconnected
+							if self.game in all_game:
+								all_game.remove(self.game)
+							# Notify remaining player that game has ended
+							self.send_msg({
+								'type': 'game_ended', 
+								'message': 'Game ended due to opponent not reconnecting'
+							})
+							if self.id == self.game.match.player1.id :
+								self.game.match.end(self.game.match.player2)
+							else:
+								self.game.match.end(self.game.match.player1)
+				timer_thread = threading.Thread(target=end_game_timer)
+				timer_thread.start()
 
 	def update_game(self):
 		ball = self.game.state['ball']
-		# with lock:
-		# 	state['active_player'] = len(connected_client_list)
-		# 	if state['active_player'] < 2:
-		# 		return
 		left_player = self.game.state['players'][1]
 		right_player = self.game.state['players'][2]
 
@@ -219,6 +230,16 @@ class Consumer(WebsocketConsumer):
 		with lock:
 			for client in self.game.player_list:
 				client.send(game_data)
+
+	def send_msg(self, msg):
+		msg_json = json.dumps(msg)
+		for client in self.game.player_list:
+			client.send(msg_json)
+	
+	def send_connection(self):
+		for client in self.game.player_list:
+			if client != self:
+				client.send(json.dumps({'type' : 'opponent connected'}))
 	
 	def start_game_loop(self):
 		def game_loop():
@@ -242,5 +263,3 @@ class Consumer(WebsocketConsumer):
 				print("Game paused because a player disconnected.")
 				return
 		threading.Thread(target=game_loop, daemon=True).start()
-
-#TO DO : link everything together more
