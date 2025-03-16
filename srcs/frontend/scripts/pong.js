@@ -76,12 +76,15 @@ function onLoad() {
             const Message = document.getElementById('player-turn');
             playerRole = data.role;  // Store the player's role ('left' or 'right')
             Message.textContent = "I am the : " + playerRole + " player";
+			playerPosition.y = 250;
             if (playerRole === 'left'){
+				console.log("gauche")
                 playerPosition.x = 50;
                 opponentPosition.x = 750;
                 playerId = 1;
             }
             if (playerRole === 'right'){
+				console.log("droite")
                 playerPosition.x = 750;
                 opponentPosition.x = 50;
                 playerId = 2;
