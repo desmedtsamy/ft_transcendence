@@ -123,13 +123,16 @@ class Consumer(WebsocketConsumer):
 				if winner == 'X' or winner == 'O' or winner == 'n':
 					print('winner:', winner)
 					self.game.state['winner'] = winner
-					self.send_state()
 					if winner == 'n':
-						self.game.match.end(None)
+						# commente pur empecher les match nuls
+						# self.game.match.end(None)
+						self.game.state['winner'] = 0
+						self.game.state['board'] = [' ' for _ in range(9)]
 					elif self.id == self.game.match.player1.id :
 						self.game.match.end(self.game.match.player1)
 					else:
 						self.game.match.end(self.game.match.player2)
+					self.send_state()
 					return
 				else:
 					# Changer le joueur
