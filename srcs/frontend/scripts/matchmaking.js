@@ -1,3 +1,6 @@
+let socket;
+
+
 function onLoad() {
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {

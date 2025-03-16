@@ -3,10 +3,11 @@
 # Obtenir le nom d'hôte depuis les variables d'environnement ou utiliser une valeur par défaut
 
 # Extraire juste le nom de domaine sans le port pour le certificat
-DOMAIN=$(echo ${HOST} | cut -d':' -f1)
+DOMAIN=$(echo ${HOST}:${PORT} | cut -d':' -f1)
 
 # Afficher les valeurs pour le débogage
-echo "Using HOST_NAME: $HOST"
+echo "Using HOST: $HOST"
+echo "Using PORT: $PORT"
 echo "Using DOMAIN for SSL certificate: $DOMAIN"
 
 # Générer un certificat SSL auto-signé avec le bon nom de domaine

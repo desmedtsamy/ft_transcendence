@@ -1,6 +1,7 @@
 window.user;
 window.selected_game;
 window.friends;
+window.notification_socket;
 
 async function fetchUserInfo() {
 	createLoadingSpinner();
@@ -15,13 +16,15 @@ async function fetchUserInfo() {
 			method: 'GET',
 			credentials: 'include',
 		});
-
+		if (window.selected_game === "pong")
+			deletePongLoader();
+		else
+			deleteTicTacToeLoader();
 		if (response.ok) {
 			const data = await response.json();
 			if (data.is_authenticated) {
 				window.friends = data.friends;
 				handleUserAuthenticated(data.user, data.friends);
-				setNotification();
 			} else {
 				handleUserNotAuthenticated();
 				console.log('User is not authenticated');

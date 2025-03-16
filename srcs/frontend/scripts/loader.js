@@ -75,9 +75,6 @@ function deleteTicTacToeLoader() {
 
 function setPongLoader() {
 	const app = document.getElementById('app');
-	const title = document.createElement('div');
-	title.innerHTML = 'Chargement...';
-	app.appendChild(title);
 	const spinner = document.createElement('div');
 	spinner.className = 'pong-spinner';
 	spinner.innerHTML = `
@@ -86,4 +83,11 @@ function setPongLoader() {
 		<div class="paddle-spinner paddle-spinner-right"></div>
 	`;
 	app.appendChild(spinner);
+}
+
+function deletePongLoader(){
+	const loaders = document.getElementsByClassName("pong-spinner");
+	while(loaders.length > 0){
+		loaders[0].remove();
+	}
 }

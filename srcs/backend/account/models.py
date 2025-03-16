@@ -6,6 +6,13 @@ from game.models import Match
 from datetime import timedelta
 from django.core.cache import cache
 from django.contrib.sessions.models import Session
+from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.exceptions import ValidationError
+
+def validate_reserved_username(value):
+	reserved_names = ['root', 'system', 'moderator', 'staff', 'support']
+	if value.lower() in reserved_names:
+		raise ValidationError(f"Le nom d'utilisateur '{value}' est réservé et ne peut pas être utilisé.")
 
 def update_user_status():
 	time_threshold_inactive = timezone.now() - timedelta(minutes=2)
@@ -24,7 +31,18 @@ class User(AbstractUser):
 	)
 	
 	selected_game = models.CharField(max_length=20, choices=GAME_TYPES, default='pong')
-	username = models.CharField(max_length=100, unique=True)
+	username = models.CharField(
+		max_length=30, 
+		unique=True,
+		validators=[
+			MinLengthValidator(3, message="Le nom d'utilisateur doit contenir au moins 3 caractères."),
+			RegexValidator(
+				regex=r'^[a-zA-Z0-9_-]+$',
+				message="Le nom d'utilisateur ne peut contenir que des lettres, des chiffres, des tirets et des underscores.",
+			),
+			validate_reserved_username,
+		]
+	)
 	email = models.EmailField(unique=True)
 	avatar = models.ImageField(default='profile_pics/default.png', upload_to='profile_pics')
 	last_activity = models.DateTimeField(default=timezone.now)

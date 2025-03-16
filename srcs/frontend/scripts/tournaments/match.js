@@ -150,11 +150,14 @@ function renderTournament(tournament) {
 		} else {
 			document.getElementById('button_container').appendChild(createButton('Rejoindre le tournoi', joinTournament));
 		}
+	}
 
-		if (tournament.creator === window.user.username) {
-			if (!tournament.is_started) {
-				document.getElementById('admin_button_container').appendChild(createButton('Démarrer le tournoi', startTournament));
-			}
+	// Admin buttons
+	if (tournament.creator === window.user.username) {
+		if (!tournament.is_started) {
+			document.getElementById('admin_button_container').appendChild(createButton('Démarrer le tournoi', startTournament));
+		}
+		if (!tournament.is_started || tournament.is_finished) {
 			document.getElementById('admin_button_container').appendChild(createButton('Supprimer le tournoi', deleteTournament));
 		}
 	}

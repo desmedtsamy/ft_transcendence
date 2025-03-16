@@ -34,7 +34,6 @@ def join_tournament(tournament_id, user_id):
 
 		if not matchs:
 			return {'error': 'Le tournoi est complet'}, 400
-
 		tournamentMatch = matchs.first()
 		match = tournamentMatch.match
 		match.set_player(user)

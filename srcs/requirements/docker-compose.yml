@@ -33,7 +33,7 @@ services:
       - ../backend/media/:/app/media
       - ../backend/staticfiles/:/app/staticfiles
     ports:
-      - "8042:443"
+      - "${PORT}:443"
     env_file: ../../.env
     networks:
       - app-network
