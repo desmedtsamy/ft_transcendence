@@ -47,30 +47,36 @@ function createLoadingSpinner() {
 }
 
 window.changeCSS = function (game) {
-	let linkElement = document.getElementById('gameStylesheet');
-	if (!linkElement) {
-		linkElement = document.createElement('link');
-		linkElement.rel = 'stylesheet';
-		linkElement.id = 'gameStylesheet';
-		document.head.appendChild(linkElement);
+	// Remove existing stylesheets first
+	const existingStylesheet = document.getElementById('gameStylesheet');
+	if (existingStylesheet) {
+		existingStylesheet.remove();
 	}
-	
-	if (game === 'pong') {
-		linkElement.href = '/css/pong.css';
-	} else if (game === 'tictactoe') {
-		linkElement.href = '/css/tictactoe.css';
+	const existingTournamentStylesheet = document.getElementById('tournamentStylesheet');
+	if (existingTournamentStylesheet) {
+		existingTournamentStylesheet.remove();
 	}
 
-	// Always ensure tournament CSS is loaded on tournament page
+	// Create and add new stylesheet
+	const linkElement = document.createElement('link');
+	linkElement.rel = 'stylesheet';
+	linkElement.id = 'gameStylesheet';
+	
+	const timestamp = new Date().getTime();
+	if (game === 'pong') {
+		linkElement.href = `/css/pong.css?v=${timestamp}`;
+	} else if (game === 'tictactoe') {
+		linkElement.href = `/css/tictactoe.css?v=${timestamp}`;
+	}
+	document.head.appendChild(linkElement);
+
+	// Handle tournament CSS
 	if (window.location.pathname.startsWith('/tournaments')) {
-		let tournamentStylesheet = document.getElementById('tournamentStylesheet');
-		if (!tournamentStylesheet) {
-			tournamentStylesheet = document.createElement('link');
-			tournamentStylesheet.rel = 'stylesheet';
-			tournamentStylesheet.id = 'tournamentStylesheet';
-			document.head.appendChild(tournamentStylesheet);
-		}
-		tournamentStylesheet.href = '/css/tournament/tournament.css';
+		const tournamentStylesheet = document.createElement('link');
+		tournamentStylesheet.rel = 'stylesheet';
+		tournamentStylesheet.id = 'tournamentStylesheet';
+		tournamentStylesheet.href = `/css/tournament/tournament.css?v=${timestamp}`;
+		document.head.appendChild(tournamentStylesheet);
 	}
 }
 
@@ -189,15 +195,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 	document.addEventListener('click', (event) => {
 		if (event.target.closest('[data-link]')) {
 			event.preventDefault();
-            const path = event.target.closest('[data-link]').getAttribute('data-link');
+			const path = event.target.closest('[data-link]').getAttribute('data-link');
 			navigateTo(path);
-        }
-    });
+			// Reapply CSS after navigation
+			if (window.selected_game) {
+				setTimeout(() => window.changeCSS(window.selected_game), 0);
+			}
+		}
+	});
 	
     window.addEventListener('popstate', (event) => {
 		// If we have state and it contains a path, use that instead
 		if (event.state && event.state.path) {
 			render(event.state.path);
+			// Reapply CSS after navigation
+			if (window.selected_game) {
+				setTimeout(() => window.changeCSS(window.selected_game), 0);
+			}
 		} else {
 			// Otherwise fallback to current pathname
 			navigateTo(window.location.pathname);
