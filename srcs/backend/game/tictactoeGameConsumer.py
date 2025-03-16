@@ -6,7 +6,7 @@ import threading
 from game.services import getMatch
 
 all_game = []
-lock = Lock()  # thread-safe operations
+all_game_lock = Lock()
 
 # game
 class Game():
@@ -17,6 +17,7 @@ class Game():
 		self.p1_id = match.player1.id
 		self.p2_id = match.player2.id
 		self.turntoplay = self.p1_id
+		self.lock = Lock()
 		self.state = { 'type': 'gamestate',
 			'board': [' ' for _ in range(9)],
 			'winner': 0,
@@ -36,7 +37,7 @@ class Consumer(WebsocketConsumer):
 		}))
 		id = match.id
 		print(f"l'id de la game{id} ")
-		with lock:
+		with all_game_lock:
 			for game in all_game:
 				if game.id == id:
 					print(f"le score de la game {game.id} quand elle existe deja {game.state}")
@@ -51,7 +52,7 @@ class Consumer(WebsocketConsumer):
 		self.id  = int (self.scope['url_route']['kwargs']['user_id'])
 		#ajouter la game
 		self.game = self.getGame()
-		with lock:
+		with self.game.lock:
 			# verifie si le joueur a deja une connection existante
 			player_to_remove = None
 			for player in self.game.player_list:
@@ -65,7 +66,6 @@ class Consumer(WebsocketConsumer):
 			
 			# verifie si le client est un membre du match et l'ajoute
 			print("Adding player to the list")
-			self.game.player_list.append(self)
 			if self.id == self.game.p1_id:
 				self.role = "X"
 			elif self.id == self.game.p2_id:
@@ -73,6 +73,7 @@ class Consumer(WebsocketConsumer):
 			else:
 				self.refuse_connection()
 				return
+			self.game.player_list.append(self)
 			self.send_role_to_client()
 			# envoyer a l'autre joueurs qu'il se co
 			# self.send(json.dumps(self.game.state))
@@ -152,10 +153,13 @@ class Consumer(WebsocketConsumer):
 		return 'n'
 	
 	def disconnect(self, code):
-		with lock:
+		with self.game.lock:
 			if self in self.game.player_list:
 				self.game.player_list.remove(self)
 				self.role = None
+			if self.id != self.game.p1_id and self.id != self.game.p2_id:
+				print("fraud detected")
+				return
 			if len(self.game.player_list) == 0:
 				print(f"No players left in game {self.game.id}. Removing from all_game.")
 				if self.game in all_game:
@@ -165,7 +169,7 @@ class Consumer(WebsocketConsumer):
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 				def end_game_timer():
 					time.sleep(60)
-					with lock:
+					with self.game.lock:
 						if len(self.game.player_list) < 2:
 							if self.game in all_game:
 								all_game.remove(self.game)
