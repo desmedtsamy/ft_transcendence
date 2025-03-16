@@ -10,7 +10,7 @@ from django.core.validators import RegexValidator, MinLengthValidator
 from django.core.exceptions import ValidationError
 
 def validate_reserved_username(value):
-	reserved_names = ['admin', 'root', 'system', 'moderator', 'staff', 'support']
+	reserved_names = ['root', 'system', 'moderator', 'staff', 'support']
 	if value.lower() in reserved_names:
 		raise ValidationError(f"Le nom d'utilisateur '{value}' est réservé et ne peut pas être utilisé.")
 
