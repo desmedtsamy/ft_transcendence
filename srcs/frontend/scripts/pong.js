@@ -9,6 +9,8 @@ var scores = [0,0];
 var countdown = 0;
 var gameFinished = false;
 var win = false;
+var opponentConnected = false;
+var gamePaused = false;
 
 let keysPressed = { ArrowUp: false, ArrowDown: false };
 let velocity = 0; // Vitesse du joueur
@@ -54,9 +56,26 @@ function onLoad() {
             console.log(data.message);
             window.location.href = data.url;
         }
+
+        if (data.type === 'disconnect') {
+            handleOpponentDisconnect();
+        }
+
+        if (data.type === 'opponent connected') {
+            opponentConnected = true;
+            gamePaused = false;
+            const disconnectMessage = document.getElementById('player-turn');
+            disconnectMessage.textContent = "I am the : " + playerRole + " player";
+            if (window.disconnectTimer) {
+                clearInterval(window.disconnectTimer);
+                window.disconnectTimer = null;
+            }
+        }
         // If the server sends the player's role
         if (data.type === 'role') {
+            const Message = document.getElementById('player-turn');
             playerRole = data.role;  // Store the player's role ('left' or 'right')
+            Message.textContent = "I am the : " + playerRole + " player";
             if (playerRole === 'left'){
                 playerPosition.x = 50;
                 opponentPosition.x = 750;
@@ -117,16 +136,6 @@ function onLoad() {
 
     // Event listener for WebSocket close event
     socket.addEventListener('close', function () {
-        keysPressed = { ArrowUp: false, ArrowDown: false };
-        velocity = 0;
-
-        // Supprimer les écouteurs clavier
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        gameFinished = false;
-        win = false;
-        socket.close();
         console.log('WebSocket connection closed.');
     });
     
@@ -164,14 +173,52 @@ function startGameLoop(){
         }
         const deltaTime = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
-        
-        update(deltaTime);
-        draw();
+        if (!gamePaused) {
+            update(deltaTime);
+            draw();
+        } 
         requestAnimationFrame(gameLoop);
     }
     requestAnimationFrame(gameLoop);
 }
 
+function handleOpponentDisconnect() {
+    if (!gameFinished) {
+        opponentConnected = false;
+        gamePaused = true; // Mettre le jeu en pause
+        let timeLeft = 10;
+        const disconnectMessage = document.getElementById('player-turn');
+        
+        if (window.disconnectTimer) {
+            clearInterval(window.disconnectTimer);
+        }
+
+        window.disconnectTimer = setInterval(() => {
+            if (gameFinished || opponentConnected) {
+                disconnectMessage.textContent = "I am the : " + playerRole + " player";
+                clearInterval(window.disconnectTimer);
+                window.disconnectTimer = null;
+                return;
+            }
+
+            if (timeLeft >= 0) {
+                disconnectMessage.textContent = `Opponent disconnected ${timeLeft}s left before forfeit`;
+                timeLeft--;
+            } else {
+                gameFinished = true;
+                disconnectMessage.textContent = "Game won by forfeit";
+                win = true;
+                drawEndScreen(win);
+                clearInterval(window.disconnectTimer);
+                window.disconnectTimer = null;
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.close();
+                }
+                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
+            }
+        }, 1000);
+    }
+}
 function update(deltaTime) {
     if (keysPressed.ArrowUp) velocity = -SPEED;
     else if (keysPressed.ArrowDown) velocity = SPEED;

@@ -35,7 +35,6 @@ class Game():
 			'winner': 0
 		}
 
-
 class Consumer(WebsocketConsumer):
 
 	def getGame(self):
@@ -74,6 +73,7 @@ class Consumer(WebsocketConsumer):
 			if player_to_remove:
 				print("Removing player from the list")
 				self.game.player_list.remove(player_to_remove)
+			
 			# verifie si le client est un membre du match et l'ajoute
 			print("Adding player to the list")
 			self.game.player_list.append(self)
@@ -84,7 +84,10 @@ class Consumer(WebsocketConsumer):
 			else:
 				self.refuse_connection()
 				return
+
 			self.send_role_to_client()
+			self.send_connection()
+
 		if len(self.game.player_list) == 2:
 			self.countdown()
 			print("Starting the game loop " , self.id)
@@ -102,6 +105,7 @@ class Consumer(WebsocketConsumer):
 			i = 3
 			while i >= 0:
 				for client in self.game.player_list:
+					#print("valeur de i:", i)
 					client.send(json.dumps({"countdown" : i}))
 				if i > 0:
 					time.sleep(1)
@@ -131,41 +135,53 @@ class Consumer(WebsocketConsumer):
 			print(f"Error in receive: {e}")
 			self.send(json.dumps({"error": "Server error"}))
 
-	def disconnect(self):
+	def handle_data(self, data):
+		if data.get('type') == 'move':
+			self.move_player(data)
+		else:
+			print("error: wrong data type")
+	
+	def move_player(self, data):
+		position = data.get('position')
+		if position is not None:
+			if  0 <= position['y'] <= canvas_height - paddle_height:
+				if self.role == "left":
+					self.game.state['players'][1]['y'] = position['y']
+				elif self.role == "right":
+					self.game.state['players'][2]['y'] = position['y']
+		else:
+			print("Position data missing")
+
+
+	def disconnect(self, code):
 		with lock:
 			if self in self.game.player_list:
 				self.game.player_list.remove(self)
 				self.role = None
 			if len(self.game.player_list) == 0:
 				print(f"No players left in game {self.game.id}. Removing from all_game.")
-				self.game.match.end(None)
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2:
+				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
-	
-	def start_game_loop(self):
-		def game_loop():
-			#to do: add a stop to the loop upon reaching a certain score
-			while len(self.game.player_list) == 2:
-				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:
-					print("Game over")
-					if self.game.state['scores'][1] >= MAXSCORE:
-						self.game.state['winner'] = self.game.p1_id
-						self.send_state()
-						self.game.match.end(self.game.match.player1)
-					else:
-						self.game.state['winner'] = self.game.p2_id
-						self.send_state()
-						self.game.match.end(self.game.match.player2)
-					return
-				self.update_game()
-				self.send_state()
-				time.sleep(0.0155)
-			if len(self.game.player_list) < 2:
-				print("Game paused because a player disconnected.")
-				return
-		threading.Thread(target=game_loop, daemon=True).start()
+				def end_game_timer():
+					time.sleep(10)  # Wait for 60 seconds
+					with lock:
+						if len(self.game.player_list) < 2:  # Check if opponent hasn't reconnected
+							if self.game in all_game:
+								all_game.remove(self.game)
+							# Notify remaining player that game has ended
+							self.send_msg({
+								'type': 'game_ended', 
+								'message': 'Game ended due to opponent not reconnecting'
+							})
+							if self.id == self.game.match.player1.id :
+								self.game.match.end(self.game.match.player2)
+							else:
+								self.game.match.end(self.game.match.player1)
+				timer_thread = threading.Thread(target=end_game_timer)
+				timer_thread.start()
 
 	def update_game(self):
 		ball = self.game.state['ball']
@@ -209,25 +225,41 @@ class Consumer(WebsocketConsumer):
 				ball_rect['y'] <= paddle_rect['y'] + paddle_rect['height'] and
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
-	def handle_data(self, data):
-		if data.get('type') == 'move':
-			self.move_player(data)
-		else:
-			print("error: wrong data type")
-	
-	def move_player(self, data):
-		position = data.get('position')
-		if position is not None:
-			if  0 <= position['y'] <= canvas_height - paddle_height:
-				if self.role == "left":
-					self.game.state['players'][1]['y'] = position['y']
-				elif self.role == "right":
-					self.game.state['players'][2]['y'] = position['y']
-		else:
-			print("Position data missing")
-
 	def send_state(self):
 		game_data = json.dumps(self.game.state)
 		with lock:
 			for client in self.game.player_list:
 				client.send(game_data)
+
+	def send_msg(self, msg):
+		msg_json = json.dumps(msg)
+		for client in self.game.player_list:
+			client.send(msg_json)
+	
+	def send_connection(self):
+		for client in self.game.player_list:
+			if client != self:
+				client.send(json.dumps({'type' : 'opponent connected'}))
+	
+	def start_game_loop(self):
+		def game_loop():
+			#to do: add a stop to the loop upon reaching a certain score
+			while len(self.game.player_list) == 2:
+				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:
+					print("Game over")
+					if self.game.state['scores'][1] >= MAXSCORE:
+						self.game.state['winner'] = self.game.p1_id
+						self.send_state()
+						self.game.match.end(self.game.match.player1)
+					else:
+						self.game.state['winner'] = self.game.p2_id
+						self.send_state()
+						self.game.match.end(self.game.match.player2)
+					return
+				self.update_game()
+				self.send_state()
+				time.sleep(0.0155)
+			if len(self.game.player_list) < 2:
+				print("Game paused because a player disconnected.")
+				return
+		threading.Thread(target=game_loop, daemon=True).start()
