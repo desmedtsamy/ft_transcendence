@@ -164,11 +164,11 @@ class Consumer(WebsocketConsumer):
 				print(f"No players left in game {self.game.id}. Removing from all_game.")
 				if self.game in all_game:
 					all_game.remove(self.game)
-			elif len(self.game.player_list) < 2:
+			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 				def end_game_timer():
-					time.sleep(60)
+					time.sleep(10)
 					with self.game.lock:
 						if len(self.game.player_list) < 2:
 							if self.game in all_game:
