@@ -85,7 +85,6 @@ function onLoad() {
                     }
                     document.getElementById('button-wrapper').innerHTML = `
                         <a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>
-                        <a class="header_link rematch" href="#" onclick="handleRematch(event)"><i class="fas fa-redo"></i> Revanche</a>
                     `;
                 }
             }
