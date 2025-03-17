@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from .models import User, Match, FriendshipRequest
 from .serializers import UserSerializer
 from game.serializers import MatchSerializer
-from .services import send_friend_request, remove_friend, accept_friend_request, delete_friend_request, get_42_user_data, handle_42_user
+from .services import *
 
 
 class CurrentUserViewAPI(APIView):
@@ -113,11 +113,8 @@ class UserSettingsView(APIView):
 
 	def patch(self, request, *args, **kwargs):
 		user = request.user
-		serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		response, status = update_user(user, request)
+		return Response(response, status)
 
 class SearchUsersAPIView(APIView):
 	permission_classes = [IsAuthenticated]
