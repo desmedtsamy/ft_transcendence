@@ -121,6 +121,10 @@
 	margin-top: 20px;
 }
 
+.text-lblue{
+	color: lightblue;
+}
+
 .round {
 	display: flex;
 	flex-direction: column;

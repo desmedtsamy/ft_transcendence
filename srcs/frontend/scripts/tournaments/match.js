@@ -42,7 +42,7 @@ export function populateTournaments(tournamentId)
 		}
 		tournamentList.innerHTML = '';
 		if (!data.tournaments || data.tournaments.length === 0) {
-			tournamentList.innerHTML = '<div class="text-center mt-3">Aucun tournoi disponible</div>';
+			tournamentList.innerHTML = '<div class="text-center text-lblue mt-3">Aucun tournoi disponible</div>';
 			return;
 		}
 		data["tournaments"].forEach(tournament => {
