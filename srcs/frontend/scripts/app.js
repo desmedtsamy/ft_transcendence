@@ -133,7 +133,7 @@ window.alert = function(message, type = 'normal') {
 
 document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize the history state for the current page
-	window.history.replaceState({ path: window.location.pathname }, '', window.location.pathname);
+	window.history.replaceState({ path: window.location.pathname + window.location.search }, '', window.location.pathname + window.location.search);
 	
 	// Setup game selector
 	const gameMenu = document.getElementById('game-menu');

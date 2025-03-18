@@ -18,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 					'is_staff',
 					'scores',
 					'wins',
+					'intra_id',
 					'losses',
 					'friendship_requests_sent',
 					'password',

@@ -62,7 +62,7 @@ function callback() {
 				const json = await response.json();
 				const user = json.user;
 				alert("Bienvenue " + user.username);
-				handleUserAuthenticated(user, json.friends);
+				handleUserAuthenticated(user);
 				navigateTo('/');
 			} else {
 				console.error("Erreur lors de la synchronisation 42:", response.statusText);
@@ -86,7 +86,8 @@ function navigateTo(path) {
 	else if (absolutePath === '/42sync') {
 		sync_42();
 	} else {
-		window.history.pushState({ path: absolutePath }, '', absolutePath);
+		
+		window.history.pushState({}, '', absolutePath);
 		render(absolutePath);
 	}
 }
