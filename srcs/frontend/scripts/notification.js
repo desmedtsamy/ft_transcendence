@@ -1,205 +1,3 @@
-// const game_type = localStorage.getItem('selectedGame');
-
-// function setNotification() {
-
-// 	var id = 0;
-// 	if (window.user === undefined) {
-// 		return;
-// 	} else {
-// 		id = window.user.id;
-// 	}
-
-// 	window.notification_socket = new WebSocket('wss://' + window.location.host + '/wss/notification/' + id);
-// 	window.notification_socket.addEventListener('open', function (event) {
-// 		console.log('notification socket is open now.');
-// 	});
-// 	window.notification_socket.addEventListener('close', function (event) {
-// 		console.log('notification socket is close.');
-// 		if (window.user != null){
-// 			setTimeout(function() {
-// 				setNotification();
-// 			}, 2000);
-// 		}
-// 	});
-
-// 	window.notification_socket.addEventListener('message', function (event) {
-// 		console.log(event.data);
-// 		const data = JSON.parse(event.data);
-// 		if (data.message == "match_request")
-// 			matchRequest(data, window.user.id);
-// 		else if (data.message == "match_start")
-// 		{
-
-// 			document.getElementById('alerts').innerHTML = '';
-// 			if (data.game_type != game_type)
-// 				window.setSelectedGame(data.game_type);
-// 			if (data.game_type == "pong")
-// 				navigateTo( '/pong/' + data.match_id);
-// 			else
-// 				navigateTo( '/tictactoe/' + data.match_id);
-// 		}
-// });
-
-// window.notification_socket.onerror = function (error) {
-// 	alert(`[error] ${error.message}`);
-// };
-// }
-
-// function matchRequest(data, id) {
-// 	const name = data.name;
-// 	const match_id = data.match_id;
-// 	const timestamp = data.timestamp;
-// 	const isTournament = data.tournament === true;
-// 	const tournamentName = data.tournament_name || "Tournoi";
-// 	const player1Name = data.player1_name || "Joueur 1";
-// 	const player2Name = data.player2_name || "Joueur 2";
-// 	const player1Id = data.player1_id;
-// 	const player2Id = data.player2_id;
-// 	const isPlayer1 = id === player1Id;
-// 	const opponentName = isPlayer1 ? player2Name : player1Name;
-	
-// 	const alertsEl = document.getElementById('alerts');
-// 	const alertEl = document.createElement('div');
-// 	alertEl.className = `alert alert-normal`;
-	
-// 	if (isTournament) {
-// 		alertEl.textContent = `Un match du tournoi "${tournamentName}" va commencer contre ${opponentName}`;
-// 	} else if (isPlayer1){
-// 		alertEl.textContent = `demande envoyé`;
-// 	}else{
-// 		alertEl.textContent = `${opponentName} vous propose un vs`;
-// 	}
-	
-// 	alertEl.style.display = 'flex';
-// 	alertEl.style.justifyContent = 'space-between';
-// 	alertEl.style.flexDirection = 'column';
-	
-// 	const buttonsContainer = document.createElement('div');
-// 	buttonsContainer.style.display = 'flex';
-// 	buttonsContainer.style.justifyContent = 'space-between';
-// 	buttonsContainer.style.marginTop = '10px';
-	
-// 	if (isTournament || !isPlayer1)
-// 	{
-// 		const acceptButton = document.createElement('button');
-// 		acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
-// 		acceptButton.textContent = 'Accept';
-// 		acceptButton.addEventListener('click', function() {
-// 			acceptMatch(id, match_id);
-// 			alertsEl.innerHTML = '';
-// 			clearInterval(timerInterval);
-// 		});
-// 		buttonsContainer.appendChild(acceptButton);
-		
-// 		const declineButton = document.createElement('button');
-// 		declineButton.classList.add('button', 'btn-danger', 'cancel-friend-request');
-// 		declineButton.textContent = 'Decline';
-// 		declineButton.addEventListener('click', function() {
-// 			declineMatch(id, match_id);
-// 			alertsEl.innerHTML = '';
-// 			clearInterval(timerInterval);
-// 		});
-// 		buttonsContainer.appendChild(declineButton);
-// 	}
-	
-// 	// Créer le container pour le timer
-// 	const timerContainer = document.createElement('div');
-// 	timerContainer.style.marginTop = '10px';
-// 	timerContainer.style.textAlign = 'center';
-	
-// 	// Créer l'élément pour le texte du timer
-// 	const timerText = document.createElement('div');
-// 	timerText.style.fontWeight = 'bold';
-// 	timerText.style.marginBottom = '5px';
-	
-// 	// Créer la barre de progression
-// 	const progressBar = document.createElement('div');
-// 	progressBar.style.width = '100%';
-// 	progressBar.style.backgroundColor = '#eee';
-// 	progressBar.style.borderRadius = '5px';
-// 	progressBar.style.overflow = 'hidden';
-	
-// 	const progressFill = document.createElement('div');
-// 	progressFill.style.height = '10px';
-// 	progressFill.style.width = '100%';
-// 	progressFill.style.backgroundColor = '#4CAF50';
-// 	progressFill.style.transition = 'width 1s linear';
-	
-// 	progressBar.appendChild(progressFill);
-// 	timerContainer.appendChild(timerText);
-// 	timerContainer.appendChild(progressBar);
-	
-// 	alertEl.appendChild(buttonsContainer);
-// 	alertEl.appendChild(timerContainer);
-// 	alertsEl.appendChild(alertEl);
-	
-// 	let timeLeft = 60;
-// 	if (timestamp) {
-// 		console.log("timestamp :", timestamp, " date.now : ", Date.now());
-// 		const elapsedTime = Math.floor((Date.now() - timestamp) / 1000);
-// 		timeLeft = Math.max(0, 60 - elapsedTime);
-// 		console.log("time left:", timeLeft);
-// 	}
-// 	timerText.textContent = `${timeLeft} secondes restantes`;
-	
-// 	const timerInterval = setInterval(function() {
-// 		timeLeft--;
-// 		if (timeLeft <= 0) {
-// 			clearInterval(timerInterval);
-// 			timerText.textContent = "Temps écoulé";
-// 		} else {
-// 			timerText.textContent = `${timeLeft} secondes restantes`;
-// 		}
-		
-// 		const percentLeft = (timeLeft / 60) * 100;
-// 		progressFill.style.width = `${percentLeft}%`;
-		
-// 		if (timeLeft <= 10) {
-// 			progressFill.style.backgroundColor = '#f44336'; // Rouge quand peu de temps
-// 		} else if (timeLeft <= 30) {
-// 			progressFill.style.backgroundColor = '#ff9800'; // Orange quand temps modéré
-// 		}
-// 	}, 1000);
-	
-// 	setTimeout(function() {
-// 		clearInterval(timerInterval);
-// 		if (alertsEl.contains(alertEl)) {
-// 			declineMatch(id, match_id);
-// 			alertsEl.innerHTML = '';
-// 		}
-// 	}, 60000);
-// }
-
-// function acceptMatch(id, match_id) {
-// 	window.sendNotification(id, match_id, 'match_accept');
-// }
-
-// function declineMatch(id, match_id) {
-// 	console.log("send decline ", match_id)
-// 	window.sendNotification(id, match_id, 'match_decline');
-// }
-// function sendNotification(client_id, match_id,  message) {
-// 	alert("message envoyé");
-// 	window.notification_socket.send(JSON.stringify({
-// 		client_id: client_id,
-// 		match_id: match_id,
-// 		message: message,
-// 		name: window.user.username,
-// 		id: window.user.id,
-// 		game_type: game_type
-// 	}));
-// }
-
-// function onUnload() {
-// 	window.notification_socket.close();
-// }
-
-// // export { onLoad,onUnload, sendNotification, setNotification };
-// window.sendNotification = sendNotification;
-// window.setNotification = setNotification;
-// window.onUnload = onUnload;
-
-
 /**
  * Module de gestion des notifications pour le système de matchmaking
  */
@@ -357,6 +155,7 @@ class NotificationManager {
 	  alertEl.style.display = 'flex';
 	  alertEl.style.justifyContent = 'space-between';
 	  alertEl.style.flexDirection = 'column';
+	  alertEl.id = match_id;
 	  
 	  // Définir le message de l'alerte
 	  if (isTournament) {
@@ -378,14 +177,12 @@ class NotificationManager {
 		// Bouton d'acceptation
 		const acceptButton = this._createButton('Accept', 'button btn-success accept-friend-request', () => {
 		  this.acceptMatch(userId, match_id);
-		  document.getElementById('alerts').innerHTML = '';
 		  this._clearMatchTimeout(match_id);
 		});
 		
 		// Bouton de refus
 		const declineButton = this._createButton('Decline', 'button btn-danger cancel-friend-request', () => {
 		  this.declineMatch(userId, match_id);
-		  document.getElementById('alerts').innerHTML = '';
 		  this._clearMatchTimeout(match_id);
 		});
 		
@@ -517,8 +314,8 @@ class NotificationManager {
 	 * @private
 	 */
 	_handleMatchStart(data) {
-	  // Nettoyer les alertes existantes
-	  document.getElementById('alerts').innerHTML = '';
+
+		document.getElementById(data.match_id).remove()
 	  
 	  // Changer de jeu si nécessaire
 	  if (data.game_type !== this.game_type && window.setSelectedGame) {
