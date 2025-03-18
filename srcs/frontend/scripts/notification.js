@@ -314,20 +314,17 @@ class NotificationManager {
 	 * @private
 	 */
 	_handleMatchStart(data) {
-
 		document.getElementById(data.match_id).remove()
 	  
-	  // Changer de jeu si nécessaire
-	  if (data.game_type !== this.game_type && window.setSelectedGame) {
-		window.setSelectedGame(data.game_type);
-	  }
-	  
-	  // Naviguer vers la page du jeu
-	  if (data.game_type === "pong") {
-		window.navigateTo(`/pong/${data.match_id}`);
-	  } else {
-		window.navigateTo(`/tictactoe/${data.match_id}`);
-	  }
+		if (data.game_type !== this.game_type && window.setSelectedGame) {
+			window.setSelectedGame(data.game_type);
+		}
+		
+		if (data.game_type === "pong") {
+			window.navigateTo(`/pong/${data.match_id}`);
+		} else {
+			window.navigateTo(`/tictactoe/${data.match_id}`);
+		}
 	}
 
 	_handleMatchDecline(data) {

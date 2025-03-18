@@ -39,25 +39,25 @@ function makeMove(index, player, cells) {
     }
 }
 
-function setTicTacToeLoader (elem){
-	if (elem == null) {
-		elem = document.getElementById('app');
-	}
-	elem.innerHTML = `
-		<div class="board" id="board">
-			<div class="cell" data-index="0"></div>
-			<div class="cell" data-index="1"></div>
-			<div class="cell" data-index="2"></div>
-			<div class="cell" data-index="3"></div>
-			<div class="cell" data-index="4"></div>
-			<div class="cell" data-index="5"></div>
-			<div class="cell" data-index="6"></div>
-			<div class="cell" data-index="7"></div>
-			<div class="cell" data-index="8"></div>
-		</div>
-	`;
+function setTicTacToeLoader(elem) {
+    if (elem == null) {
+        elem = document.getElementById('app');
+    }
+    elem.innerHTML = `
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+    `;
 
-	const cells = initBoard();
+    const cells = initBoard();
     if (!cells) return;
     startGame(cells);
 }
@@ -85,9 +85,9 @@ function setPongLoader() {
 	app.appendChild(spinner);
 }
 
-function deletePongLoader(){
-	const loaders = document.getElementsByClassName("pong-spinner");
-	while(loaders.length > 0){
-		loaders[0].remove();
-	}
+function deletePongLoader() {
+    const loaders = document.getElementsByClassName("pong-spinner");
+    while(loaders.length > 0) {
+        loaders[0].remove();
+    }
 }

@@ -33,23 +33,20 @@ let listenersAdded = false;
 
 function onLoad() {
     if (listenersAdded) return;
-	if (window.user === undefined) {
-		console.log('User not authenticated');
-		return;
-	}
+    if (window.user === undefined) {
+        console.log('User not authenticated');
+        return;
+    }
     console.log("La page charge!");
     
-    // Set the game type for styling
     document.body.setAttribute('data-game', 'pong');
 
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Initialize WebSocket connection
-	socket = new WebSocket('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
+    socket = new WebSocket('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
-    // Event listener for WebSocket open event
     socket.addEventListener('open', function () {
         console.log('Connected to WebSocket server.');
         startGameLoop();

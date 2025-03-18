@@ -50,7 +50,6 @@ function createLoadingSpinner() {
 }
 
 window.changeCSS = function (game) {
-	// Remove existing stylesheets first
 	const existingStylesheet = document.getElementById('gameStylesheet');
 	if (existingStylesheet) {
 		existingStylesheet.remove();
@@ -60,7 +59,6 @@ window.changeCSS = function (game) {
 		existingTournamentStylesheet.remove();
 	}
 
-	// Create and add new stylesheet
 	const linkElement = document.createElement('link');
 	linkElement.rel = 'stylesheet';
 	linkElement.id = 'gameStylesheet';
@@ -73,7 +71,6 @@ window.changeCSS = function (game) {
 	}
 	document.head.appendChild(linkElement);
 
-	// Handle tournament CSS
 	if (window.location.pathname.startsWith('/tournaments')) {
 		const tournamentStylesheet = document.createElement('link');
 		tournamentStylesheet.rel = 'stylesheet';
