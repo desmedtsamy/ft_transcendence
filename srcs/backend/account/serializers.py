@@ -15,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
 					'last_activity',
 					'last_connection',
 					'is_online',
-					'intra_id',
 					'is_staff',
 					'scores',
 					'wins',
