@@ -17,7 +17,8 @@ export function populateTournaments(tournamentId)
 		document.head.appendChild(link);
 	}
 
-	const selectedGame = localStorage.getItem('selectedGame');
+	// Get selected game with fallback to 'pong'
+	const selectedGame = localStorage.getItem('selectedGame') || 'pong';
 
     fetch('/api/tournament/getTournaments/', {
         method: 'POST',
@@ -25,9 +26,15 @@ export function populateTournaments(tournamentId)
             'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
         },
+        credentials: 'include', // Add this to ensure cookies are sent
         body: JSON.stringify({ selectedGame })
     })
-	.then(response => response.json())
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.json();
+	})
 	.then(data => {
 		if (!tournamentList) {
 			console.error('Tournament list element not found after fetch');

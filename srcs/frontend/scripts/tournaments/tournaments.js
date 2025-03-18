@@ -47,6 +47,9 @@ async function handleCreateTournament(event) {
     // Check authentication first
     const isAuthenticated = await checkAuthentication();
     if (!isAuthenticated) {
+        if (window.tournamentModal) {
+            window.tournamentModal.hide();
+        }
         alert('Please log in to create a tournament');
         navigateTo('/login');
         return;
@@ -162,8 +165,8 @@ function onLoad() {
     const modalElement = document.getElementById('Modal');
     if (modalElement && typeof bootstrap !== 'undefined') {
         window.tournamentModal = new bootstrap.Modal(modalElement, {
-            backdrop: 'static',
-            keyboard: false
+            backdrop: true,
+            keyboard: true
         });
     }
 
