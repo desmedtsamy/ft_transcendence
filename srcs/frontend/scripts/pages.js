@@ -1,5 +1,5 @@
 async function callbackPage() {
-	const response = await fetch('/templates/login.html');
+	const response = await fetch('/templates/account/login.html');
 	const htmlContent = await response.text();
 	return {
 		html: htmlContent,
@@ -11,7 +11,7 @@ async function registerPage() {
 	if (window.user !== null) {
 		return homePage();
 	}
-	const response = await fetch('/templates/register.html');
+	const response = await fetch('/templates/account/register.html');
 	const htmlContent = await response.text();
 	return {
 		html: htmlContent,
@@ -23,7 +23,7 @@ async function loginPage() {
 	if (window.user !== null) {
 		return homePage();
 	}
-	const response = await fetch('/templates/login.html');
+	const response = await fetch('/templates/account/login.html');
 	const htmlContent = await response.text();
 	return {
 		html: htmlContent,
@@ -47,11 +47,11 @@ async function pongPage() {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/pong.html');
+	const response = await fetch('/templates/game/pong.html');
 	const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "/scripts/pong.js",
+		script: "/scripts/game/pong.js",
 	};
 }
 async function tictactoePage() {
@@ -59,28 +59,28 @@ async function tictactoePage() {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/tictactoe.html');
+	const response = await fetch('/templates/game/tictactoe.html');
 	const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "/scripts/tictactoe.js",
+		script: "/scripts/game/tictactoe.js",
 	};
 }
 
 async function homePage() {
 	if ( window.selected_game === "tictactoe") {
-		const response = await fetch('/templates/home_tictactoe.html');
+		const response = await fetch('/templates/home/tictactoe.html');
 		const htmlContent = await response.text();
 		return {
 			html: htmlContent,
-			script: "/scripts/home_tictactoe.js",
+			script: "/scripts/home/tictactoe.js",
 		};
 	}
-	const response = await fetch('/templates/home_pong.html');
+	const response = await fetch('/templates/home/pong.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "/scripts/home_pong.js",
+		script: "/scripts/home/pong.js",
 	};
 }
 
@@ -102,7 +102,7 @@ async function searchPage() {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/search.html');
+	const response = await fetch('/templates/account/search.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
@@ -111,7 +111,7 @@ async function searchPage() {
 }
 
 async function friendsPage() {
-	const response = await fetch('/templates/friends.html');
+	const response = await fetch('/templates/account/friends.html');
     const htmlContent = await response.text();
 	const pageData = {
 		html: htmlContent,
@@ -151,7 +151,7 @@ async function profilePage() {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/profile.html');
+	const response = await fetch('/templates/account/profile.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
@@ -164,7 +164,7 @@ async function settingsPage() {
 		alert("You must be logged in to access this page.", "error");
 		return homePage();
 	}
-	const response = await fetch('/templates/settings.html');
+	const response = await fetch('/templates/account/settings.html');
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,

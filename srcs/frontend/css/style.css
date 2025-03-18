@@ -22,12 +22,13 @@ html, body {
 }
 
 #app {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	margin: 0;
-	width: 100%;
+	padding: 0;
+	display: flex;
 	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
 }
 
 .header_link{
@@ -693,7 +694,7 @@ a {
 	color: var(--primary-color);
 }
 
-#button-wrapper {
+/* #button-wrapper {
 	position: absolute;
 	left: 50%;
 	top: 65%;
@@ -703,7 +704,7 @@ a {
 	display: flex;
 	gap: 15px;
 	justify-content: center;
-}
+} */
 
 #button-wrapper .header_link {
 	display: inline-flex;

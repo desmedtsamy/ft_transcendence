@@ -1,6 +1,8 @@
 const PADDLE_WIDTH = 15;
 const PADDLE_HEIGHT = 120;
 const BALL_RADIUS = 7;
+const NEON_COLOR = '#16e0bd';
+const BG_COLOR = '#1a1a2e';
 
 const ball = {
   x: 0,
@@ -41,13 +43,17 @@ function initCanvas() {
 }
 
 function drawPaddle(paddle) {
-	ctx.fillStyle = '#16e0bd';
+	ctx.fillStyle = NEON_COLOR;
+	ctx.shadowBlur = 15;
+	ctx.shadowColor = NEON_COLOR;
 	ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
 function drawBall() {
+	ctx.shadowBlur = 20;
+	ctx.shadowColor = NEON_COLOR;
 	ctx.beginPath();
-	ctx.fillStyle = '#16e0bd';
+	ctx.fillStyle = NEON_COLOR;
 	ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
 	ctx.fill();
 }
@@ -93,24 +99,36 @@ function updateBall() {
 				return;
 			}
 			
-			ctx.fillStyle = '#1a1a2e';
+			ctx.fillStyle = BG_COLOR;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			
+			// Dessiner la ligne centrale avec effet néon
 			ctx.beginPath();
 			ctx.setLineDash([10, 10]);
 			ctx.moveTo(canvas.width / 2, 0);
 			ctx.lineTo(canvas.width / 2, canvas.height);
-			ctx.strokeStyle = 'rgba(0,255,136,0.2)';
+			ctx.strokeStyle = 'rgba(22, 224, 189, 0.4)';
 			ctx.lineWidth = 2;
 			ctx.stroke();
 			ctx.setLineDash([]);
+			
+			// Afficher un score de démo statique
+			ctx.fillStyle = NEON_COLOR;
+			ctx.shadowBlur = 15;
+			ctx.shadowColor = NEON_COLOR;
+			ctx.font = "48px VT323";
+			ctx.textAlign = 'center';
+			ctx.fillText("0 | 0", canvas.width/2, 70);
+			ctx.shadowBlur = 0;
 			
 			movePaddles();
 			updateBall();
 			
 			drawPaddle(leftPaddle);
 			drawPaddle(rightPaddle);
+			ctx.shadowBlur = 0; // Réinitialiser après les raquettes
 			drawBall();
+			ctx.shadowBlur = 0; // Réinitialiser après la balle
 			
 			gameLoopId = requestAnimationFrame(gameLoop);
 		}

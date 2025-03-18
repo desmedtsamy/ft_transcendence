@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        canvas {
+            border: 2px solid #16e0bd;
+            box-shadow: 0 0 15px #16e0bd;
+            display: block;
+            margin: 0 auto;
+            background-color: #1a1a2e;
+        }
+        #player-turn {
+            color: #16e0bd;
+            margin-top: 20px;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            text-shadow: 0 0 10px #16e0bd;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        #button-wrapper a {
+            color: #16e0bd;
+            text-decoration: none;
+            font-family: 'VT323', monospace;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pongCanvas" width="800" height="400"></canvas>
+    <div id="button-wrapper" style="padding-top:1em;">
+		<a class="header_link" href="#" data-link="/" id="back_to_menu" style="visibility:hidden;">
+			<i class="fas fa-arrow-circle-left"></i> Back to Menu
+		</a>
+	</div>
+    <div id="player-turn"></div>
+		
+    <script type="module" src="game.js"></script>
+</body>
+<style>
+#neon {
+    color: var(--primary-color);
+    text-shadow: 0 0 10px var(--primary-color),
+                 0 0 20px var(--primary-color),
+                 0 0 30px var(--primary-color);
+    margin: 0;
+    font-size: 4.5rem;
+    white-space: nowrap;
+    animation: neonPulse 1.5s infinite alternate;
+    font-family: 'VT323', monospace;
+    letter-spacing: 4px;
+    font-weight: bold;
+}
+</style>
+</html>

@@ -11,7 +11,7 @@ all_game_lock = Lock()
 # options a faire d'ou les variables
 velocity = 3
 canvas_width = 800
-canvas_height = 600
+canvas_height = 400
 paddle_height = 100
 paddle_width = 10
 ball_size = 10
