@@ -59,6 +59,9 @@ function renderSearchResults(users) {
 		const actionButton = createActionButton(user);
 		listItem.appendChild(actionButton);
 
+		const fightButton = createFightButton(user);
+		listItem.appendChild(fightButton);
+
 		searchResults.appendChild(listItem);
 	}
 }
@@ -118,6 +121,36 @@ function createActionButton(user) {
     return button; 
 }
 
+async function handleFightAction(userId) {
+	try {
+		const response = await fetch(`/api/game/create_match/`, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': getCookie('csrftoken'),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				player1: window.user.id,
+				player2: userId,
+				game_type: localStorage.getItem('selectedGame'),
+			}),
+		});
+	} catch (error) {
+		console.error('Erreur AJAX :', error);
+	}
+}
+
+function createFightButton(user) {
+	const button = document.createElement('button');
+	button.classList.add('button', 'btn-primary', 'fight');
+	button.innerHTML = '<i class="fas fa-gamepad"></i>';
+	button.title = 'Faire une partie';
+	button.addEventListener('click', (event) => {
+		event.preventDefault();
+		handleFightAction(user.id);
+	});
+	return button;
+}
 async function handleFriendAction(actionUrl, userId) {
 	try {
 		const response = await fetch(actionUrl, {
