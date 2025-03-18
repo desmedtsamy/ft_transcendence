@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 import json
 import logging
+import random
+import threading
+import time
 
 from django.dispatch import receiver
 from channels.generic.websocket import WebsocketConsumer
@@ -183,7 +186,6 @@ class Consumer(WebsocketConsumer):
         """Gère le refus d'un match."""
         try:
             tournament_match = TournamentMatch.objects.filter(match_id=match_id).first()
-            
             if tournament_match:
                 # Match de tournoi
                 logger.info(f"Refus d'un match de tournoi {match_id}")
@@ -244,10 +246,35 @@ class Consumer(WebsocketConsumer):
                 if tournament:
                     notification_data["tournament_id"] = tournament.id
                     notification_data["tournament_name"] = getattr(tournament, 'name', "Tournoi")
-            
             # Envoyer les notifications aux joueurs
             notification_manager.send_notification(player1_id, notification_data)
             notification_manager.send_notification(player2_id, notification_data)
+            
+            # Configurer un timer pour vérifier le statut du match après 60 secondes
+            def check_match_status():
+                time.sleep(70)
+                try:
+                    # Récupérer le match à nouveau pour avoir son statut actuel
+                    current_match = Match.objects.get(id=match_id)
+                    
+                    # Vérifier si le match est toujours en attente
+                    if current_match.status == 'pending':
+                        logger.info(f"Match {match_id} toujours en attente après 60 secondes, attribution aléatoire du gagnant")
+                        
+                        # Choisir un gagnant aléatoirement
+                        winner = random.choice([current_match.player1, current_match.player2])
+                        
+                        # Terminer le match avec le gagnant aléatoire
+                        current_match.end(winner)
+                except Match.DoesNotExist:
+                    logger.info(f"Match {match_id} n'existe plus, probablement déjà traité ou supprimé")
+                except Exception as e:
+                    logger.error(f"Erreur lors de la vérification du statut du match après timeout: {e}", exc_info=True)
+            print("timer_thread start ??")
+            # Lancer le timer dans un thread séparé
+            timer_thread = threading.Thread(target=check_match_status)
+            timer_thread.daemon = True  # Le thread se fermera quand le programme principal se termine
+            timer_thread.start()
             
         except Exception as e:
             logger.error(f"Erreur lors du démarrage du match: {e}", exc_info=True)

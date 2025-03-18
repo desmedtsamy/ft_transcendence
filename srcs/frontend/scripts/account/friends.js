@@ -181,18 +181,18 @@ function renderSearchResults(users) {
 
 		searchResults.appendChild(listItem);
 	}
-}
-
-function createFightButton(user) {
-	const button = document.createElement('button');
-	button.classList.add('button', 'btn-primary', 'fight');
-	button.innerHTML = '<i class="fas fa-gamepad"></i>';
-	button.title = 'Faire une partie';
-	button.addEventListener('click', (event) => {
-		event.preventDefault();
-		handleFightAction(user.id);
-	});
-	return button;
+	
+	function createFightButton(user) {
+		const button = document.createElement('button');
+		button.classList.add('button', 'btn-primary', 'fight');
+		button.innerHTML = '<i class="fas fa-gamepad"></i>';
+		button.title = 'Faire une partie';
+		button.addEventListener('click', (event) => {
+			event.preventDefault();
+			handleFightAction(user.id);
+		});
+		return button;
+	}
 }
 async function handleFightAction(userId) {
 	try {

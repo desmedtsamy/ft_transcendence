@@ -245,6 +245,8 @@ class Consumer(WebsocketConsumer):
 	
 	def start_game_loop(self):
 		def game_loop():
+			self.game.match.status = "started"
+			self.game.match.save()
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(self.game.player_list) == 2:
 				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:

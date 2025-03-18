@@ -135,7 +135,7 @@ class NotificationManager {
 	  this.timeoutHandlers[match_id] = setTimeout(() => {
 		if (alertsEl.contains(alertEl)) {
 		  this.declineMatch(userId, match_id);
-		  alertsEl.innerHTML = '';
+		  alertEl.remove();
 		}
 	  }, this.NOTIFICATION_TIMEOUT);
 	}
@@ -329,8 +329,8 @@ class NotificationManager {
 
 	_handleMatchDecline(data) {
 		const alertsEl = document.getElementById('alerts');
-		const alerts = alertsEl.querySelectorAll('.alert');
-		alertsEl.innerHTML = '';
+		// const alerts = alertsEl.querySelectorAll('.alert');
+		// alertsEl.innerHTML = '';
 
 		const declineAlert = document.createElement('div');
 		declineAlert.className = 'alert alert-danger';
@@ -341,9 +341,7 @@ class NotificationManager {
 		
 		// Supprimer la notification après 5 secondes
 		setTimeout(() => {
-		if (alertsEl.contains(declineAlert)) {
-			alertsEl.removeChild(declineAlert);
-		}
+			declineAlert.remove();
 		}, 5000);
 	}
 	

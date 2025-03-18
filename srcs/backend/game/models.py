@@ -30,7 +30,7 @@ class Match(models.Model):
 		elif self.player2 == None:
 			self.end(self.player1)
 		else:
-			self.status = 'started'
+			self.status = 'pending'
 			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self)
 			self.save()
 		self.save()
