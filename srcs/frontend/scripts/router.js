@@ -86,8 +86,7 @@ function navigateTo(path) {
 	else if (absolutePath === '/42sync') {
 		sync_42();
 	} else {
-		
-		window.history.pushState({}, '', absolutePath);
+		window.history.pushState({ path: absolutePath }, '', absolutePath);
 		render(absolutePath);
 	}
 }

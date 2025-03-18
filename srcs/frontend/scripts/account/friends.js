@@ -1,4 +1,3 @@
-
 const selectedGame = localStorage.getItem('selectedGame');
 
 function getFriendRequests() {
@@ -123,7 +122,21 @@ function renderSearchResults(users) {
 
 	searchResults.innerHTML = '<h2>liste d\'amis</h2>';
 	if (users.length === 0) {
-		searchResults.innerHTML += "<p>Aucun ami trouvé</p>";
+		const emptyStateDiv = document.createElement('div');
+		emptyStateDiv.classList.add('empty-state');
+		
+		const message = document.createElement('p');
+		message.innerHTML = "Vous n'avez pas encore d'amis. Commencez à explorer et à vous connecter avec d'autres joueurs!";
+		
+		const searchLink = document.createElement('a');
+		searchLink.href = '#';
+		searchLink.dataset.link = '/search';
+		searchLink.classList.add('button', 'btn-primary');
+		searchLink.innerHTML = '<i class="fas fa-search"></i> Rechercher des joueurs';
+		
+		emptyStateDiv.appendChild(message);
+		emptyStateDiv.appendChild(searchLink);
+		searchResults.appendChild(emptyStateDiv);
 		return;
 	}
 

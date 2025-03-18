@@ -208,17 +208,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 	});
 	
     window.addEventListener('popstate', (event) => {
-		// If we have state and it contains a path, use that instead
-		if (event.state && event.state.path) {
-			render(event.state.path);
-			// Reapply CSS after navigation
-			if (window.selected_game) {
-				setTimeout(() => window.changeCSS(window.selected_game), 0);
-			}
-		} else {
-			// Otherwise fallback to current pathname
-			navigateTo(window.location.pathname);
-		}
+        // If we have state and it contains a path, use that path
+        if (event.state && event.state.path) {
+            render(event.state.path);
+        } else {
+            // If no state, use current pathname
+            render(window.location.pathname);
+        }
+        
+        // Reapply CSS after navigation
+        if (window.selected_game) {
+            setTimeout(() => window.changeCSS(window.selected_game), 0);
+        }
     });
 	
 	// Initialize Bootstrap components in the navbar

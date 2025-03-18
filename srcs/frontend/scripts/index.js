@@ -44,7 +44,7 @@ window.handleUserAuthenticated = function(user, friends) {
 	}
 	const friendsLink = document.getElementById('friends-link');
 	if (friendsLink) {
-		friendsLink.style.display = (friends && friends.length > 0) ? 'block' : 'none';
+		friendsLink.style.display = 'block';
 	}
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
