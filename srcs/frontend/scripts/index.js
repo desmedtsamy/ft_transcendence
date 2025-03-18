@@ -42,10 +42,6 @@ window.handleUserAuthenticated = function(user, friends) {
 	if (adminLink) {
 		adminLink.style.display = user.is_staff ? 'block' : 'none';
 	}
-	const friendsLink = document.getElementById('friends-link');
-	if (friendsLink) {
-		friendsLink.style.display = 'block';
-	}
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
 		gameSelector.value = user.selected_game;
@@ -88,7 +84,6 @@ window.handleUserNotAuthenticated = function() {
     const adminLink = document.getElementById('admin-link');
     const gameSelector = document.getElementById('gameSelector');
     const searchLink = document.getElementById('search-link');
-	const friendsLink = document.getElementById('friends-link');
 
     if (gameSelector) {
         const savedGame = localStorage.getItem('selectedGame') || 'pong';
@@ -102,7 +97,6 @@ window.handleUserNotAuthenticated = function() {
     profileMenu.style.display = 'none';
     adminLink.style.display = 'none';
 	searchLink.style.display = 'none';
-	friendsLink.style.display = 'none';
 
 	window.disconnectNotifications();
 }

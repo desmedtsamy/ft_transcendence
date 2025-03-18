@@ -1,4 +1,3 @@
-
 async function callbackPage() {
 	const response = await fetch('/templates/login.html');
 	const htmlContent = await response.text();
@@ -112,18 +111,28 @@ async function searchPage() {
 }
 
 async function friendsPage() {
-	if (window.user === null) {
-		alert("You must be logged in to access this page.", "error");
-		return homePage();
-	}
 	const response = await fetch('/templates/friends.html');
     const htmlContent = await response.text();
-	return {
+	const pageData = {
 		html: htmlContent,
 		script: "/scripts/account/friends.js",
 	};
-}
 
+	// After the page loads, show/hide appropriate content based on auth status
+	setTimeout(() => {
+		const loginPrompt = document.getElementById('login-prompt');
+		const friendsContent = document.getElementById('friends-content');
+		if (window.user === null) {
+			loginPrompt.style.display = 'block';
+			friendsContent.style.display = 'none';
+		} else {
+			loginPrompt.style.display = 'none';
+			friendsContent.style.display = 'block';
+		}
+	}, 0);
+
+	return pageData;
+}
 
 async function tournamentsPage() {
 	// if (window.user === null) {

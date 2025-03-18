@@ -244,6 +244,9 @@ function handleRemoveFriend(userId) {
 }
 
 function onLoad() {
+	if (window.user === null) {
+		return; // Don't try to load friend data if user is not authenticated
+	}
 	getFriendRequests();
 	window.updateFriends().then(() => {
 		renderSearchResults(window.friends);
