@@ -66,7 +66,7 @@ function onLoad() {
 
             // Gestion de la fin de partie après déconnexion prolongée
             if (data.type === 'game_ended') {
-                document.getElementById('player-turn').textContent = data.message;
+                document.getElementById('player-turn').textContent = "Game won by forfeit";
                 gameFinished = true;
                 return;
             }
@@ -214,10 +214,9 @@ function handleOpponentDisconnect() {
         const countdown = setInterval(() => {
             timeLeft--;
             if (timeLeft >= 0 && !gameFinished && !opponentConnected) {
-                disconnectMessage.textContent = `Votre adversaire s'est déconnecté. Fin dans ${timeLeft}s`;
+                disconnectMessage.textContent = `Opponent disconnected ${timeLeft}s left before forfeit`;
             } else {
                 console.log("clear");
-                disconnectMessage.textContent = "Je suis le joueur: " + playerRole;
                 clearInterval(countdown);
             }
         }, 1000);
