@@ -1,4 +1,3 @@
-
 async function getClientAPI(){
 	try {
 		const link = document.getElementById('login_42');
@@ -37,6 +36,26 @@ function onLoad() {
 		event.preventDefault();
 	
 		const formData = new FormData(form);
+		
+		const oldPassword = document.getElementById('old_password').value;
+		const newPassword1 = document.getElementById('new_password1').value;
+		const newPassword2 = document.getElementById('new_password2').value;
+		
+		if (oldPassword || newPassword1 || newPassword2) {
+			if (newPassword1) formData.set('password', newPassword1);
+			
+			if (!oldPassword || !newPassword1 || !newPassword2) {
+				alert('Vous devez remplir tous les champs de mot de passe pour changer votre mot de passe.');
+				return;
+			}
+			
+			// Vérifier que les nouveaux mots de passe correspondent
+			if (newPassword1 !== newPassword2) {
+				alert('Les nouveaux mots de passe ne correspondent pas.');
+				return;
+			}
+		}
+		
 		try {
 			const response = await fetch('/api/account/settings/',
 				{
@@ -53,7 +72,8 @@ function onLoad() {
 				fetchUserInfo();
 			} else {
 				const errorData = await response.json();
-				alert('Erreur lors de la mise à jour des paramètres : ' + errorData.error);
+				alert('Erreur lors de la mise à jour des paramètres : ' + 
+                      (errorData.error ? (typeof errorData.error === 'object' ? JSON.stringify(errorData.error) : errorData.error) : 'Erreur inconnue'));
 			}
 		} catch (error) {
 			console.error('Erreur lors de la requête :', error);

@@ -23,6 +23,12 @@ class Game():
 			'winner': 0,
 			'turn': 'X',
 		}
+		# Système de vote pour redémarrer
+		self.restart_votes = set()
+
+	# Réinitialiser les votes pour redémarrer
+	def reset_restart_votes(self):
+		self.restart_votes = set()
 
 class Consumer(WebsocketConsumer):
 
@@ -113,29 +119,77 @@ class Consumer(WebsocketConsumer):
 			self.send(json.dumps({"error": "Server error"}))
 
 	def handle_data(self, data):
+		if "action" in data:
+			if data["action"] == "restart_game":
+				print(f"User {self.id} votes to restart the game")
+				
+				self.game.restart_votes.add(self.id)
+				
+				both_voted = self.game.p1_id in self.game.restart_votes and self.game.p2_id in self.game.restart_votes
+				
+				if both_voted:
+					self.game.state['board'] = [' ' for _ in range(9)]
+					self.game.state['winner'] = 0
+					self.game.state['turn'] = 'X'
+					self.game.turntoplay = self.game.p1_id
+					self.game.reset_restart_votes()
+					self.send_msg({
+						'type': 'game_restarted',
+						'message': 'Les deux joueurs ont accepté de redémarrer la partie',
+					})
+					self.send_state()
+				else:
+					other_player_id = self.game.p2_id if self.id == self.game.p1_id else self.game.p1_id
+					waiting_for_player = "X" if other_player_id == self.game.p1_id else "O"
+					
+					self.send_msg({
+						'type': 'restart_vote',
+						'message': f'En attente de la confirmation du joueur {waiting_for_player} pour redémarrer',
+						'votes': list(self.game.restart_votes)
+					})
+				return
+			
+			elif data["action"] == "give_up":
+				print("User gives up")
+				winner = None
+				if self.id == self.game.p1_id:
+					winner = self.game.match.player2
+					self.game.state['winner'] = 'O'
+				else:
+					winner = self.game.match.player1
+					self.game.state['winner'] = 'X'
+				
+				self.game.match.end(winner)
+				
+				self.game.reset_restart_votes()
+				
+				self.send_msg({
+					'type': 'game_forfeit',
+					'message': 'Un joueur a abandonné la partie',
+					'winner': self.game.state['winner']
+				})
+				self.send_state()
+				return
+		
 		if self.id == self.game.turntoplay:
-			# Si c'est son tour de jouer
 			move = data['cell']
-			if self.game.state['board'][move] == ' ':  # Si la case est vide
-				self.game.state['board'][move] = self.game.state['turn']  # Mise à jour du tableau
-				# Vérifier la victoire
+			if self.game.state['board'][move] == ' ':
+				self.game.state['board'][move] = self.game.state['turn']
 				winner = self.check_winner(self.game.state['board'])
 				if winner == 'X' or winner == 'O' or winner == 'n':
 					print('winner:', winner)
 					self.game.state['winner'] = winner
-					if winner == 'n':
-						# commente pur empecher les match nuls
-						# self.game.match.end(None)
-						self.game.state['winner'] = 0
-						self.game.state['board'] = [' ' for _ in range(9)]
-					elif self.id == self.game.match.player1.id :
-						self.game.match.end(self.game.match.player1)
-					else:
-						self.game.match.end(self.game.match.player2)
+					
+					self.game.reset_restart_votes()
+					
+					if winner != 'n':
+						if self.id == self.game.match.player1.id:
+							self.game.match.end(self.game.match.player1)
+						else:
+							self.game.match.end(self.game.match.player2)
 					self.send_state()
 					return
 				else:
-					# Changer le joueur
 					self.game.state['turn'] = 'O' if self.game.state['turn'] == 'X' else 'X'
 					self.game.turntoplay = self.game.p2_id if self.game.turntoplay == self.game.p1_id else self.game.p1_id
 				self.send_state()
@@ -176,7 +230,6 @@ class Consumer(WebsocketConsumer):
 						if len(self.game.player_list) < 2:
 							if self.game in all_game:
 								all_game.remove(self.game)
-							# Notify remaining player that game has ended
 							self.send_msg({
 								'type': 'game_ended', 
 								'message': 'Game ended due to opponent not reconnecting'
@@ -185,8 +238,6 @@ class Consumer(WebsocketConsumer):
 								self.game.match.end(self.game.match.player2)
 							else:
 								self.game.match.end(self.game.match.player1)
-
-				# Start the timer in a separate thread
 				timer_thread = threading.Thread(target=end_game_timer)
 				timer_thread.start()
 

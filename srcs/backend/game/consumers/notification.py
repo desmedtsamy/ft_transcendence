@@ -7,8 +7,8 @@ from channels.generic.websocket import WebsocketConsumer
 
 from account.models import User
 from game.services import create_match
-from .models import Match, TournamentMatch
-from .signals import match_started
+from game.models import Match, TournamentMatch
+from game.signals import match_started
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
@@ -102,10 +102,10 @@ def handle_match_started(sender, **kwargs):
     player1_id = kwargs['player1_id']
     player2_id = kwargs['player2_id']
     match = kwargs['match']
-    NotificationConsumer.start_match(player1_id, player2_id, match)
+    Consumer.start_match(player1_id, player2_id, match)
 
 
-class NotificationConsumer(WebsocketConsumer):
+class Consumer(WebsocketConsumer):
     """Consumer WebSocket pour gérer les notifications en temps réel."""
 
     def connect(self):

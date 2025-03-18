@@ -6,6 +6,7 @@ var win = false;
 var board = ['', '', '', '', '', '', '', '', ''];
 var currentPlayer = '';  // Ajout de la variable currentPlayer
 var opponentConnected = false;
+var hasVotedRestart = false; // Variable pour suivre si le joueur a voté pour redémarrer
 
 function onLoad() {
     if (window.user === undefined) {
@@ -16,9 +17,28 @@ function onLoad() {
     
     // Set the game type for styling
     document.body.setAttribute('data-game', 'tictactoe');
+    
+    // Initialize game controls
+    document.getElementById('button-wrapper').innerHTML = `
+    <button id="restart-button" class="game-button">Recommencer</button>
+    <button id="quit-button" class="game-button">Abandonner</button>
+    `;
+    
+    // Setup restart functionality
+    document.getElementById('restart-button').disabled = true;
+    document.getElementById('restart-button').addEventListener('click', function() {
+        const message = { action: 'restart_game' };
+        socket.send(JSON.stringify(message));
+        hasVotedRestart = true;
+        this.disabled = true;
+    });
 
-    // Initialisation de la connexion WebSocket
-	socket = new WebSocket('wss://' + window.location.host + '/wss/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
+    document.getElementById('quit-button').addEventListener('click', function() {
+        const message = { action: 'give_up' };
+        socket.send(JSON.stringify(message));
+        window.location.href = '/';
+    });
+    socket = new WebSocket('wss://' + window.location.host + '/wss/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     socket.addEventListener('open', function () {
         console.log('Connected to WebSocket server.');
@@ -50,8 +70,35 @@ function onLoad() {
                 gameFinished = true;
                 return;
             }
+            
+            // Réception d'un vote pour redémarrer
+            if (data.type === 'restart_vote') {
+                document.getElementById('player-turn').textContent = data.message;
+                return;
+            }
+            
+            // La partie a été redémarrée après votes
+            if (data.type === 'game_restarted') {
+                document.getElementById('player-turn').textContent = data.message;
+                gameFinished = false;
+                hasVotedRestart = false; // Réinitialiser le vote du joueur
+                
+                // Remplacer les boutons de vote par une notification
+                setTimeout(() => {
+                    if (!gameFinished) {
+                        document.getElementById('player-turn').textContent = "C'est le tour de " + currentPlayer;
+                    }
+                }, 3000);
+                return;
+            }
+            
+            if (data.type === 'game_forfeit') {
+                document.getElementById('player-turn').textContent = data.message;
+                gameFinished = true;
+                document.getElementById('button-wrapper').innerHTML = '<a class="header_link" href="#" data-link="/"><i class="fas fa-home"></i></a>';
+                return;
+            }
 
-            // Si le serveur envoie le rôle du joueur
             if (data.type === 'role') {
                 playerRole = data.role;
                 console.log("Mon rôle est: " + playerRole);
@@ -59,7 +106,6 @@ function onLoad() {
                 document.getElementById('player-turn').textContent = "C'est le tour de " + currentPlayer;
             }
 
-            // Mise à jour de l'état du jeu
             if (data.type === 'gamestate') {
                 currentPlayer = data.turn;
                 if (currentPlayer === playerRole){
@@ -71,8 +117,6 @@ function onLoad() {
                 if (data.board !== undefined)
                     updateBoard(data.board);
                 if (data.winner !== 0) {
-                    // Fermeture de WebSocket
-                    socket.close();
                     gameFinished = true;
                     if (data.winner === playerRole) {
                         console.log("Vous avez gagné !");
@@ -81,16 +125,21 @@ function onLoad() {
                     } 
                     else if (data.winner === 'n'){
                         document.getElementById('player-turn').textContent = "Match nul!";
+						document.getElementById('restart-button').disabled = false;
                     }
                     else {
                         console.log("Vous avez perdu !");
                         document.getElementById('player-turn').textContent = "Vous avez perdu";
                     }
-                    document.getElementById('button-wrapper').innerHTML = `
-                        <a class="header_link" href="#" data-link="/">
-                            <i class="fas fa-arrow-circle-left"></i> Back to Menu
-                        </a>
-                    `;
+                    
+                    // Use our design for game end UI
+                    if (data.winner !== 'n') {
+                        document.getElementById('button-wrapper').innerHTML = `
+                            <a class="header_link" href="#" data-link="/">
+                                <i class="fas fa-arrow-circle-left"></i> Back to Menu
+                            </a>
+                        `;
+                    }
                 }
             }
         } catch (e) {
@@ -188,6 +237,7 @@ function onUnload() {
     board = ['', '', '', '', '', '', '', '', ''];
     currentPlayer = '';  // Ajout de la variable currentPlayer
     opponentConnected = false;
+    hasVotedRestart = false;
 }
 
 // Add rematch handling function

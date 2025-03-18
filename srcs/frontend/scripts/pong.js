@@ -29,7 +29,10 @@ const handleKeyUp = function (e) {
     if (e.key === 'ArrowDown') keysPressed.ArrowDown = false;
 };
 
+let listenersAdded = false;
+
 function onLoad() {
+    if (listenersAdded) return;
 	if (window.user === undefined) {
 		console.log('User not authenticated');
 		return;
@@ -174,12 +177,14 @@ function onLoad() {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 }
-
+let gameLoopRunning = false;
 function startGameLoop(){
     let lastTime = 0;
+    gameLoopRunning = true
     function gameLoop(timestamp) {
-        if (gameFinished){
-            drawEndScreen(win);
+        if (gameFinished || !gameLoopRunning){
+            if (gameFinished)
+                drawEndScreen(win);
             return;
         }
         const deltaTime = (timestamp - lastTime) / 1000;
@@ -320,8 +325,11 @@ function drawEndScreen(win) {
 }
 
 function onUnload(){
+    gameLoopRunning = false;
+    console.log("onunload appele")
     keysPressed = { ArrowUp: false, ArrowDown: false };
     velocity = 0;
+    lastSent = 0;
 
     // Supprimer les écouteurs clavier
     window.removeEventListener('keydown', handleKeyDown);
