@@ -158,10 +158,10 @@ HOST = os.environ.get('HOST', 'localhost')
 PORT = os.environ.get('PORT', '443')
 
 # Construit l'URL avec le port seulement si ce n'est pas le port standard (443)
-# if PORT == '443':
-BASE_URL = f"https://{HOST}"
-# else:
-#     BASE_URL = f"https://{HOST}:{PORT}"
+if HOST == 'localhost':
+    BASE_URL = f"https://{HOST}:{PORT}"
+else:
+    BASE_URL = f"https://{HOST}"
 
 FORTYTWO_REDIRECT_URI = f"{BASE_URL}/42callback"
 FORTYTWO_SYNC_URI = f"{BASE_URL}/42sync"
