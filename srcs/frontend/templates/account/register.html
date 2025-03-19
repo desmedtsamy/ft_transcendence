@@ -1,10 +1,77 @@
-<h2>Créer un compte</h2>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-glow">
+                <div class="card-header text-center py-4">
+                    <h2 class="mb-0">Créer un compte</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form id="register-form">
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="username" name="username" autocomplete="off" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" required>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">S'inscrire</button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Déjà inscrit? <a href="/login" class="text-decoration-none">Se connecter</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
 .card {
     background-color: var(--secondary-bg) !important;
     border-color: var(--primary-color) !important;
-    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.1);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.border-glow {
+    position: relative;
+}
+
+.border-glow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(var(--primary-rgb), 0.5), 
+        rgba(var(--primary-rgb), 0.1), 
+        rgba(var(--primary-rgb), 0.5));
+    border-radius: 14px;
+    z-index: -1;
+    animation: glowing 1.5s linear infinite;
+}
+
+@keyframes glowing {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.7; }
 }
 
 .form-control {
@@ -14,6 +81,7 @@
     padding: 1rem;
     font-size: 1.1rem;
     border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .form-control:focus {
@@ -30,27 +98,12 @@
     font-weight: bold;
     padding: 0.8rem;
     transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
 .btn-primary:hover {
     background-color: transparent;
     color: var(--primary-color);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
-}
-
-.btn-outline-primary {
-    background-color: transparent;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary-color);
-    color: var(--bg-color);
     border-color: var(--primary-color);
     box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
 }
@@ -63,28 +116,17 @@ h2 {
 .form-label {
     color: var(--text-color);
     margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
-.text-light {
-    color: var(--text-color) !important;
+a {
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: rgba(var(--primary-rgb), 0.8);
+    text-decoration: underline !important;
 }
 </style>
-
-    <form id="register-form">
-        <div>
-            <label for="username">Nom d'utilisateur:</label>
-            <input type="text" id="username" name="username" autocomplete="off" required>
-        </div>
-        <div>
-            <label for="email">Email:</label>   
-
-            <input type="email" id="email" name="email" autocomplete="off" required>
-        </div>
-        <div>
-            <label for="password">Mot   
- de passe:</label>
-            <input type="password" id="password" name="password" autocomplete="off" required>
-        </div>
-
-        <button type="submit">S'inscrire</button>
-    </form>

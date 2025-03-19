@@ -55,12 +55,26 @@ function renderSearchResults(users) {
 
 		listItem.appendChild(link);
 
-		// Ajouter les boutons d'action en fonction de la relation avec l'utilisateur
+		// Create a div to contain all the buttons
+		const buttonDiv = document.createElement('div');
+		
+		// Add the buttons to the div
 		const actionButton = createActionButton(user);
-		listItem.appendChild(actionButton);
-
-		const fightButton = createFightButton(user);
-		listItem.appendChild(fightButton);
+		// Check if actionButton is a div (for accept/reject buttons) or a button
+		if (actionButton.tagName === 'DIV') {
+			// If it's already a div with buttons, we just add it to our list item
+			listItem.appendChild(actionButton);
+		} else {
+			// Otherwise we add it to our buttonDiv
+			buttonDiv.appendChild(actionButton);
+			
+			// Add the fight button to the div
+			const fightButton = createFightButton(user);
+			buttonDiv.appendChild(fightButton);
+			
+			// Add the button div to the list item
+			listItem.appendChild(buttonDiv);
+		}
 
 		searchResults.appendChild(listItem);
 	}
@@ -76,8 +90,8 @@ function createActionButton(user) {
     } else if (user.friend_request_sent) {
         button.classList.add('button', 'btn-danger', 'cancel-friend-request');
         button.dataset.action = `/api/account/friend-requests/${user.id}/cancel/`; 
-        button.textContent = 'Annuler';
-		button.title = 'Annuler la demande d\'ami';
+        button.innerHTML = '<i class="fas fa-user-slash"></i>';
+        button.title = 'Annuler la demande d\'ami';
     } else if (user.friend_request_received) {
         const acceptButton = document.createElement('button');
         acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
