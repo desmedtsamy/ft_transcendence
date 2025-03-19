@@ -27,6 +27,7 @@ class Game():
 		self.p2_id = match.player2.id
 		self.p1_name = match.player1.username
 		self.p2_name = match.player2.username
+		self.is_running = False
 		self.lock = Lock()
 		self.state = { 'type': 'gamestate',
 			'players': {
@@ -93,7 +94,9 @@ class Consumer(WebsocketConsumer):
 		if len(self.game.player_list) == 2:
 			self.countdown()
 			print("Starting the game loop " , self.id)
-			self.start_game_loop()
+			if self.game.is_running == False:
+				self.game.is_running = True
+				self.start_game_loop()
 		else:
 			print("Waiting for another player to connect ", self.id )
 
