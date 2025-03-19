@@ -1,9 +1,8 @@
 var socket;
-var playerPosition = { x: 50, y: 150 };
-var opponentPosition = { x: 750, y: 150 };
+var playerPosition = { x: 50, y: 150 };  // Toujours à gauche
+var opponentPosition = { x: 750, y: 150 };  // Toujours à droite
 var ballPosition = { x: 400, y: 200 };
 var canvas, ctx;
-var playerRole = '';  //Variable to store the player's role ('left' or 'right')
 var playerId = 0;
 var scores = [0,0];
 var countdown = 0;
@@ -12,8 +11,8 @@ var win = false;
 var opponentConnected = false;
 var gamePaused = false;
 // Pseudos des joueurs
-var player1Username = "player1";
-var player2Username = "player2";
+var myUsername = "player1";  // Le nom du joueur courant
+var opponentUsername = "player2";  // Le nom de l'adversaire
 
 // Constantes pour le style néon
 const PADDLE_WIDTH = 10;
@@ -84,42 +83,26 @@ function onLoad() {
             opponentConnected = true;
             gamePaused = false;
             const disconnectMessage = document.getElementById('player-turn');
-            disconnectMessage.textContent = "I am the : " + playerRole + " player";
+            disconnectMessage.textContent = "I am the : left player";
             if (window.disconnectTimer) {
                 clearInterval(window.disconnectTimer);
                 window.disconnectTimer = null;
             }
         }
         
-        // If the server sends player usernames (pour préparer l'intégration future)
-        if (data.usernames) {
-            if (data.usernames.player1) {
-                player1Username = data.usernames.player1;
-            }
-            if (data.usernames.player2) {
-                player2Username = data.usernames.player2;
-            }
-        }
-        
         // If the server sends the player's role
         if (data.type === 'role') {
             const Message = document.getElementById('player-turn');
-            playerRole = data.role;  // Store the player's role ('left' or 'right')
-            Message.textContent = "I am the : " + playerRole + " player";
-			playerPosition.y = 150;
-            if (playerRole === 'left'){
-				console.log("gauche")
-                playerPosition.x = 50;
-                opponentPosition.x = 750;
-                playerId = 1;
-            }
-            if (playerRole === 'right'){
-				console.log("droite")
-                playerPosition.x = 750;
-                opponentPosition.x = 50;
-                playerId = 2;
-            }
-            console.log("My role is: " + playerRole);
+            Message.textContent = "I am the : left player";
+            playerPosition.y = 150;
+            playerPosition.x = 50;    // Toujours à gauche
+            opponentPosition.x = 750; // Toujours à droite
+            
+            // Mise à jour des pseudos
+            myUsername = data.player1;
+            opponentUsername = data.player2;
+            
+            console.log("My username: " + myUsername);
         }
     
         if (data.countdown !== undefined) {
@@ -129,32 +112,26 @@ function onLoad() {
         // Handle the game state update
         if (data.type === 'gamestate'){
             if (data.scores) {
-                scores[0] = data.scores[1];
-                scores[1] = data.scores[2];
+                scores[0] = data.scores[1];  // Mon score (côté gauche)
+                scores[1] = data.scores[2];  // Score de l'adversaire (côté droit)
             }
+            
             if (data.players) {
-                if (playerRole === 'left') {
-                    opponentPosition.y = data.players[2].y || opponentPosition.y;
-                } else if (playerRole === 'right') {
-                    opponentPosition.y = data.players[1].y || opponentPosition.y;
-                }
+                opponentPosition.y = data.players[2].y || opponentPosition.y;
             }
+            
             if (data.ball) {
                 ballPosition = data.ball;
             }
             
             if (data.winner !== 0){
-                //close websocket
                 socket.close();
-                gameFinished = true
+                gameFinished = true;
                 if (data.winner === window.user.id){
-                    //winning screen
-                    console.log("u won wp" + data.winner + " - " + window.user.id);
+                    console.log("You won!");
                     win = true;
-                }
-                else {
-                    //losing screen
-                    console.log("u lost" + data.winner + " - " + window.user.id);
+                } else {
+                    console.log("You lost!");
                 }
                 document.getElementById('back_to_menu').style = "visibility:visible;";
             }
@@ -162,7 +139,7 @@ function onLoad() {
         
     } catch (e) {
         console.error("Failed to parse JSON:", event.data);
-		console.log(e);
+        console.log(e);
     }
     
     });
@@ -230,7 +207,7 @@ function handleOpponentDisconnect() {
 
         window.disconnectTimer = setInterval(() => {
             if (gameFinished || opponentConnected) {
-                disconnectMessage.textContent = "I am the : " + playerRole + " player";
+                disconnectMessage.textContent = "I am the : left player";
                 clearInterval(window.disconnectTimer);
                 window.disconnectTimer = null;
                 return;
@@ -283,7 +260,7 @@ function sendPlayerPosition() {
     }
 }
 
-// Function to draw the game state (player and ball positions)
+// Function to draw the game state
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -292,19 +269,20 @@ function draw() {
     ctx.setLineDash([10, 10]);
     ctx.moveTo(canvas.width / 2, 0);
     ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = 'rgba(22, 224, 189, 0.4)'; // Néon color with transparency
+    ctx.strokeStyle = 'rgba(22, 224, 189, 0.4)';
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.setLineDash([]);
     
     // Dessin des raquettes avec effet néon
-    // Raquette joueur
     ctx.fillStyle = NEON_COLOR;
     ctx.shadowBlur = 15;
     ctx.shadowColor = NEON_COLOR;
+    
+    // Raquette joueur (gauche)
     ctx.fillRect(playerPosition.x, playerPosition.y, PADDLE_WIDTH, PADDLE_HEIGHT);
     
-    // Raquette adversaire
+    // Raquette adversaire (droite)
     ctx.fillRect(opponentPosition.x, opponentPosition.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
     // Désactiver les ombres pour le reste
@@ -340,18 +318,17 @@ function draw() {
     ctx.font = "28px VT323";
     ctx.shadowBlur = 10;
     
-    // Pseudo du joueur 1 à gauche
+    // Mon pseudo à gauche
     ctx.textAlign = 'left';
-   
-	ctx.fillStyle = NEON_COLOR;
-	ctx.shadowColor = NEON_COLOR;
-    ctx.fillText(player1Username, 40, 40);
+    ctx.fillStyle = 'NEON_COLOR';  // Moi en surbrillance
+    ctx.shadowColor = 'NEON_COLOR';
+    ctx.fillText(myUsername, 40, 40);
     
-    // Pseudo du joueur 2 à droite
+    // Pseudo adversaire à droite
     ctx.textAlign = 'right';
-	ctx.fillStyle = NEON_COLOR;
-	ctx.shadowColor = NEON_COLOR;
-    ctx.fillText(player2Username, canvas.width - 40, 40);
+    ctx.fillStyle = NEON_COLOR;
+    ctx.shadowColor = NEON_COLOR;
+    ctx.fillText(opponentUsername, canvas.width - 40, 40);
     
     ctx.shadowBlur = 0;
 }
@@ -365,40 +342,38 @@ function drawEndScreen(win) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     
-	ctx.shadowBlur = 20;
-	ctx.shadowOffsetX = 0;
-	ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 
     if (win) {
         ctx.fillStyle = NEON_COLOR;
         ctx.shadowColor = NEON_COLOR;
-        ctx.fillText("Victory", canvas.width / 2, canvas.height / 2);
+        ctx.fillText("Victory", canvas.width / 2, canvas.height / 3);
         
         // Afficher qui a gagné
         ctx.font = "36px VT323";
-        ctx.fillStyle = '#NEON_COLOR';
-        ctx.shadowColor = '#NEON_COLOR';
+        ctx.fillStyle = 'NEON_COLOR';
+        ctx.shadowColor = 'NEON_COLOR';
         ctx.shadowBlur = 10;
-        const winnerUsername = (playerRole === 'left') ? player1Username : player2Username;
-        ctx.fillText(winnerUsername + " wins!", canvas.width / 2, canvas.height / 2 + 80);
+        ctx.fillText(myUsername + " wins!", canvas.width / 2, canvas.height / 3 + 80);
     } else {
         ctx.fillStyle = 'red';
         ctx.shadowColor = 'red';
-        ctx.fillText("Defeat", canvas.width / 2, canvas.height / 2);
+        ctx.fillText("Defeat", canvas.width / 2, canvas.height / 3);
         
         // Afficher qui a gagné
         ctx.font = "36px VT323";
-        ctx.fillStyle = '#NEON_COLOR';
-        ctx.shadowColor = '#NEON_COLOR';
+        ctx.fillStyle = 'NEON_COLOR';
+        ctx.shadowColor = 'NEON_COLOR';
         ctx.shadowBlur = 10;
-        const winnerUsername = (playerRole === 'left') ? player2Username : player1Username;
-        ctx.fillText(winnerUsername + " wins!", canvas.width / 2, canvas.height / 2 + 80);
+        ctx.fillText(opponentUsername + " wins!", canvas.width / 2, canvas.height / 3 + 80);
     }
     
     ctx.shadowBlur = 0;
     ctx.shadowColor = 'transparent';
 
-	document.getElementById('back_to_menu').style = "visibility:visible;";
+    document.getElementById('back_to_menu').style = "visibility:visible;";
 }
 
 function onUnload(){

@@ -25,6 +25,8 @@ class Game():
 		self.match = match
 		self.p1_id = match.player1.id
 		self.p2_id = match.player2.id
+		self.p1_name = match.player1.username
+		self.p2_name = match.player2.username
 		self.lock = Lock()
 		self.state = { 'type': 'gamestate',
 			'players': {
@@ -111,12 +113,25 @@ class Consumer(WebsocketConsumer):
 			i -= 1
 
 	def send_role_to_client(self):
-		""" Send the player's role (left or right) to the client """
-		self.send(json.dumps({
-			'type': 'role',
-			'role': self.role
-		}))
-	
+		""" Send the player's role to the client - always as left """
+		# Déterminer qui est l'adversaire basé sur l'ID du joueur actuel
+		if self.id == self.game.p1_id:
+			# Joueur 1 - lui et son adversaire gardent leurs noms
+			self.send(json.dumps({
+				'type': 'role',
+				'role': "left",  # Toujours à gauche
+				'player1': self.game.p1_name,  # Son nom (joueur actuel)
+				'player2': self.game.p2_name,  # Nom de l'adversaire
+			}))
+		else:
+			# Joueur 2 - les noms sont inversés pour qu'il se voie comme joueur1
+			self.send(json.dumps({
+				'type': 'role',
+				'role': "left",  # Toujours à gauche
+				'player1': self.game.p2_name,  # Son nom (joueur actuel)
+				'player2': self.game.p1_name,  # Nom de l'adversaire
+			}))
+
 	def receive(self, text_data=None, bytes_data=None):
 		try:
 			if text_data:
@@ -143,11 +158,14 @@ class Consumer(WebsocketConsumer):
 	def move_player(self, data):
 		position = data.get('position')
 		if position is not None:
-			if  0 <= position['y'] <= canvas_height - paddle_height:
-				if self.role == "left":
+			if 0 <= position['y'] <= canvas_height - paddle_height:
+				# Mise à jour de la position selon l'ID du joueur
+				if self.id == self.game.p1_id:
 					self.game.state['players'][1]['y'] = position['y']
-				elif self.role == "right":
+				else:
 					self.game.state['players'][2]['y'] = position['y']
+			else:
+				print("Position out of bounds")
 		else:
 			print("Position data missing")
 
@@ -228,10 +246,41 @@ class Consumer(WebsocketConsumer):
 				ball_rect['y'] + ball_rect['height'] >= paddle_rect['y'])
 
 	def send_state(self):
-		game_data = json.dumps(self.game.state)
 		with self.game.lock:
 			for client in self.game.player_list:
-				client.send(game_data)
+				# Créer une copie de l'état du jeu adaptée à chaque joueur
+				if client.id == self.game.p1_id:
+					# Joueur 1 reçoit l'état normal
+					client.send(json.dumps(self.game.state))
+				else:
+					# Joueur 2 reçoit l'état inversé
+					inverted_state = {
+						'type': 'gamestate',
+						'players': {
+							# Le joueur 2 se voit à gauche (position 1)
+							1: {
+								'x': 50,
+								'y': self.game.state['players'][2]['y']
+							},
+							# Le joueur 1 est vu à droite (position 2)
+							2: {
+								'x': 750,
+								'y': self.game.state['players'][1]['y']
+							}
+						},
+						'ball': {
+							'x': canvas_width - self.game.state['ball']['x'],
+							'y': self.game.state['ball']['y'],
+							'vx': -self.game.state['ball']['vx'],
+							'vy': self.game.state['ball']['vy']
+						},
+						'scores': {
+							1: self.game.state['scores'][2],
+							2: self.game.state['scores'][1]
+						},
+						'winner': self.game.state['winner']
+					}
+					client.send(json.dumps(inverted_state))
 
 	def send_msg(self, msg):
 		msg_json = json.dumps(msg)
