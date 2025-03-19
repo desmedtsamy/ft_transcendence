@@ -12,12 +12,12 @@ from account.models import User
 from game.services import create_match
 from game.models import Match, TournamentMatch
 from game.signals import match_started
+from account.signals import friend_request_created
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
 
 class NotificationManager:
-    """Gestionnaire de notifications pour les clients websocket."""
     
     def __init__(self):
         self.connected_clients = {}
@@ -106,6 +106,24 @@ def handle_match_started(sender, **kwargs):
     player2_id = kwargs['player2_id']
     match = kwargs['match']
     Consumer.start_match(player1_id, player2_id, match)
+
+@receiver(friend_request_created)
+def handle_friend_request_created(sender, **kwargs):
+    """Gestionnaire du signal friend_request_created."""
+    from_user = kwargs['from_user']
+    to_user = kwargs['to_user']
+    
+    # Préparer les données de notification
+    notification_data = {
+        'message': "friend_request",
+        'type': "friend_request",
+        'from_user_id': from_user.id,
+        'from_user_name': from_user.username,
+        'timestamp': int(datetime.now().timestamp() * 1000)
+    }
+    
+    # Envoyer la notification à l'utilisateur destinataire
+    notification_manager.send_notification(to_user.id, notification_data)
 
 
 class Consumer(WebsocketConsumer):

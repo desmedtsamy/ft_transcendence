@@ -91,6 +91,9 @@ class NotificationManager {
 		  case 'match_decline':
 			this._handleMatchDecline(data);
 			break;
+		  case 'friend_request':
+			this._handleFriendRequest(data);
+			break;
 		  default:
 			console.log('Type de message non géré:', data.message);
 		}
@@ -140,6 +143,35 @@ class NotificationManager {
 	  }, this.NOTIFICATION_TIMEOUT);
 	}
   
+	/**
+	 * Traite une demande d'ami
+	 * @param {Object} data - Données de la demande d'ami
+	 * @private
+	 */
+	_handleFriendRequest(data) {
+	  const from_user_id = data.from_user_id;
+	  const from_user_name = data.from_user_name;
+	  const timestamp = data.timestamp;
+	  
+	  // Créer l'alerte de demande d'ami
+	  const alertEl = this._createFriendRequestAlert({
+		from_user_id,
+		from_user_name,
+		timestamp
+	  });
+	  
+	  // Ajouter l'alerte au conteneur
+	  const alertsEl = document.getElementById('alerts');
+	  alertsEl.appendChild(alertEl);
+	  
+	  // Configurer le timeout pour supprimer automatiquement après 5 minutes
+	  setTimeout(() => {
+		if (alertsEl.contains(alertEl)) {
+		  alertEl.remove();
+		}
+	  }, 5 * 60 * 1000); // 5 minutes
+	}
+
 	/**
 	 * Crée l'élément d'alerte pour une demande de match
 	 * @param {Object} options - Options de l'alerte
@@ -344,7 +376,147 @@ class NotificationManager {
 			declineAlert.remove();
 		}, 5000);
 	}
-	
+  
+	/**
+	 * Crée l'élément d'alerte pour une demande d'ami
+	 * @param {Object} options - Options de l'alerte
+	 * @returns {HTMLElement} - Élément d'alerte
+	 * @private
+	 */
+	_createFriendRequestAlert({ from_user_id, from_user_name, timestamp }) {
+	  // Créer l'élément d'alerte
+	  const alertEl = document.createElement('div');
+	  alertEl.className = 'alert alert-info friend-request-alert';
+	  alertEl.style.display = 'flex';
+	  alertEl.style.justifyContent = 'space-between';
+	  alertEl.style.flexDirection = 'column';
+	  alertEl.id = `friend-request-${from_user_id}-${timestamp}`;
+	  
+	  // Définir le message de l'alerte
+	  const messageEl = document.createElement('div');
+	  messageEl.textContent = `${from_user_name} vous a envoyé une demande d'ami`;
+	  alertEl.appendChild(messageEl);
+	  
+	  // Créer le conteneur des boutons
+	  const buttonsContainer = document.createElement('div');
+	  buttonsContainer.style.display = 'flex';
+	  buttonsContainer.style.justifyContent = 'space-between';
+	  buttonsContainer.style.marginTop = '10px';
+	  
+	  // Bouton d'acceptation
+	  const acceptButton = this._createButton('Accepter', 'button btn-success accept-friend-request', () => {
+		this._acceptFriendRequest(from_user_id);
+		alertEl.remove();
+	  });
+	  
+	  // Bouton de refus
+	  const declineButton = this._createButton('Refuser', 'button btn-danger cancel-friend-request', () => {
+		this._rejectFriendRequest(from_user_id);
+		alertEl.remove();
+	  });
+	  
+	  buttonsContainer.appendChild(acceptButton);
+	  buttonsContainer.appendChild(declineButton);
+	  alertEl.appendChild(buttonsContainer);
+	  
+	  return alertEl;
+	}
+  
+	/**
+	 * Accepte une demande d'ami
+	 * @param {number} userId - ID de l'utilisateur qui a envoyé la demande
+	 * @private
+	 */
+	_acceptFriendRequest(userId) {
+	  fetch(`/api/account/friend-requests/${userId}/accept/`, {
+		method: 'POST',
+		headers: {
+		  'X-CSRFToken': this._getCookie('csrftoken'),
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  user_id: userId,
+		}),
+	  }).then(response => {
+		if (response.ok) {
+		  // Afficher une notification de succès
+		  this._showSuccessAlert(`Demande d'ami acceptée!`);
+		  
+		  // Si nous sommes sur la page des amis, recharger la liste
+		  if (typeof onLoad === 'function') {
+			onLoad();
+		  }
+		} else {
+		  console.error('Erreur lors de l\'acceptation de la demande d\'ami');
+		}
+	  }).catch(error => {
+		console.error('Erreur réseau:', error);
+	  });
+	}
+  
+	/**
+	 * Refuse une demande d'ami
+	 * @param {number} userId - ID de l'utilisateur qui a envoyé la demande
+	 * @private
+	 */
+	_rejectFriendRequest(userId) {
+	  fetch(`/api/account/friend-requests/${userId}/reject/`, {
+		method: 'POST',
+		headers: {
+		  'X-CSRFToken': this._getCookie('csrftoken'),
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  user_id: userId,
+		}),
+	  }).then(response => {
+		if (response.ok) {
+		  // Afficher une notification de succès
+		  this._showSuccessAlert(`Demande d'ami refusée`);
+		  
+		  // Si nous sommes sur la page des amis, recharger la liste
+		  if (typeof onLoad === 'function') {
+			onLoad();
+		  }
+		} else {
+		  console.error('Erreur lors du refus de la demande d\'ami');
+		}
+	  }).catch(error => {
+		console.error('Erreur réseau:', error);
+	  });
+	}
+  
+	/**
+	 * Affiche une alerte de succès temporaire
+	 * @param {string} message - Message à afficher
+	 * @private
+	 */
+	_showSuccessAlert(message) {
+	  const alertsEl = document.getElementById('alerts');
+	  const successAlert = document.createElement('div');
+	  successAlert.className = 'alert alert-success';
+	  successAlert.textContent = message;
+	  
+	  alertsEl.appendChild(successAlert);
+	  
+	  // Disparaît après 3 secondes
+	  setTimeout(() => {
+		successAlert.remove();
+	  }, 3000);
+	}
+  
+	/**
+	 * Récupère un cookie par son nom
+	 * @param {string} name - Nom du cookie
+	 * @returns {string} - Valeur du cookie
+	 * @private
+	 */
+	_getCookie(name) {
+	  const value = `; ${document.cookie}`;
+	  const parts = value.split(`; ${name}=`);
+	  if (parts.length === 2) return parts.pop().split(';').shift();
+	  return '';
+	}
   
 	/**
 	 * Envoie une notification au serveur

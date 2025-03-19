@@ -7,6 +7,7 @@ from .models import User, FriendshipRequest, Friendship
 from .serializers import UserSerializer
 from django.contrib.auth import login
 from django.db.models import Q
+from account.signals import friend_request_created
 
 def get_42_user_data(request, redirect_uri):
 	client_id = settings.FORTYTWO_CLIENT_ID
@@ -98,6 +99,7 @@ def send_friend_request(from_user, to_user):
 	if existing_request:
 		return {'error': 'Une demande d\'ami a déjà été envoyée à cet utilisateur.'}, 400
 	FriendshipRequest.objects.create(from_user=from_user, to_user=to_user)
+	friend_request_created.send(sender=None , from_user=from_user, to_user=to_user)
 	return {'success': 'Demande d\'ami envoyée avec succès.'}, 201
 
 

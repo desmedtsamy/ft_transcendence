@@ -60,22 +60,9 @@ function renderSearchResults(users) {
 		
 		// Add the buttons to the div
 		const actionButton = createActionButton(user);
-		// Check if actionButton is a div (for accept/reject buttons) or a button
-		if (actionButton.tagName === 'DIV') {
-			// If it's already a div with buttons, we just add it to our list item
-			listItem.appendChild(actionButton);
-		} else {
-			// Otherwise we add it to our buttonDiv
-			buttonDiv.appendChild(actionButton);
-			
-			// Add the fight button to the div
-			const fightButton = createFightButton(user);
-			buttonDiv.appendChild(fightButton);
-			
-			// Add the button div to the list item
-			listItem.appendChild(buttonDiv);
-		}
-
+		const fightButton = createFightButton(user);
+		actionButton.appendChild(fightButton);
+		listItem.appendChild(actionButton);
 		searchResults.appendChild(listItem);
 	}
 }
@@ -131,8 +118,9 @@ function createActionButton(user) {
             handleFriendAction(button.dataset.action, user.id);
         });
     }
-
-    return button; 
+	const buttonContainer = document.createElement('div');
+	buttonContainer.appendChild(button);
+    return buttonContainer; 
 }
 
 async function handleFightAction(userId) {
