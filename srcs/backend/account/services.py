@@ -32,6 +32,17 @@ def get_42_user_data(request, redirect_uri):
 	user_data = response.json()
 	return user_data, 200
 
+def generate_unique_email(email):
+    local_part, domain = email.split("@")  # Sépare l'adresse en deux parties
+    num = 1
+    new_email = email
+
+    while User.objects.filter(email=new_email).exists():
+        new_email = f"{local_part}+{num}@{domain}"
+        num += 1
+
+    return new_email
+
 def handle_42_user(request, user_data, update_existing_user=False):
 	email = user_data['email']
 	first_name = user_data['first_name']
@@ -46,15 +57,15 @@ def handle_42_user(request, user_data, update_existing_user=False):
 		if User.objects.filter(intra_id=intra_id).exclude(id=user.id).exists():
 			return {'error': 'Un utilisateur avec cet ID 42 existe déjà.'}, 400
 	else:
-		user = User.objects.filter(intra_id=intra_id).first() or \
-			User.objects.filter(email=email).first() or \
-			User.objects.filter(username=username).first()
+		user = User.objects.filter(intra_id=intra_id).first()
 
 		if not user:
 			num = 1
 			while User.objects.filter(username=username).exists():
 				username = f"{user_data['login']}_{num}"
 				num += 1
+			email = generate_unique_email(user_data['email'])
+			
 			user = User.objects.create_user(
 				username=username,
 				email=email,
