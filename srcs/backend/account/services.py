@@ -17,10 +17,8 @@ def get_42_user_data(request, redirect_uri):
 		data = request.data
 		code = data.get('code')
 	except json.JSONDecodeError:
-		print("la")
 		return {'error': 'Données JSON invalides.'}, 400
 	if not code:
-		print("pas la")
 		return {'error': 'Code d\'autorisation manquant.'}, 400
 	oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
 	token = oauth.fetch_token(

@@ -79,9 +79,11 @@ class Client42ViewAPI(APIView):
 	def post(self, request):
 		client_id = settings.FORTYTWO_CLIENT_ID
 		redirect_uri = settings.FORTYTWO_REDIRECT_URI
+		sync_uri = settings.FORTYTWO_SYNC_URI
 		return Response({
 			'client_id': client_id,
-			'redirect_uri': redirect_uri
+			'redirect_uri': redirect_uri,
+			'sync_uri': sync_uri
 		}, status=status.HTTP_200_OK)
 
 class Callback42View(APIView):

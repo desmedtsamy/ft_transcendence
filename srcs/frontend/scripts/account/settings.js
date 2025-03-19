@@ -13,8 +13,8 @@ async function getClientAPI(){
 		if (response.ok) {
 			const response_json = await response.json();
 			const client_id = response_json.client_id;
-			link.href = "https://api.intra.42.fr/oauth/authorize?client_id=" + client_id + "&redirect_uri=http%3A%2F%2Flocalhost%3A8042%2F42sync&response_type=code";
-
+			const sync_uri = response_json.sync_uri;
+			link.href = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(sync_uri)}&response_type=code`;
 		} else {
 			link.style.display = 'none';
 			const result = await response.json();
