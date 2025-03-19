@@ -49,7 +49,7 @@
 
 /* Add black frame to buttons */
 .user_element button {
-    border: 6px solid #000;
+    border: 4px solid var(--bg-color);
     border-radius: 4px;
 }
 
