@@ -328,5 +328,6 @@ class Consumer(WebsocketConsumer):
 				time.sleep(0.0155)
 			if len(self.game.player_list) < 2:
 				print("Game paused because a player disconnected.")
+				self.game.is_running = False
 				return
 		threading.Thread(target=game_loop, daemon=True).start()
