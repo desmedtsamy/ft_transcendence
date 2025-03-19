@@ -157,8 +157,14 @@ FORTYTWO_CLIENT_SECRET = os.environ.get('FORTYTWO_CLIENT_SECRET')
 HOST = os.environ.get('HOST', 'localhost')
 PORT = os.environ.get('PORT', '443')
 
-FORTYTWO_REDIRECT_URI = f"https://{HOST}:{PORT}/42callback"
-FORTYTWO_SYNC_URI = f"https://{HOST}:{PORT}/42sync"
+# Construit l'URL avec le port seulement si ce n'est pas le port standard (443)
+# if PORT == '443':
+BASE_URL = f"https://{HOST}"
+# else:
+#     BASE_URL = f"https://{HOST}:{PORT}"
+
+FORTYTWO_REDIRECT_URI = f"{BASE_URL}/42callback"
+FORTYTWO_SYNC_URI = f"{BASE_URL}/42sync"
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -176,11 +182,11 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     f"https://{HOST}",
-	f"https://{HOST}:{PORT}"
+	# f"https://{HOST}:{PORT}"
 ]
 CSRF_TRUSTED_ORIGINS = [
     f"https://{HOST}",
-	f"https://{HOST}:{PORT}"
+	# f"https://{HOST}:{PORT}"
 ]
 ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', f"{HOST}"]
 
