@@ -84,7 +84,7 @@ function onLoad() {
             opponentConnected = true;
             gamePaused = false;
             const disconnectMessage = document.getElementById('player-turn');
-            disconnectMessage.textContent = "I am the : left player";
+            disconnectMessage.textContent = "";
             if (window.disconnectTimer) {
                 clearInterval(window.disconnectTimer);
                 window.disconnectTimer = null;
@@ -93,8 +93,6 @@ function onLoad() {
         
         // If the server sends the player's role
         if (data.type === 'role') {
-            const Message = document.getElementById('player-turn');
-            Message.textContent = "I am the : left player";
             playerPosition.y = 150;
             playerPosition.x = 50;    // Toujours à gauche
             opponentPosition.x = 750; // Toujours à droite
