@@ -25,7 +25,10 @@
                         </div>
                         
                         <div class="text-center mt-4">
-                            <p class="mb-0">Déjà inscrit? <a href="/login" class="text-decoration-none">Se connecter</a></p>
+                            <div class="login-link">
+                                <span>Déjà inscrit?</span>
+                                <a href="/login" class="btn btn-primary btn-lg ms-2">Se connecter</a>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -128,5 +131,32 @@ a {
 a:hover {
     color: rgba(var(--primary-rgb), 0.8);
     text-decoration: underline !important;
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
+.login-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.login-link span {
+    color: var(--text-color);
 }
 </style>
