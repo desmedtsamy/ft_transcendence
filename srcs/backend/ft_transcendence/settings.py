@@ -182,11 +182,11 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     f"https://{HOST}",
-	# f"https://{HOST}:{PORT}"
+	f"https://{HOST}:{PORT}"
 ]
 CSRF_TRUSTED_ORIGINS = [
     f"https://{HOST}",
-	# f"https://{HOST}:{PORT}"
+	f"https://{HOST}:{PORT}"
 ]
 ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1', f"{HOST}"]
 
