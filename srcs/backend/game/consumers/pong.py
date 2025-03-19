@@ -3,6 +3,7 @@ from threading import Lock
 import json
 import time
 import threading
+import random
 from game.services import getMatch
 
 all_game = []
@@ -34,7 +35,7 @@ class Game():
 				1: {'x': 50, 'y': 150},  # left player
 				2: {'x': 750, 'y': 150}  # right player
 			},
-			'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
+			'ball': {'x': 400, 'y': 300, 'vx': random_velocity(), 'vy': random_velocity()},
 			'scores': {1: 0, 2: 0},
 			'winner': 0
 		}
@@ -247,7 +248,7 @@ class Consumer(WebsocketConsumer):
 				self.game.state['scores'][2] += 1  # Right player scores
 			else:
 				self.game.state['scores'][1] += 1  # Left player scores
-			ball['x'], ball['y'], ball['vx'], ball['vy'] = canvas_width/2, canvas_height/2, velocity, velocity
+			ball['x'], ball['y'], ball['vx'], ball['vy'] = canvas_width/2, canvas_height/2, random_velocity(), random_velocity()
 
 	def check_collision(self, ball, paddle):
 		""" Checks if the ball collides with a given paddle """
@@ -331,3 +332,7 @@ class Consumer(WebsocketConsumer):
 				self.game.is_running = False
 				return
 		threading.Thread(target=game_loop, daemon=True).start()
+
+def random_velocity():
+	rint = random.randint(1,2)
+	return velocity if rint == 1 else -velocity
