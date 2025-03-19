@@ -251,35 +251,56 @@ function renderRecentMatches(matches, userData) {
 function renderScoreChart(matches, user) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
 
-    let currentScore = user.scores[user.selected_game];
-    const scoreData = [currentScore];
-    const labels = ['Score actuel'];
-
+    // Calculate starting score by going backward from current score based on match history
+    let startingScore = user.scores[user.selected_game];
+    // Loop through matches from newest to oldest to get the starting score
+    for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
+        const isWinner = match.winner && match.winner === user.id;
+        const pointsChange = isWinner ? 42 : -21;
+        startingScore -= pointsChange; // Subtract the points that were gained/lost
+    }
+    
+    // Make sure starting score isn't negative
+    startingScore = Math.max(0, startingScore);
+    
+    // Now build the score data in forward chronological order (oldest match first)
+    const scoreData = [startingScore];
+    const labels = ['Début'];
+    
+    let runningScore = startingScore;
+    
     if (scoreChart) {
         scoreChart.destroy();
     }
     
+    // Process matches in chronological order (oldest first)
     for (let i = matches.length - 1; i >= 0; i--) {
         const match = matches[i];
         const isWinner = match.winner && match.winner === user.id;
         
         const pointsChange = isWinner ? 42 : -21;
         
-        // Calcul du score historique
-        currentScore -= pointsChange;
-        scoreData.push(currentScore);
+        // Add points to running score
+        runningScore += pointsChange;
+        scoreData.push(runningScore);
         
-        // Formatage de la date
-        const matchDate = new Date(match.created_at);
-        const formattedDate = matchDate.toLocaleString(); 
-        labels.push(formattedDate);
+        // Use numbered games
+        labels.push(`Match ${matches.length - i}`);
     }
+    
+    // Current score is already the last element in scoreData
+    // We just need to update the last label
+    labels[labels.length - 1] = 'Actuel';
     
     console.log("Scores calculés:", scoreData);
     
-    // Inverser les tableaux pour avoir l'ordre chronologique
-    scoreData.reverse();
-    labels.reverse();
+    // No need to reverse arrays as we're already building them in chronological order
+    
+    // Get the primary color from CSS variables
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+    const secondaryBg = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg').trim();
 
     scoreChart = new Chart(ctx, {
         type: 'line',
@@ -288,15 +309,46 @@ function renderScoreChart(matches, user) {
             datasets: [{
                 label: 'Score',
                 data: scoreData,
-                borderColor: 'rgb(75, 192, 192)',
+                borderColor: primaryColor,
+                backgroundColor: 'rgba(22, 224, 189, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: primaryColor,
+                pointBorderColor: primaryColor,
+                pointHoverBackgroundColor: bgColor,
+                pointHoverBorderColor: primaryColor,
                 tension: 0.1
             }]
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: primaryColor
+                    },
+                    onClick: null
+                }
+            },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(22, 224, 189, 0.1)'
+                    },
+                    ticks: {
+                        color: primaryColor
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(22, 224, 189, 0.1)'
+                    },
+                    ticks: {
+                        color: primaryColor,
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    }
                 }
             }
         }
