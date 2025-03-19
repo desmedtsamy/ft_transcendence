@@ -281,6 +281,11 @@ function renderScoreChart(matches, user) {
     scoreData.reverse();
     labels.reverse();
 
+    // Get the primary color from CSS variables
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+    const secondaryBg = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg').trim();
+
     scoreChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -288,15 +293,43 @@ function renderScoreChart(matches, user) {
             datasets: [{
                 label: 'Score',
                 data: scoreData,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
+                borderColor: primaryColor,
+                backgroundColor: 'rgba(22, 224, 189, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: primaryColor,
+                pointBorderColor: primaryColor,
+                pointHoverBackgroundColor: bgColor,
+                pointHoverBorderColor: primaryColor,
+                tension: 0.2
             }]
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: primaryColor
+                    },
+                    onClick: null
+                }
+            },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(22, 224, 189, 0.1)'
+                    },
+                    ticks: {
+                        color: primaryColor
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(22, 224, 189, 0.1)'
+                    },
+                    ticks: {
+                        color: primaryColor
+                    }
                 }
             }
         }

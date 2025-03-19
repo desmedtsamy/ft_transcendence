@@ -1,36 +1,136 @@
-<form id="settings-form" >
+<div class="container">
+	<div class="row justify-content-center mt-5">
+		<div class="col-md-8">
+			<div class="card bg-dark border-primary">
+				<div class="card-header">
+					<h2 class="text-center mb-0">Paramètres du compte</h2>
+				</div>
+				<div class="card-body p-4">
+					<form id="settings-form">
+						<!-- Hidden fields -->
+						<input type="text" name="username_fake" style="display:none">
+						<input type="password" name="password" style="display:none">
+						
+						<div class="mb-3">
+							<label for="username_input" class="form-label">Nom d'utilisateur</label>
+							<input type="text" class="form-control" id="username_input" name="username" autocomplete="new-password">
+						</div>
+						
+						<div class="mb-3">
+							<label for="email" class="form-label">Email</label>
+							<input type="email" class="form-control" id="email" name="email" autocomplete="new-password">
+						</div>
+						
+						<div class="mb-4">
+							<label for="avatar" class="form-label">Avatar</label>
+							<input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+						</div>
+						
+						<div class="border-top pt-4 mb-4" style="color: var(--primary-color)">
+							<h4 class="mb-3">Changer le mot de passe</h4>
+							
+							<div class="mb-3">
+								<label for="old_password" class="form-label">Ancien mot de passe</label>
+								<input type="password" class="form-control" id="old_password" name="old_password" autocomplete="new-password">
+							</div>
+							
+							<div class="mb-3">
+								<label for="new_password1" class="form-label">Nouveau mot de passe</label>
+								<input type="password" class="form-control" id="new_password1" name="new_password1" autocomplete="new-password">
+							</div>
+							
+							<div class="mb-3">
+								<label for="new_password2" class="form-label">Confirmez le nouveau mot de passe</label>
+								<input type="password" class="form-control" id="new_password2" name="new_password2" autocomplete="new-password">
+							</div>
+						</div>
+						
+						<div class="d-grid gap-2">
+							<button type="submit" class="btn btn-outline-primary btn-lg">Enregistrer les modifications</button>
+							<a class="btn btn-outline-primary btn-lg" id="login_42">
+								<span>Synchroniser avec </span>
+								<img src="/img/42_logo.svg" alt="42" style="height: 1em; vertical-align: middle;">
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
-	<input type="text" name="username_fake" style="display:none">
-	<input type="password" name="password" style="display:none">
+<style>
+.card {
+	background-color: var(--secondary-bg) !important;
+	border-color: var(--primary-color) !important;
+	box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.1);
+}
 
-	<div>
-		<label for="username">Nom d'utilisateur:</label>
-		<input type="text" id="username_input" name="username" autocomplete="new-password"> 
-	</div>
-	<div>
-		<label for="email">Email:</label>
-		<input type="email" id="email" name="email" autocomplete="new-password">
-	</div>   
+.card-header {
+	background-color: var(--primary-color) !important;
+	color: var(--bg-color) !important;
+	padding: 1rem;
+}
 
-	<div>
-		<label for="avatar">Avatar:</label>
-		<input type="file" id="avatar" name="avatar" accept="image/*">
-	</div>
-	<div>
-		<label for="old_password">Ancien mot de passe:</label>
-		<input type="password" id="old_password" name="old_password" autocomplete="new-password">
-	</div>
-	<div>
-		<label for="new_password1">Nouveau mot de passe:</label>
-		<input type="password" id="new_password1" name="new_password1" autocomplete="new-password">
-	</div>
-	<div>
-		<label for="new_password2">Confirmez le nouveau mot de passe:</label>
-		<input type="password" id="new_password2" name="new_password2" autocomplete="new-password">   
+.card-body {
+	background-color: var(--secondary-bg);
+}
 
-	</div>
-	<button type="submit">Enregistrer les modifications</button>
-	<a class="submit form_elem" id="login_42" >
-		<span>sync your account with </span> <img src="/img/42_logo.svg" alt="42" style="height:1em ">
-	</a>
-</form>
+h2, h4 {
+	color: inherit;
+	font-weight: bold;
+}
+
+.form-label {
+	color: var(--text-color);
+	margin-bottom: 0.5rem;
+}
+
+.form-control {
+	background-color: var(--secondary-bg);
+	border: 1px solid rgba(var(--primary-rgb), 0.3);
+	color: var(--text-color);
+	padding: 0.75rem 1rem;
+	border-radius: 8px;
+	font-size: 1rem;
+}
+
+.form-control:focus {
+	background-color: var(--secondary-bg);
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+	color: var(--text-color);
+}
+
+.form-control::placeholder {
+	color: rgba(var(--primary-rgb), 0.5);
+}
+
+.border-top {
+	border-top: 1px solid rgba(var(--primary-rgb), 0.3) !important;
+}
+
+/* Override Bootstrap button styles to ensure consistency */
+.btn-outline-primary {
+	border: 1px solid var(--primary-color) !important;
+	color: var(--bg-color) !important;
+	background-color: var(--primary-color) !important;
+	padding: 0.5rem 1rem !important;
+	font-weight: normal !important;
+}
+
+.btn-outline-primary:hover {
+	background-color: transparent !important;
+	color: var(--primary-color) !important;
+	border: 1px solid var(--primary-color) !important;
+}
+
+/* Focus state should match hover */
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+	box-shadow: none !important;
+	background-color: transparent !important;
+	color: var(--primary-color) !important;
+	border: 1px solid var(--primary-color) !important;
+}
+</style>
