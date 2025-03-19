@@ -63,6 +63,7 @@ function onLoad() {
 
     socket.addEventListener('open', function () {
         console.log('Connected to WebSocket server.');
+        sendPlayerPosition();
         startGameLoop();
     });
 

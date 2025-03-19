@@ -30,8 +30,8 @@ class Game():
 		self.lock = Lock()
 		self.state = { 'type': 'gamestate',
 			'players': {
-				1: {'x': 50, 'y': 250},  # left player
-				2: {'x': 750, 'y': 250}  # right player
+				1: {'x': 50, 'y': 150},  # left player
+				2: {'x': 750, 'y': 150}  # right player
 			},
 			'ball': {'x': 400, 'y': 300, 'vx': velocity, 'vy': velocity},
 			'scores': {1: 0, 2: 0},
@@ -220,12 +220,23 @@ class Consumer(WebsocketConsumer):
 		if self.check_collision(ball, left_player):
 			ball['vx'] = -ball['vx']
 			ball['x'] = left_player['x'] + paddle_width + ball_size
+			hit_height = ball['y'] - left_player['y']
+			print('hit: ', hit_height)
+			if hit_height < 15:
+				ball['vy'] = velocity
+			elif hit_height > 85:
+				ball['vy'] = -velocity
 
 		# Collision with right player's paddle
 		if self.check_collision(ball, right_player):
 			ball['vx'] = -ball['vx']
 			ball['x'] = right_player['x'] - paddle_width
-
+			hit_height = ball['y'] - right_player['y']
+			print('hit: ', hit_height)
+			if hit_height < 15:
+				ball['vy'] = velocity
+			elif hit_height > 85:
+				ball['vy'] = -velocity
 
 		# Reset ball if it goes beyond the left or right bounds
 		if ball['x'] <= 0 or ball['x'] >= canvas_width:
