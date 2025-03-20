@@ -79,7 +79,7 @@ class NotificationManager {
 		const data = JSON.parse(event.data);
 		switch (data.message) {
 		  case 'match_request':
-			if (data.type = "matchmaking")
+			if (data.type == "matchmaking")
 				this._handleMatchStart(data);
 			else
 				this._handleMatchRequest(data);
