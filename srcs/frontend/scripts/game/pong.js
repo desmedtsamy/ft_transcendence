@@ -46,6 +46,12 @@ const handleKeyUp = function (e) {
 let listenersAdded = false;
 
 function onLoad() {
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = true;
+		// Set the initial value based on the selected game
+		gameSelector.value = window.selected_game || 'pong';
+	}
     if (listenersAdded) return;
     if (window.user === undefined) {
         return;
@@ -364,6 +370,10 @@ function drawEndScreen(win) {
 }
 
 function onUnload(){
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = false;
+	}
     gameLoopRunning = false;
     keysPressed = { ArrowUp: false, ArrowDown: false };
     velocity = 0;

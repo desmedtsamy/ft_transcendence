@@ -9,6 +9,12 @@ var opponentConnected = false;
 var hasVotedRestart = false; // Variable pour suivre si le joueur a voté pour redémarrer
 
 function onLoad() {
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = true;
+		// Set the initial value based on the selected game
+		gameSelector.value = window.selected_game || 'pong';
+	}
     if (window.user === undefined) {
         return;
     }
@@ -209,6 +215,10 @@ function handleOpponentDisconnect() {
 }
 
 function onUnload() {
+	const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = false;
+	}
     gameFinished = false;
     win = false;
     playerTurn = false;
