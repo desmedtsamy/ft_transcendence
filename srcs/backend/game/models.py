@@ -43,13 +43,13 @@ class Match(models.Model):
 			if self.game_type not in self.winner.scores:
 				self.winner.scores[self.game_type] = 0 
 			self.winner.scores[self.game_type] +=42
-			self.winner.wins += 1
+			self.winner.wins[self.game_type] += 1
 			if looser.scores[self.game_type] > 19:
 				looser.scores[self.game_type] -=19
 			else:
 				looser.scores[self.game_type] = 0
 			
-			looser.losses += 1
+			looser.losses[self.game_type] += 1
 			self.winner.save()
 			looser.save()
 		self.status = 'finished'

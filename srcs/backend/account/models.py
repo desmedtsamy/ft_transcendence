@@ -50,8 +50,8 @@ class User(AbstractUser):
 	is_online = models.BooleanField(default=False)
 	intra_id = models.IntegerField(unique=True, null=True, blank=True)
 	scores = models.JSONField(default=dict)
-	wins = models.IntegerField(default=0)
-	losses = models.IntegerField(default=0)
+	wins   = models.JSONField(default=dict)
+	losses = models.JSONField(default=dict)
 
 	def get_matches(self):
 		return Match.objects.filter(Q(player1=self) | Q(player2=self))
@@ -71,12 +71,16 @@ class User(AbstractUser):
 		return FriendshipRequest.objects.filter(from_user=self)
 	
 	@staticmethod
-	def initialize_scores():
+	def initialize_dict():
 		return {game[0]: 0 for game in User.GAME_TYPES}
 	
 	def save(self, *args, **kwargs):
 		if not self.scores:
-			self.scores = self.initialize_scores()
+			self.scores = self.initialize_dict()
+		if not self.wins:
+			self.wins = self.initialize_dict()
+		if not self.losses:
+			self.losses = self.initialize_dict()
 		super().save(*args, **kwargs)
 	
 	def check_user_status():

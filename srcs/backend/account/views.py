@@ -223,6 +223,7 @@ class UserProfileView(APIView):
 	def get(self, request, username):
 		try:
 			user = User.objects.get(username=username)
+			selected_game = request.user.selected_game
 
 			friends = request.user.get_friends()
 			friend_requests_sent = FriendshipRequest.objects.filter(from_user=request.user).values_list('to_user', flat=True)
@@ -234,12 +235,19 @@ class UserProfileView(APIView):
 			user_data['is_friend'] = user in friends
 			user_data['friend_request_sent'] = user.pk in friend_requests_sent
 			user_data['friend_request_received'] = user.pk in friend_requests_received
+			user_data['rank'] = self.calculate_user_ranking(user, selected_game)
 
 			return Response(user_data, status=status.HTTP_200_OK)
 
 		except User.DoesNotExist:
 			return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+	def calculate_user_ranking(self, user,selected_game):
+		user_score = user.scores[selected_game]
+		users_with_higher_score = User.objects.filter(**{f'scores__{selected_game}__gt': user_score}).count()
+		ranking = users_with_higher_score + 1
+
+		return ranking
 class UserFriendsListView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 

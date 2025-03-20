@@ -60,12 +60,21 @@ function renderProfileInfo(user) {
 	const winLossRatio = document.getElementById('win-loss-ratio');
 	const profileScore = document.getElementById('profile-score');
 	const lastConnection = document.getElementById('last-connection');
+	const rank = document.getElementById('rank');
 	
     profileUsername.textContent = user.username;
     profileAvatar.src = user.avatar;
-    winLossRatio.textContent = calculateWinLossRatio(user.wins, user.losses); 
-    profileScore.textContent = user.score;
+	if (selectedGame == "pong"){
+		winLossRatio.textContent = calculateWinLossRatio(user.wins.pong, user.losses.pong); 
+    	profileScore.textContent = user.scores.pong;
+	}
+	else
+	{
+		profileScore.textContent = user.scores.tictactoe;
+		winLossRatio.textContent = calculateWinLossRatio(user.wins.tictactoe, user.losses.tictactoe); 
+	}
     lastConnection.textContent = formatTimeAgo(user.last_connection);
+	rank.textContent = user.rank;
     renderFriendActions(user);
 	set1v1Button(user);
 }
@@ -76,7 +85,7 @@ function formatTimeAgo(timestamp) {
     const diffInSeconds = Math.floor((now - then) / 1000);
 	
     if (diffInSeconds < 60) {
-		return 'il y a quelques secondes'; 
+		return 'en ligne'; 
     } else if (diffInSeconds < 3600) { // Moins d'une heure
         const minutes = Math.floor(diffInSeconds / 60);
         return `il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
@@ -135,7 +144,7 @@ function createActionButton(user) {
         buttonContainer.appendChild(rejectButton);
 
         return buttonContainer;
-    } else {
+    } else if (user.id != window.user.id){
         button.classList.add('button', 'btn-primary', 'send-friend-request');
         button.dataset.action = `/api/account/friend-requests/${user.id}/send/`; 
         button.innerHTML = '<i class="fas fa-user-plus"></i>';
@@ -169,7 +178,7 @@ async function handleFriendAction(actionUrl, userId) {
 		if (response.ok) {
 			const data = await response.json();
 			alert(data.success, "success");
-			searchUsers(); 
+			navigateTo(window.location.pathname);
 		} else {
 			const errorData = await response.json();
 			alert('Erreur : ' + errorData.error, "error");
@@ -177,18 +186,6 @@ async function handleFriendAction(actionUrl, userId) {
 	} catch (error) {
 		alert('Erreur : ' + error, "error");
 	}
-}
-
-function createButton(text, colorClass, actionClass, actionUrl) {
-	const button = document.createElement('button');
-    button.classList.add('btn', colorClass, actionClass);
-    button.dataset.action = actionUrl;
-    button.textContent = text;
-    button.addEventListener('click', (event) => {
-		event.preventDefault();
-        handleFriendAction(actionUrl, user.id);
-    });
-    return button;
 }
 
 async function fetchMatchesData(userData) {
@@ -244,8 +241,7 @@ function renderRecentMatches(matches, userData) {
         const player1Span = document.createElement('span');
         player1Span.classList.add('player-name');
         if (player1.id) {
-            const player1Link = document.createElement('a');
-            player1Link.href = `#/profile/${player1.username}`;
+            const player1Link = document.createElement('span');
             player1Link.textContent = player1.username;
             player1Span.appendChild(player1Link);
         } else {
@@ -262,7 +258,7 @@ function renderRecentMatches(matches, userData) {
         player2Span.classList.add('player-name');
         if (player2.id) {
             const player2Link = document.createElement('a');
-            player2Link.href = `#/profile/${player2.username}`;
+            player2Link.href = `/profile/${player2.username}`;
             player2Link.textContent = player2.username;
             player2Span.appendChild(player2Link);
         } else {
