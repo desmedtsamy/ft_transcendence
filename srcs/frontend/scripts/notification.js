@@ -79,7 +79,10 @@ class NotificationManager {
 		const data = JSON.parse(event.data);
 		switch (data.message) {
 		  case 'match_request':
-			this._handleMatchRequest(data);
+			if (data.type = "matchmaking")
+				this._handleMatchStart(data);
+			else
+				this._handleMatchRequest(data);
 			break;
 		  case 'match_start':
 			this._handleMatchStart(data);
@@ -342,7 +345,9 @@ class NotificationManager {
 	 * @private
 	 */
 	_handleMatchStart(data) {
-		document.getElementById(data.match_id).remove()
+		let notif = document.getElementById(data.match_id);
+		if (notif)
+			notif.remove();
 	  
 		if (data.game_type !== this.game_type && window.setSelectedGame) {
 			window.setSelectedGame(data.game_type);

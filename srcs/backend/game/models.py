@@ -22,7 +22,7 @@ class Match(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	status = models.CharField(max_length=100, default='pending', choices=GAME_STATUS)
 
-	def start(self):
+	def start(self, type="tournament"):
 		if self.player1 == None and self.player2 == None:
 			self.end(None)
 		if self.player1 == None:
@@ -31,7 +31,7 @@ class Match(models.Model):
 			self.end(self.player1)
 		else:
 			# if self.status == 'pending' :
-			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self)
+			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self, type=type)
 			self.status = 'pending'
 			self.save()
 		self.save()

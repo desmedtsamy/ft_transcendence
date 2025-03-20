@@ -21,5 +21,5 @@ class CreateMatch(generics.CreateAPIView):
 		match = create_match(player1, player2, game_type)
 		if match == -1:
 			return Response({"detail": "Erreur lors de la création du match"}, status=400)
-		match.start()
+		match.start("vs")
 		return Response(MatchSerializer(match).data)

@@ -104,7 +104,8 @@ def handle_match_started(sender, **kwargs):
     player1_id = kwargs['player1_id']
     player2_id = kwargs['player2_id']
     match = kwargs['match']
-    Consumer.start_match(player1_id, player2_id, match)
+    type = kwargs['type']
+    Consumer.start_match(player1_id, player2_id, match, type)
 
 @receiver(friend_request_created)
 def handle_friend_request_created(sender, **kwargs):
@@ -224,7 +225,7 @@ class Consumer(WebsocketConsumer):
             logger.error(f"Erreur lors du traitement de match_decline: {e}", exc_info=True)
 
     @staticmethod
-    def start_match(player1, player2, match):
+    def start_match(player1, player2, match, type):
         """Démarre un match entre deux joueurs."""
         try:
             match_id = match.id
@@ -254,7 +255,8 @@ class Consumer(WebsocketConsumer):
                 'player1_id': player1_id,
                 'player2_id': player2_id,
                 'player1_name': player1_name,
-                'player2_name': player2_name
+                'player2_name': player2_name,
+                'type' : type,
             }
             
             # Ajouter des informations de tournoi si nécessaire

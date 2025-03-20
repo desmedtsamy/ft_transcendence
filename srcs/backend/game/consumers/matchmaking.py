@@ -124,7 +124,7 @@ class Consumer(WebsocketConsumer):
 		# Créer le match
 		match = create_match(self.id, opponent_id, game_type)
 		waiting_players.remove(opponent)
-		
+		match.start("matchmaking")
 		# Retirer aussi le joueur actuel s'il est dans la file
 		current_player = None
 		for player in waiting_players:
@@ -139,17 +139,17 @@ class Consumer(WebsocketConsumer):
 		if self.matchmaking_timer:
 			self.matchmaking_timer.cancel()
 		# Notifier les deux joueurs du match
-		self.send(text_data=json.dumps({
-			'action': 'match_found',
-			'match_id': match.id,
-			'opponent_id': opponent_id
-		}))
+		# self.send(text_data=json.dumps({
+		# 	'action': 'match_found',
+		# 	'match_id': match.id,
+		# 	'opponent_id': opponent_id
+		# }))
 		
-		opponent_consumer.send(text_data=json.dumps({
-			'action': 'match_found',
-			'match_id': match.id,
-			'opponent_id': self.id
-		}))
+		# opponent_consumer.send(text_data=json.dumps({
+		# 	'action': 'match_found',
+		# 	'match_id': match.id,
+		# 	'opponent_id': self.id
+		# }))
 		
 		return True
 

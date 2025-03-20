@@ -5,7 +5,6 @@ function onLoad() {
 	const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
 		gameSelector.disabled = true;
-		// Set the initial value based on the selected game
 		gameSelector.value = window.selected_game || 'pong';
 	}
 
@@ -23,14 +22,6 @@ function onLoad() {
 			action: 'find_match',
 			game_type: gameType
 		}));
-	});
-
-	socket.addEventListener('message', function (event) {
-		const data = JSON.parse(event.data);
-		
-		if (data.action === 'match_found') {
-			window.navigateTo(`/${window.selected_game}/${data.match_id}`);
-		}
 	});
 }
 
