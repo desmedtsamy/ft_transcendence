@@ -13,7 +13,9 @@ function onLoad() {
 	if (gameSelector) {
 		gameSelector.disabled = true;
 	}
-
+	if ( localStorage.getItem('selectedGame') != "tictactoe" && window.setSelectedGame) {
+		window.setSelectedGame("tictactoe");
+	}
     if (window.user === undefined) {
         return;
     }
@@ -218,6 +220,7 @@ function onUnload() {
 	if (gameSelector) {
 		gameSelector.disabled = false;
 	}
+	
     gameFinished = false;
     win = false;
     playerTurn = false;

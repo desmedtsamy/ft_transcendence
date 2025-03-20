@@ -50,6 +50,9 @@ function onLoad() {
 	if (gameSelector) {
 		gameSelector.disabled = true;
 	}
+	if ( localStorage.getItem('selectedGame') != "pong" && window.setSelectedGame) {
+		window.setSelectedGame("pong");
+	}
     if (listenersAdded) return;
     if (window.user === undefined) {
         return;
