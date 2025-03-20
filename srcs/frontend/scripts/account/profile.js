@@ -207,8 +207,6 @@ function renderRecentMatches(matches, userData) {
         player1Span.classList.add('player-name');
         
 		player1Span.textContent = player1.username;
-		console.log(match.winner, player1.id);
-		console.log(match)
 		if (match.winner && player1.id == match.winner) {
 			player1Span.classList.add('winner');
 		} else {
@@ -292,8 +290,6 @@ function renderScoreChart(matches, user) {
     // Current score is already the last element in scoreData
     // We just need to update the last label
     labels[labels.length - 1] = 'Actuel';
-    
-    console.log("Scores calculés:", scoreData);
     
     // No need to reverse arrays as we're already building them in chronological order
     

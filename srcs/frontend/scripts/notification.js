@@ -30,13 +30,11 @@ class NotificationManager {
 		
 		// Gestionnaire d'ouverture de connexion
 		this.socket.addEventListener('open', () => {
-		  console.log('Connexion WebSocket établie pour les notifications');
 		  resolve(this.socket);
 		});
   
 		// Gestionnaire de fermeture de connexion
 		this.socket.addEventListener('close', () => {
-		  console.log('Connexion WebSocket fermée pour les notifications');
 		  this._scheduleReconnect();
 		});
   
@@ -79,8 +77,6 @@ class NotificationManager {
 	_handleIncomingMessage(event) {
 	  try {
 		const data = JSON.parse(event.data);
-		console.log('Message reçu:', data);
-  
 		switch (data.message) {
 		  case 'match_request':
 			this._handleMatchRequest(data);
@@ -95,7 +91,7 @@ class NotificationManager {
 			this._handleFriendRequest(data);
 			break;
 		  default:
-			console.log('Type de message non géré:', data.message);
+			break;
 		}
 	  } catch (error) {
 		console.error('Erreur de traitement du message:', error);
@@ -564,7 +560,6 @@ class NotificationManager {
 	 * @param {number} matchId - ID du match
 	 */
 	declineMatch(userId, matchId) {
-	  console.log("Refus du match:", matchId);
 	  this.sendNotification(userId, matchId, 'match_decline');
 	}
   
@@ -607,9 +602,6 @@ class NotificationManager {
 	// Fonction d'envoi de notification
 	window.sendNotification = function(client_id, match_id, message) {
 	  const success = notificationManager.sendNotification(client_id, match_id, message);
-	  if (success) {
-		console.log(`Notification "${message}" envoyée à ${client_id} pour le match ${match_id}`);
-	  }
 	};
 	
 	// Fonction d'acceptation de match
@@ -626,7 +618,6 @@ class NotificationManager {
     window.disconnectNotifications = function() {
       if (notificationManager && typeof notificationManager.disconnect === 'function') {
         notificationManager.disconnect();
-        console.log('WebSocket déconnecté');
       }
     };
 	  

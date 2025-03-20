@@ -10,10 +10,8 @@ var hasVotedRestart = false; // Variable pour suivre si le joueur a voté pour r
 
 function onLoad() {
     if (window.user === undefined) {
-        console.log('User not authenticated');
         return;
     }
-    console.log("La page charge!");
     
     // Set the game type for styling
     document.body.setAttribute('data-game', 'tictactoe');
@@ -41,16 +39,13 @@ function onLoad() {
     socket = new WebSocket('wss://' + window.location.host + '/wss/tictactoe/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     socket.addEventListener('open', function () {
-        console.log('Connected to WebSocket server.');
     });
 
     socket.addEventListener('message', function (event) {
         try {
             var data = JSON.parse(event.data);
-            console.log(data);
             if (data.type === 'redirect') {
                 socket.close();
-                console.log(data.message);
                 window.location.href = data.url;
             }
 
@@ -101,7 +96,6 @@ function onLoad() {
 
             if (data.type === 'role') {
                 playerRole = data.role;
-                console.log("Mon rôle est: " + playerRole);
                 document.getElementById('player-role').textContent = "Je suis le joueur: " + playerRole;
                 document.getElementById('player-turn').textContent = "C'est le tour de " + currentPlayer;
             }
@@ -119,7 +113,6 @@ function onLoad() {
                 if (data.winner !== 0) {
                     gameFinished = true;
                     if (data.winner === playerRole) {
-                        console.log("Vous avez gagné !");
                         win = true;
                         document.getElementById('player-turn').textContent = "Vous avez gagnez";
                     } 
@@ -128,7 +121,6 @@ function onLoad() {
 						document.getElementById('restart-button').disabled = false;
                     }
                     else {
-                        console.log("Vous avez perdu !");
                         document.getElementById('player-turn').textContent = "Vous avez perdu";
                     }
                     
@@ -148,7 +140,6 @@ function onLoad() {
     });
 
     socket.addEventListener('close', function () {
-        console.log('Connexion WebSocket fermée.');
     });
 
     socket.addEventListener('error', function (error) {
@@ -157,14 +148,12 @@ function onLoad() {
 
     window.addEventListener('beforeunload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("Fermeture de la socket 1")
             socket.close(1000, 'Page refresh');
         }
     });
 
     window.addEventListener('unload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("Fermeture de la socket 2")
             socket.close(1000, 'Page is refreshing');
         }
     });
@@ -175,13 +164,10 @@ function onLoad() {
 
 
 function handleCellClick(index) {
-    console.log("je clique");
     if (!gameFinished && playerTurn && board[index] === ' ') {  // On vérifie si le joueur a le droit de jouer
         const message = {cell: index};
-        console.log("la conditin d'envoi est respecte");
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
-            console.log("j'envoi des trucs au serveurs");
         }
     }
 }
@@ -216,7 +202,6 @@ function handleOpponentDisconnect() {
             if (timeLeft >= 0 && !gameFinished && !opponentConnected) {
                 disconnectMessage.textContent = `Opponent disconnected ${timeLeft}s left before forfeit`;
             } else {
-                console.log("clear");
                 clearInterval(countdown);
             }
         }, 1000);

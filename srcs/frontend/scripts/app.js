@@ -27,7 +27,6 @@ async function fetchUserInfo() {
 				handleUserAuthenticated(data.user, data.friends);
 			} else {
 				handleUserNotAuthenticated();
-				console.log('User is not authenticated');
 			}
 		} else {
 			handleUserNotAuthenticated();
@@ -40,7 +39,6 @@ async function fetchUserInfo() {
 }
 
 function createLoadingSpinner() {
-	console.log("DEBUG createLoadingSpinner");
 	const app = document.getElementById('app');
 	const loadingElement = document.createElement('div');
 	loadingElement.className = 'loading-dots';
@@ -126,9 +124,6 @@ window.alert = function(message, type = 'normal') {
 	setTimeout(() => {
 		alertEl.style.display = 'none';
 	}, 5000);
-
-	// FOR DEBUG
-	console.log('Alert:', message);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

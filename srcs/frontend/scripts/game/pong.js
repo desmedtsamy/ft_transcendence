@@ -48,10 +48,8 @@ let listenersAdded = false;
 function onLoad() {
     if (listenersAdded) return;
     if (window.user === undefined) {
-        console.log('User not authenticated');
         return;
     }
-    console.log("La page charge!");
     
     document.body.setAttribute('data-game', 'pong');
 
@@ -62,7 +60,6 @@ function onLoad() {
     socket = new WebSocket('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     socket.addEventListener('open', function () {
-        console.log('Connected to WebSocket server.');
         sendPlayerPosition();
         startGameLoop();
     });
@@ -72,7 +69,6 @@ function onLoad() {
         var data = JSON.parse(event.data);
         if (data.type === 'redirect'){
             socket.close();
-            console.log(data.message);
             window.location.href = data.url;
         }
 
@@ -100,8 +96,6 @@ function onLoad() {
             // Mise à jour des pseudos
             myUsername = data.player1;
             opponentUsername = data.player2;
-            
-            console.log("My username: " + myUsername);
         }
     
         if (data.countdown !== undefined) {
@@ -127,10 +121,7 @@ function onLoad() {
                 socket.close();
                 gameFinished = true;
                 if (data.winner === window.user.id){
-                    console.log("You won!");
                     win = true;
-                } else {
-                    console.log("You lost!");
                 }
                 document.getElementById('back_to_menu').style = "visibility:visible;";
             }
@@ -138,14 +129,12 @@ function onLoad() {
         
     } catch (e) {
         console.error("Failed to parse JSON:", event.data);
-        console.log(e);
     }
     
     });
 
     // Event listener for WebSocket close event
     socket.addEventListener('close', function () {
-        console.log('WebSocket connection closed.');
     });
     
     // Event listener for WebSocket error event
@@ -155,7 +144,6 @@ function onLoad() {
     
     window.addEventListener('beforeunload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("closing socket 1")
             socket.close(1000, 'Page refresh');
         }
     });
@@ -163,7 +151,6 @@ function onLoad() {
     
     window.addEventListener('unload', function () {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            console.log("closing socket 2")
             socket.close(1000, 'Page is refreshing');
         }
     });
@@ -377,7 +364,6 @@ function drawEndScreen(win) {
 
 function onUnload(){
     gameLoopRunning = false;
-    console.log("onunload appele")
     keysPressed = { ArrowUp: false, ArrowDown: false };
     velocity = 0;
     lastSent = 0;

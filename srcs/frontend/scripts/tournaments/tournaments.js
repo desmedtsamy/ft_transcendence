@@ -74,7 +74,6 @@ async function handleCreateTournament(event) {
         
         if (response.ok) {
             const createdTournament = await response.json();
-            console.log('Tournoi créé :', createdTournament);
             window.tournamentModal.hide();
             populateTournaments(createdTournament.id);
             alert('Tournoi créé avec succès !');
