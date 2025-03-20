@@ -47,10 +47,10 @@ class Consumer(WebsocketConsumer):
 		if (match.status == 'finished'):
 			# redirige
 			self.send(json.dumps({
-            'type': 'redirect',
-            'message': 'Match is finished',
-            'url': '/'
-        }))
+			'type': 'redirect',
+			'message': 'Match is finished',
+			'url': '/'
+		}))
 		id = match.id
 		with all_game_lock:
 			for game in all_game:
@@ -63,6 +63,7 @@ class Consumer(WebsocketConsumer):
 	def connect(self):
 		self.accept()
 		self.id  = int (self.scope['url_route']['kwargs']['user_id'])
+		print("user ", self.id, " se connect")
 		#ajouter la game
 		self.game = self.getGame()
 		with self.game.lock:
@@ -156,6 +157,7 @@ class Consumer(WebsocketConsumer):
 					self.game.state['players'][2]['y'] = position['y']
 
 	def disconnect(self, code):
+		print("l'utilisateur ", self, " se deco")
 		with self.game.lock:
 			if self in self.game.player_list:
 				self.game.player_list.remove(self)
