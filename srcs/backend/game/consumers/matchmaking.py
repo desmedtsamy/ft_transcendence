@@ -73,7 +73,6 @@ class Consumer(WebsocketConsumer):
 						'action': 'waiting_for_opponent',
 						'message': f'Looking for an opponent with similar skill level... (Waiting for {MATCHMAKING_DELAY} seconds)'
 					}))
-					print(f"Player {self.id} (score: {current_score}) added to matchmaking queue for {game_type}")
 					
 					# Programmer une vérification différée pour ce joueur
 					self.matchmaking_timer = threading.Timer(MATCHMAKING_DELAY, self.delayed_matchmaking, args=[game_type, current_score])
@@ -154,7 +153,6 @@ class Consumer(WebsocketConsumer):
 			'opponent_id': self.id
 		}))
 		
-		print(f"Match created: {match.id} between players {self.id} (score: {current_score}) and {opponent_id} (score: {opponent['score']})")
 		return True
 
 	def cancel_matchmaking(self):
@@ -162,7 +160,6 @@ class Consumer(WebsocketConsumer):
 			for i, player in enumerate(waiting_players):
 				if player['id'] == self.id:
 					waiting_players.pop(i)
-					print(f"Player {self.id} removed from matchmaking queue")
 					break
 		
 		# Annuler le timer si existant

@@ -85,7 +85,6 @@ class NotificationManager:
     def send_notification(self, user_id, notification_data):
         """Envoie une notification ou la stocke si le client n'est pas connecté."""
         if user_id in self.connected_clients:
-            print("send message ", notification_data)
             self.connected_clients[user_id].send(text_data=json.dumps(notification_data))
             logger.info(f"Notification envoyée à l'utilisateur {user_id}")
             return True
@@ -288,7 +287,6 @@ class Consumer(WebsocketConsumer):
                     logger.info(f"Match {match_id} n'existe plus, probablement déjà traité ou supprimé")
                 except Exception as e:
                     logger.error(f"Erreur lors de la vérification du statut du match après timeout: {e}", exc_info=True)
-            print("timer_thread start ??")
             # Lancer le timer dans un thread séparé
             timer_thread = threading.Thread(target=check_match_status)
             timer_thread.daemon = True  # Le thread se fermera quand le programme principal se termine

@@ -177,8 +177,6 @@ class AcceptFriendRequestView(APIView):
 			from_user = User.objects.get(id=user_id)
 		except User.DoesNotExist:
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
-		print(from_user)
-		print(to_user)
 		response, status = accept_friend_request(to_user, from_user)
 		return Response(response, status=status)
 

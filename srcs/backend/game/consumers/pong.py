@@ -52,7 +52,6 @@ class Consumer(WebsocketConsumer):
             'url': '/'
         }))
 		id = match.id
-		print(f"l'id dr la game{id} ")
 		with all_game_lock:
 			for game in all_game:
 				if game.id == id:
@@ -71,15 +70,12 @@ class Consumer(WebsocketConsumer):
 			player_to_remove = None
 			for player in self.game.player_list:
 				if player.id == self.id:
-					print("player already connected. Disconnecting the old connection.")
 					player_to_remove = player
 					break
 			if player_to_remove:
-				print("Removing player from the list")
 				self.game.player_list.remove(player_to_remove)
 			
 			# verifie si le client est un membre du match et l'ajoute
-			print("Adding player to the list")
 			if self.id == self.game.p1_id:
 				self.role = "left"
 			elif self.id == self.game.p2_id:
@@ -94,12 +90,9 @@ class Consumer(WebsocketConsumer):
 
 		if len(self.game.player_list) == 2:
 			self.countdown()
-			print("Starting the game loop " , self.id)
 			if self.game.is_running == False:
 				self.game.is_running = True
 				self.start_game_loop()
-		else:
-			print("Waiting for another player to connect ", self.id )
 
 	def refuse_connection(self, reason="Too many players for the game"):
 		self.send(json.dumps({"error": reason}))
@@ -140,12 +133,7 @@ class Consumer(WebsocketConsumer):
 		try:
 			if text_data:
 				data = json.loads(text_data)
-				# print(f"Received data: {data}")
 				self.handle_data(data)
-			elif bytes_data:
-				print(f"Received bytes data: {bytes_data}")
-			else:
-				print("No valid data received")
 		except json.JSONDecodeError as e:
 			print(f"JSON decoding error: {e}")
 			self.send(json.dumps({"error": "Invalid JSON format"}))
@@ -156,8 +144,6 @@ class Consumer(WebsocketConsumer):
 	def handle_data(self, data):
 		if data.get('type') == 'move':
 			self.move_player(data)
-		else:
-			print("error: wrong data type")
 	
 	def move_player(self, data):
 		position = data.get('position')
@@ -168,11 +154,6 @@ class Consumer(WebsocketConsumer):
 					self.game.state['players'][1]['y'] = position['y']
 				else:
 					self.game.state['players'][2]['y'] = position['y']
-			else:
-				print("Position out of bounds")
-		else:
-			print("Position data missing")
-
 
 	def disconnect(self, code):
 		with self.game.lock:
@@ -180,15 +161,12 @@ class Consumer(WebsocketConsumer):
 				self.game.player_list.remove(self)
 				self.role = None
 			if self.id != self.game.p1_id and self.id != self.game.p2_id:
-				print("fraud detected")
 				return
 			if len(self.game.player_list) == 0:
-				print(f"No players left in game {self.game.id}. Removing from all_game.")
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
-				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 				def end_game_timer():
 					time.sleep(10)  # Wait for 60 seconds
 					with self.game.lock:
@@ -225,7 +203,6 @@ class Consumer(WebsocketConsumer):
 			ball['vx'] = -ball['vx']
 			ball['x'] = left_player['x'] + paddle_width + ball_size
 			hit_height = ball['y'] - left_player['y']
-			print('hit: ', hit_height)
 			if hit_height < 15:
 				ball['vy'] = velocity
 			elif hit_height > 85:
@@ -236,7 +213,6 @@ class Consumer(WebsocketConsumer):
 			ball['vx'] = -ball['vx']
 			ball['x'] = right_player['x'] - paddle_width
 			hit_height = ball['y'] - right_player['y']
-			print('hit: ', hit_height)
 			if hit_height < 15:
 				ball['vy'] = velocity
 			elif hit_height > 85:
@@ -314,7 +290,6 @@ class Consumer(WebsocketConsumer):
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(self.game.player_list) == 2:
 				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:
-					print("Game over")
 					if self.game.state['scores'][1] >= MAXSCORE:
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
@@ -328,7 +303,6 @@ class Consumer(WebsocketConsumer):
 				self.send_state()
 				time.sleep(0.0155)
 			if len(self.game.player_list) < 2:
-				print("Game paused because a player disconnected.")
 				self.game.is_running = False
 				return
 		threading.Thread(target=game_loop, daemon=True).start()

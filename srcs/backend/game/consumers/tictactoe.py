@@ -42,15 +42,12 @@ class Consumer(WebsocketConsumer):
 			'url': '/'
 		}))
 		id = match.id
-		print(f"l'id de la game{id} ")
 		with all_game_lock:
 			for game in all_game:
 				if game.id == id:
-					print(f"le score de la game {game.id} quand elle existe deja {game.state}")
 					return game
 			game = Game(id, match)
 			all_game.append(game)
-			print(f"le score de la game {game.id} quand je la creer {game.state}")
 			return game
 
 	def connect(self):
@@ -63,15 +60,12 @@ class Consumer(WebsocketConsumer):
 			player_to_remove = None
 			for player in self.game.player_list:
 				if player.id == self.id:
-					print("player already connected. Disconnecting the old connection.")
 					player_to_remove = player
 					break
 			if player_to_remove:
-				print("Removing player from the list")
 				self.game.player_list.remove(player_to_remove)
 			
 			# verifie si le client est un membre du match et l'ajoute
-			print("Adding player to the list")
 			if self.id == self.game.p1_id:
 				self.role = "X"
 			elif self.id == self.game.p2_id:
@@ -84,8 +78,6 @@ class Consumer(WebsocketConsumer):
 			# envoyer a l'autre joueurs qu'il se co
 			# self.send(json.dumps(self.game.state))
 			self.send_state()
-		if len(self.game.player_list) < 2:
-			print("Waiting for another player to connect ", self.id )
 		if len(self.game.player_list) == 2:
 			self.send_connection()
 			self.send_opponent_connection()
@@ -105,12 +97,7 @@ class Consumer(WebsocketConsumer):
 		try:
 			if text_data:
 				data = json.loads(text_data)
-				# print(f"Received data: {data}")
 				self.handle_data(data)
-			elif bytes_data:
-				print(f"Received bytes data: {bytes_data}")
-			else:
-				print("No valid data received")
 		except json.JSONDecodeError as e:
 			print(f"JSON decoding error: {e}")
 			self.send(json.dumps({"error": "Invalid JSON format"}))
@@ -121,10 +108,7 @@ class Consumer(WebsocketConsumer):
 	def handle_data(self, data):
 		if "action" in data:
 			if data["action"] == "restart_game":
-				print(f"User {self.id} votes to restart the game")
-				
 				self.game.restart_votes.add(self.id)
-				
 				both_voted = self.game.p1_id in self.game.restart_votes and self.game.p2_id in self.game.restart_votes
 				
 				if both_voted:
@@ -150,7 +134,6 @@ class Consumer(WebsocketConsumer):
 				return
 			
 			elif data["action"] == "give_up":
-				print("User gives up")
 				winner = None
 				if self.id == self.game.p1_id:
 					winner = self.game.match.player2
@@ -177,7 +160,6 @@ class Consumer(WebsocketConsumer):
 				self.game.state['board'][move] = self.game.state['turn']
 				winner = self.check_winner(self.game.state['board'])
 				if winner == 'X' or winner == 'O' or winner == 'n':
-					print('winner:', winner)
 					self.game.state['winner'] = winner
 					
 					self.game.reset_restart_votes()
@@ -206,7 +188,6 @@ class Consumer(WebsocketConsumer):
 		for x in board:
 			if x == ' ':
 				return None
-		print('match nul')
 		return 'n'
 	
 	def disconnect(self, code):
@@ -215,15 +196,12 @@ class Consumer(WebsocketConsumer):
 				self.game.player_list.remove(self)
 				self.role = None
 			if self.id != self.game.p1_id and self.id != self.game.p2_id:
-				print("fraud detected")
 				return
 			if len(self.game.player_list) == 0:
-				print(f"No players left in game {self.game.id}. Removing from all_game.")
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
-				print(f"Game {self.game.id} paused: only {len(self.game.player_list)} player(s) remain.")
 				def end_game_timer():
 					time.sleep(10)
 					with self.game.lock:

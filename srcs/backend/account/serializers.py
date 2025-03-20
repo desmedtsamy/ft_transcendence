@@ -27,7 +27,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 	def validate(self, data):
 		password = data.get('password')
-		print(data)
 		if password :
 			validate_password(password)
 		return data
