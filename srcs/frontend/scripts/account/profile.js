@@ -323,7 +323,7 @@ function renderScoreChart(matches, user) {
     
     // Now build the score data in forward chronological order (oldest match first)
     const scoreData = [startingScore];
-    const labels = ['Début'];
+    const labels = [''];
     
     let runningScore = startingScore;
     
