@@ -123,7 +123,6 @@ class Consumer(WebsocketConsumer):
 		
 		# Créer le match
 		match = create_match(self.id, opponent_id, game_type)
-		
 		waiting_players.remove(opponent)
 		
 		# Retirer aussi le joueur actuel s'il est dans la file
@@ -139,7 +138,6 @@ class Consumer(WebsocketConsumer):
 		# Annuler le timer si encore actif
 		if self.matchmaking_timer:
 			self.matchmaking_timer.cancel()
-		
 		# Notifier les deux joueurs du match
 		self.send(text_data=json.dumps({
 			'action': 'match_found',

@@ -95,27 +95,67 @@ function calculateWinLossRatio(wins, losses) {
     return ((wins / totalMatches) * 100).toFixed(2); 
 }
 
+function createActionButton(user) {
+    const button = document.createElement('button');
+
+    if (user.is_friend) {
+        button.classList.add('button', 'btn-danger', 'remove-friend');
+        button.dataset.action = `/api/account/friend-requests/${user.id}/remove/`; 
+        button.innerHTML = '<i class="fas fa-user-times"></i>';
+		button.title = 'Retirer de mes amis';
+    } else if (user.friend_request_sent) {
+        button.classList.add('button', 'btn-danger', 'cancel-friend-request');
+        button.dataset.action = `/api/account/friend-requests/${user.id}/cancel/`; 
+        button.innerHTML = '<i class="fas fa-user-slash"></i>';
+        button.title = 'Annuler la demande d\'ami';
+    } else if (user.friend_request_received) {
+        const acceptButton = document.createElement('button');
+        acceptButton.classList.add('button', 'btn-success', 'accept-friend-request');
+        acceptButton.dataset.action = `/api/account/friend-requests/${user.id}/accept/`;
+        acceptButton.innerHTML = '<i class="fas fa-user-check"></i>';
+
+        const rejectButton = document.createElement('button');
+        rejectButton.classList.add('button', 'btn-danger', 'reject-friend-request');
+        rejectButton.dataset.action = `/api/account/friend-requests/${user.id}/reject/`;
+        rejectButton.innerHTML = '<i class="fas fa-user-times"></i>';
+
+        acceptButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleFriendAction(acceptButton.dataset.action, user.id);
+        });
+
+        rejectButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleFriendAction(rejectButton.dataset.action, user.id);
+        });
+
+        const buttonContainer = document.createElement('div');
+		buttonContainer.id = "accept_refuse"
+        buttonContainer.appendChild(acceptButton);
+        buttonContainer.appendChild(rejectButton);
+
+        return buttonContainer;
+    } else {
+        button.classList.add('button', 'btn-primary', 'send-friend-request');
+        button.dataset.action = `/api/account/friend-requests/${user.id}/send/`; 
+        button.innerHTML = '<i class="fas fa-user-plus"></i>';
+		button.title = 'Ajouter en ami';
+    }
+
+    if (!user.friend_request_received) {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleFriendAction(button.dataset.action, user.id);
+        });
+    }
+	const buttonContainer = document.createElement('div');
+	buttonContainer.appendChild(button);
+    return buttonContainer; 
+}
+
 function renderFriendActions(user) {
 	const friendActions = document.getElementById('friend-actions');
-	friendActions.innerHTML = ''; // Clear previous actions
-	
-    if (user.id !== window.user.id) { 
-		if (user.is_friend) {
-			const removeFriendButton = createButton('Supprimer de la liste d\'amis', 'btn-danger', 'remove-friend', `/api/account/friend-requests/${user.id}/remove/`);
-            friendActions.appendChild(removeFriendButton);
-        } else if (user.friend_request_sent) {
-			const cancelRequestButton = createButton('Annuler la demande', 'btn-danger', 'cancel-friend-request', `/api/account/friend-requests/${user.id}/cancel/`);
-            friendActions.appendChild(cancelRequestButton);
-        } else if (user.friend_request_received) {
-			const acceptButton = createButton('Accepter la demande', 'btn-success', 'accept-friend-request', `/api/account/friend-requests/${user.id}/accept/`);
-            const rejectButton = createButton('Refuser la demande', 'btn-danger', 'reject-friend-request', `/api/account/friend-requests/${user.id}/reject/`);
-            friendActions.appendChild(acceptButton);
-            friendActions.appendChild(rejectButton);
-        } else {
-			const sendRequestButton = createButton('Envoyer une demande d\'ami', 'btn-primary', 'send-friend-request', `/api/account/friend-requests/${user.id}/send/`);
-            friendActions.appendChild(sendRequestButton);
-        }
-    }
+	friendActions.append(createActionButton(user))
 }
 
 async function handleFriendAction(actionUrl, userId) {
@@ -174,73 +214,96 @@ async function fetchMatchesData(userData) {
 }
 
 function renderRecentMatches(matches, userData) {
-	const recentMatchesList = document.getElementById('recent-matches');
-	recentMatchesList.innerHTML = '';
-	
+    const recentMatchesList = document.getElementById('recent-matches');
+    recentMatchesList.innerHTML = '';
+
     if (matches.length === 0) {
-		recentMatchesList.innerHTML = '<p>Aucun match récent.</p>';
+        recentMatchesList.innerHTML = '<li class="empty-state">Aucun match récent</li>';
         return;
     }
+
     matches.forEach(match => {
-        let player1 = match.player1;
-        let player2 = match.player2;
-		if (player1 == null) {
-			player1 = {username: 'anonyme', id: null};
-		}
-		if (player2 == null) {
-			player2 = {username: 'anonyme', id: null};
-		}
-		if (player2.id == userData.id) {
-			player1 = match.player2;
-			player2 = match.player1;
-		}
-        
+        // Gestion des joueurs nuls
+        let player1 = match.player1 ?? { username: 'anonyme', id: null };
+        let player2 = match.player2 ?? { username: 'anonyme', id: null };
+
+        // Échange si l'utilisateur est player2
+        if (player2.id === userData.id) {
+            [player1, player2] = [player2, player1];
+        }
+
+        // Création des éléments DOM
         const listItem = document.createElement('li');
         listItem.classList.add('match-item');
 
-        // Joueurs et scores dans une seule ligne
-        const matchInfoDiv = document.createElement('div');
-        matchInfoDiv.classList.add('match-info');
+        // Colonne 1: Joueurs
+        const playersDiv = document.createElement('div');
+        playersDiv.classList.add('match-players');
 
         // Joueur 1
         const player1Span = document.createElement('span');
         player1Span.classList.add('player-name');
-        
-		player1Span.textContent = player1.username;
-		if (match.winner && player1.id == match.winner) {
-			player1Span.classList.add('winner');
-		} else {
-			player1Span.classList.add('loser');
-		}
-		matchInfoDiv.appendChild(player1Span);
-        // Versus
-        const versusSpan = document.createElement('span');
-        versusSpan.classList.add('versus');
-        versusSpan.textContent = ' vs ';
-        matchInfoDiv.appendChild(versusSpan);
-        
+        if (player1.id) {
+            const player1Link = document.createElement('a');
+            player1Link.href = `#/profile/${player1.username}`;
+            player1Link.textContent = player1.username;
+            player1Span.appendChild(player1Link);
+        } else {
+            player1Span.textContent = player1.username;
+        }
+
+        // Séparateur VS
+        const vsSpan = document.createElement('span');
+        vsSpan.classList.add('vs-separator');
+        vsSpan.textContent = 'vs';
+
         // Joueur 2
         const player2Span = document.createElement('span');
         player2Span.classList.add('player-name');
-        
-        if(player2.id) {
-			if (match.winner && player2.id == match.winner) {
-				player2Span.classList.add('winner');
-			} else {
-				player2Span.classList.add('loser');
-			}
+        if (player2.id) {
             const player2Link = document.createElement('a');
-            player2Link.href = '#';
-            player2Link.dataset.link = `/profile/${player2.username}`;
+            player2Link.href = `#/profile/${player2.username}`;
             player2Link.textContent = player2.username;
             player2Span.appendChild(player2Link);
         } else {
             player2Span.textContent = player2.username;
         }
-        matchInfoDiv.appendChild(player2Span);
-        
-        
-        listItem.appendChild(matchInfoDiv);
+
+        playersDiv.append(player1Span, vsSpan, player2Span);
+
+        // Colonne 2: Résultat
+        const resultDiv = document.createElement('div');
+        const userWon = match.winner === userData.id;
+        resultDiv.classList.add('match-result', userWon ? 'winner-badge' : 'loser-badge');
+        resultDiv.textContent = userWon ? 'Victoire' : 'Défaite';
+
+        // Colonne 3: Durée
+        const durationDiv = document.createElement('div');
+        durationDiv.textContent = match.duration ? 
+            `${Math.floor(match.duration / 60)}m${match.duration % 60}s` : 
+            'N/A';
+
+        // Colonne 4: Score final
+        const scoreDiv = document.createElement('div');
+        scoreDiv.textContent = match.final_score || 'N/A';
+
+        // Assemblage des éléments
+        listItem.append(
+            playersDiv,
+            resultDiv,
+            durationDiv,
+            scoreDiv
+        );
+
+        // Ajout des classes de style
+        if (userWon) {
+            player1Span.classList.add('winner');
+            player2Span.classList.add('loser');
+        } else {
+            player1Span.classList.add('loser');
+            player2Span.classList.add('winner');
+        }
+
         recentMatchesList.appendChild(listItem);
     });
 }

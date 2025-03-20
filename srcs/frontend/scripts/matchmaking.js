@@ -29,7 +29,7 @@ function onLoad() {
 		const data = JSON.parse(event.data);
 		
 		if (data.action === 'match_found') {
-			window.location.href = `/${window.selected_game}/${data.match_id}`;
+			window.navigateTo(`/${window.selected_game}/${data.match_id}`);
 		}
 	});
 }

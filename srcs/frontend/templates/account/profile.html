@@ -1,16 +1,52 @@
 <link rel="stylesheet" href="/css/account/profile.css">
-<h2>Profil de <span id="profile-username"></span></h2>
-        <img id="profile-avatar" alt="Profile" class="avatar">
-		<div id="1v1"></div>
-        <p>Ratio victoires/défaites : <span id="win-loss-ratio"></span>%</p>
-        <p>Score : <span id="profile-score"></span></p>
-        <p>Dernière connexion : <span id="last-connection"></span></p>
-        <div class="friend-actions" id="friend-actions">
+
+<div class="profile-container">
+    <!-- Section principale -->
+    <div class="profile-header">
+        <div class="avatar-section">
+            <img id="profile-avatar" alt="Profile" class="avatar-large">
+            <div class="quick-actions">
+                <div id="1v1"></div>
+                <div id="friend-actions" class="friend-actions"></div>
             </div>
+        </div>
+        
+        <div class="stats-section">
+            <h1><span id="profile-username"></span></h1>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="profile-score">0</div>
+                    <div class="stat-label">Score total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="win-loss-ratio">0%</div>
+                    <div class="stat-label">Ratio victoires</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="last-connection">-</div>
+                    <div class="stat-label">Dernière connexion</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <h3>Évolution du score</h3>
+    <!-- Graphique d'évolution -->
+    <div class="chart-section">
+        <h2>Évolution du score</h2>
         <canvas id="scoreChart" width="400" height="200"></canvas>
+    </div>
 
-        <h3>Historique des matchs récents</h3>
-        <ul id="recent-matches">
-            </ul>
+    <!-- Historique des matchs -->
+    <div class="matches-section">
+        <h2>Derniers matchs</h2>
+        <div class="matches-header">
+            <span>Joueurs</span>
+            <span>Résultat</span>
+            <span>Durée</span>
+            <span>Score final</span>
+        </div>
+        <ul id="recent-matches" class="matches-list">
+            <li class="empty-state">Aucun match récent</li>
+        </ul>
+    </div>
+</div>

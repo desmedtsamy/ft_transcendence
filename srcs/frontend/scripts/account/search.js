@@ -66,6 +66,7 @@ function renderSearchResults(users) {
 		searchResults.appendChild(listItem);
 	}
 }
+
 function createActionButton(user) {
     const button = document.createElement('button');
 

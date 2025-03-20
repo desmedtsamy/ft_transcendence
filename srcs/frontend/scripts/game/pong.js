@@ -56,10 +56,11 @@ function onLoad() {
     canvas = document.getElementById('pongCanvas');
     ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+	console.log('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id)
     socket = new WebSocket('wss://' + window.location.host + '/wss/pong/' + window.location.pathname.split('/')[2] + "/" + window.user.id);
 
     socket.addEventListener('open', function () {
+		console.log("socket ouvert")
         sendPlayerPosition();
         startGameLoop();
     });

@@ -1,53 +1,168 @@
-.match-item {
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.profile-header {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.avatar-section {
+    position: relative;
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.quick-actions {
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stats-section h1 {
+    margin: 0 0 1.5rem 0;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: var(--secondary-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Section des matchs */
+.matches-section {
+    margin-top: 3rem;
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.matches-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.matches-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.match-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
     align-items: center;
-    padding: 10px 15px;
-    border-bottom: 1px solid #343a40;
-    margin-bottom: 5px;
-    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    background: var(--bg-color);
     transition: background-color 0.2s;
 }
 
 .match-item:hover {
-    background-color: rgba(52, 58, 64, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-.match-info {
+/* Éléments spécifiques aux matchs */
+.match-players {
     display: flex;
     align-items: center;
-    width: 100%;
+    gap: 1rem;
 }
 
-.player-name {
-    font-weight: 500;
+.vs-separator {
+    color: var(--text-secondary);
+    font-weight: 300;
 }
 
-.player-name a {
-    text-decoration: none;
-    color: #007bff;
+.match-result {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
 }
 
-.player-name a:hover {
-    text-decoration: underline;
+.winner-badge {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
 }
 
-.versus {
-    margin: 0 10px;
-    font-weight: bold;
-    color: #6c757d;
+.loser-badge {
+    background: rgba(244, 67, 54, 0.2);
+    color: #F44336;
 }
 
-.winner, .winner a{
-    color: #ffd700; /* Couleur dorée pour le gagnant */
-    font-weight: bold;
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        grid-template-columns: 1fr;
+    }
+    
+    .matches-header,
+    .match-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .match-players {
+        justify-content: center;
+    }
 }
+#accept_refuse {
 
-.loser, .loser a {
-    color: #dc3545; /* Couleur rouge pour le perdant */
+    display: flex;
+    justify-content: space-between;
 }
-
-/* Enlever les puces de la liste */
-#recent-matches {
-    padding-left: 0;
-	list-style-type: none;
+.fight{
+	margin:0;
+}
+#accept_refuse button{
+	margin: 0;
 }
