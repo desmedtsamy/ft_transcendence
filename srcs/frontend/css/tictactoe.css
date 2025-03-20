@@ -219,20 +219,6 @@ th {
 	-ms-user-select: none;
 }
 
-#gameSelector {
-    color: var(--bg-color);
-    margin-top: 2px;
-}
-
-#gameSelector:focus {
-    box-shadow: none;
-}
-
-#gameSelector option {
-    background-color: var(--bg-color);
-    color: var(--primary-color);
-}
-
 #game-menu {
     background-color: var(--bg-color);
     border: 1px solid var(--primary-color);

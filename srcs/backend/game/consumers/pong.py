@@ -89,9 +89,9 @@ class Consumer(WebsocketConsumer):
 			self.send_connection()
 
 		if len(self.game.player_list) == 2:
-			self.countdown()
 			if self.game.is_running == False:
 				self.game.is_running = True
+				self.countdown()
 				self.start_game_loop()
 
 	def refuse_connection(self, reason="Too many players for the game"):
@@ -168,7 +168,7 @@ class Consumer(WebsocketConsumer):
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				def end_game_timer():
-					time.sleep(10)  # Wait for 60 seconds
+					time.sleep(30)  # Wait for 30 seconds
 					with self.game.lock:
 						if len(self.game.player_list) < 2:  # Check if opponent hasn't reconnected
 							if self.game in all_game:

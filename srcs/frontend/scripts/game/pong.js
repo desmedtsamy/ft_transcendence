@@ -46,6 +46,10 @@ const handleKeyUp = function (e) {
 let listenersAdded = false;
 
 function onLoad() {
+    const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = true;
+	}
     if (listenersAdded) return;
     if (window.user === undefined) {
         return;
@@ -184,7 +188,7 @@ function handleOpponentDisconnect() {
     if (!gameFinished) {
         opponentConnected = false;
         gamePaused = true; // Mettre le jeu en pause
-        let timeLeft = 10;
+        let timeLeft = 30;
         const disconnectMessage = document.getElementById('player-turn');
         
         if (window.disconnectTimer) {
@@ -230,7 +234,7 @@ function update(deltaTime) {
     const now = performance.now();
     if (now - lastSent >= SEND_INTERVAL) {
         sendPlayerPosition();
-        lastSent = now;
+        lastSent = now; 
     }
 }
 
@@ -363,6 +367,10 @@ function drawEndScreen(win) {
 }
 
 function onUnload(){
+    const gameSelector = document.getElementById('gameSelector');
+	if (gameSelector) {
+		gameSelector.disabled = false;
+	}
     gameLoopRunning = false;
     keysPressed = { ArrowUp: false, ArrowDown: false };
     velocity = 0;

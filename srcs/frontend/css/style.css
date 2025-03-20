@@ -463,20 +463,6 @@ a {
 	margin-right: 8px;
 }
 
-#gameSelector {
-	color: var(--bg-color);
-	margin-top: 2px;
-}
-
-#gameSelector:focus {
-	box-shadow: none;
-}
-
-#gameSelector option {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
-}
-
 /* Game canvas */
 #game-canvas {
 	background-color: var(--secondary-bg);
@@ -668,20 +654,6 @@ a {
 	width: 20px;
 	text-align: center;
 	margin-right: 8px;
-}
-
-#gameSelector {
-	color: var(--bg-color);
-	margin-top: 2px;
-}
-
-#gameSelector:focus {
-	box-shadow: none;
-}
-
-#gameSelector option {
-	background-color: var(--bg-color);
-	color: var(--primary-color);
 }
 
 /* Game canvas */
