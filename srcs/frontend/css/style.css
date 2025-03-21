@@ -338,7 +338,6 @@ a {
 .navbar-nav {
 	display: flex;
 	align-items: center;
-	gap: 1rem;
 }
 
 .navbar-collapse {

@@ -251,9 +251,9 @@ th {
 
 /* Navbar Styles */
 .navbar {
-    background-color: var(--bg-color) !important;
+    background-color: var(--secondary-bg) !important;
     border-bottom: 1px solid var(--primary-color);
-    padding: 1rem 1.5rem !important;
+    padding: 0rem !important;
     min-height: 70px;
 }
 

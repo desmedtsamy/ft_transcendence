@@ -1,27 +1,32 @@
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6 col-lg-10">
-            <div class="card bg-dark border-primary">
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-glow">
+                <div class="card-header text-center py-4">
+                    <h2 class="mb-0">Se connecter</h2>
+                </div>
                 <div class="card-body p-4">
-                    <h2 class="text-center mb-4">Login</h2>
-                    <form id="login-form" onsubmit="LoginForm(event); return false;" class="p-0">
+                    <form id="login-form" onsubmit="LoginForm(event); return false;">
                         <!-- Hidden honeypot fields -->
                         <input type="text" name="username" style="position: absolute; left: -9999px;">
                         <input type="password" name="password" style="position: absolute; left: -9999px;">
                         
-                        <div class="mb-3">
-                            <input class="form-control" type="text" id="username_input" placeholder="Username" required>
+                        <div class="mb-4">
+                            <label for="username_input" class="form-label">Nom d'utilisateur</label>
+                            <input class="form-control" type="text" id="username_input"/>
                         </div>
-                        <div class="mb-3">
-                            <input class="form-control" type="password" id="password" placeholder="Password" required>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input class="form-control" type="password" id="password"/> 
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-outline-primary btn-lg">Login</button>
-                            <a class="btn btn-outline-primary btn-lg" id="login_42">
-                                <span>Sign up with </span>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">Se connecter</button>
+                            <a class="btn btn-primary btn-lg" id="login_42">
+                                <span>Se connecter avec </span>
                                 <img src="/img/42_logo.svg" alt="42" style="height: 1em; vertical-align: middle;">
                             </a>
-                            <a class="btn btn-outline-primary btn-lg" data-link="/register">Sign Up</a>
+                            <a class="btn btn-primary btn-lg" data-link="/register">Créer un compte</a>
                         </div>
                     </form>
                 </div>
@@ -34,25 +39,50 @@
 .card {
     background-color: var(--secondary-bg) !important;
     border-color: var(--primary-color) !important;
-    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.1);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.15);
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-.card-body {
-    background-color: var(--secondary-bg);
+.card-header {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
-h2 {
-    color: var(--primary-color);
-    font-weight: bold;
+.border-glow {
+    position: relative;
+}
+
+.border-glow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(var(--primary-rgb), 0.5), 
+        rgba(var(--primary-rgb), 0.1), 
+        rgba(var(--primary-rgb), 0.5));
+    border-radius: 14px;
+    z-index: -1;
+    animation: glowing 1.5s linear infinite;
+}
+
+@keyframes glowing {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.7; }
 }
 
 .form-control {
     background-color: var(--secondary-bg);
     border: 1px solid rgba(var(--primary-rgb), 0.3);
     color: var(--text-color);
-    padding: 0.75rem 1rem;
+    padding: 1rem;
+    font-size: 1.1rem;
     border-radius: 8px;
-    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 .form-control:focus {
@@ -66,36 +96,47 @@ h2 {
     color: rgba(var(--primary-rgb), 0.5);
 }
 
-/* Override Bootstrap button styles to ensure consistency */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: bold;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
 .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-    color: var(--bg-color) !important;
-    background-color: var(--primary-color) !important;
-    padding: 0.5rem 1rem !important;
-    font-weight: normal !important;
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
 }
 
 .btn-outline-primary:hover {
-    background-color: transparent !important;
-    color: var(--primary-color) !important;
-    border: 1px solid var(--primary-color) !important;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
 }
 
-/* Remove any button-specific styling */
-button.btn-outline-primary {
-    font-family: inherit !important;
-    font-size: inherit !important;
-    line-height: inherit !important;
-    border: 1px solid var(--primary-color) !important;
-    outline: none !important;
+h2 {
+    color: var(--primary-color);
+    font-weight: bold;
 }
 
-/* Focus state should match hover */
-.btn-outline-primary:focus,
-.btn-outline-primary:active {
-    box-shadow: none !important;
-    background-color: transparent !important;
-    color: var(--primary-color) !important;
-    border: 1px solid var(--primary-color) !important;
+.form-label {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 </style>

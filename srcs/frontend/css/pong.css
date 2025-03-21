@@ -42,7 +42,7 @@ a {
 
 nav {
     background-color: var(--primary-color);
-    padding: 0.8rem 1rem;
+    padding: 0rem 0rem !important;
 }
 
 nav ul li a {
@@ -231,15 +231,15 @@ th {
 
 /* Navbar Styles */
 .navbar {
-    background-color: var(--bg-color) !important;
+    background-color: var(--secondary-bg) !important;
     border-bottom: 1px solid var(--primary-color);
-    padding: 1rem 1.5rem !important;
+    padding: 0rem !important;
     min-height: 70px;
 }
 
 .navbar-brand {
     color: var(--primary-color) !important;
-    font-size: 1.5rem;
+    font-size: 0rem;
     font-weight: 600;
 }
 
