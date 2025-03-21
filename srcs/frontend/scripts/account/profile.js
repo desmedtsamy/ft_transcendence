@@ -275,8 +275,8 @@ function renderRecentMatches(matches, userData) {
 
         // Colonne 3: Durée
         const durationDiv = document.createElement('div');
-        durationDiv.textContent = match.duration ? 
-            `${Math.floor(match.duration / 60)}m${match.duration % 60}s` : 
+        durationDiv.textContent = match.data.duration ? 
+            `${Math.floor(match.data.duration / 60)}m${match.data.duration % 60}s` : 
             'N/A';
 
         // Colonne 4: Score final
@@ -306,6 +306,7 @@ function renderRecentMatches(matches, userData) {
 
 
 function renderScoreChart(matches, user) {
+	console.log(matches)
     const ctx = document.getElementById('scoreChart').getContext('2d');
 
     // Calculate starting score by going backward from current score based on match history

@@ -21,6 +21,7 @@ class Match(models.Model):
 	winner  = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='won_matches')
 	created_at = models.DateTimeField(auto_now_add=True)
 	status = models.CharField(max_length=100, default='pending', choices=GAME_STATUS)
+	data = models.JSONField(default=dict, blank=True, null=True)
 
 	def start(self, type="tournament"):
 		if self.player1 == None and self.player2 == None:
@@ -30,13 +31,17 @@ class Match(models.Model):
 		elif self.player2 == None:
 			self.end(self.player1)
 		else:
-			# if self.status == 'pending' :
 			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self, type=type)
 			self.status = 'pending'
 			self.save()
 		self.save()
 
-	def end(self, winner):
+	def end(self, winner, match_data=None):
+		if match_data:
+			if not self.data:
+				self.data = {}
+			self.data.update(match_data)
+		
 		self.winner = winner
 		if winner:
 			looser = self.player1 if self.player1 != winner else self.player2
@@ -74,3 +79,33 @@ class Match(models.Model):
 
 	def is_ready(self):
 		return self.player1 != None and self.player2 != None
+	
+	def initialize_data(self):
+		if not self.data:
+			self.data = {}
+			
+		if self.game_type == 'pong':
+			print("ici ?")
+			if 'duration' not in self.data:
+				self.data['duration'] = 0
+			if 'score_player1' not in self.data:
+				self.data['score_player1'] = 0
+			if 'score_player2' not in self.data:
+				self.data['score_player2'] = 0
+				
+		elif self.game_type == 'tictactoe':
+			if 'moves' not in self.data:
+				self.data['moves'] = 0
+			if 'draws' not in self.data:
+				self.data['draws'] = 0
+				
+	
+	def save(self, *args, **kwargs):
+		is_new = self.pk is None
+		need_init = is_new or not self.data
+		
+		super().save(*args, **kwargs)
+		
+		if need_init:
+			self.initialize_data()
+			Match.objects.filter(pk=self.pk).update(data=self.data)
