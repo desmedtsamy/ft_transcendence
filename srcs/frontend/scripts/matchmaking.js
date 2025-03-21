@@ -38,32 +38,4 @@ function onUnload() {
 	}
 }
 
-function setPongLoader(loader) {
-	loader.innerHTML = `
-		<div class="pong-spinner">
-			<div class="paddle-spinner paddle-spinner-left"></div>
-			<div class="ball"></div>
-			<div class="paddle-spinner paddle-spinner-right"></div>
-		</div>
-	`;
-}
-
-function setTicTacToeLoader(loader) {
-	loader.innerHTML = `
-		<div class="tic-tac-toe-spinner">
-			<div class="board">
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-			</div>
-		</div>
-	`;
-}
-
 export { onLoad, onUnload };

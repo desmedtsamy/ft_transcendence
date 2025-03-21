@@ -93,7 +93,7 @@ function onLoad() {
     if (!initBoard()) return;
     startGame();
     
-    const playButton = document.getElementById('play_button');
+    const playButton = document.getElementById('glass');
     if (playButton) {
         playButton.addEventListener('click', handlePlayClick);
     }
@@ -105,7 +105,7 @@ function onUnload() {
     }
     gameActive = false;
     
-    const playButton = document.getElementById('play_button');
+    const playButton = document.getElementById('glass');
     if (playButton) {
         playButton.removeEventListener('click', handlePlayClick);
     }
