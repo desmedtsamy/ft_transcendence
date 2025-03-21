@@ -21,8 +21,9 @@ function resetGame(cells) {
 function startGame(cells) {
     let moveIndex = 0;
     gameLoopId = setInterval(() => {
-        if (moveIndex < moveSequence.length) {
-            const currentCellIndex = moveOrder[moveIndex];
+		
+		if (moveIndex < moveSequence.length) {
+			const currentCellIndex = moveOrder[moveIndex];
             makeMove(currentCellIndex, moveSequence[moveIndex], cells);
             moveIndex++;
         } else {
@@ -34,14 +35,14 @@ function startGame(cells) {
 
 function makeMove(index, player, cells) {
     if (board[index] === '') {
-        board[index] = player;
+		board[index] = player;
         cells[index].textContent = player;
     }
 }
 
 function setTicTacToeLoader(elem) {
     if (elem == null) {
-        elem = document.getElementById('app');
+        elem = document.getElementById("app");
     }
     elem.innerHTML = `
         <div class="board" id="board">
@@ -66,15 +67,14 @@ function deleteTicTacToeLoader() {
 	if (gameLoopId) {
 		clearInterval(gameLoopId);
 	}
-	board = Array(9).fill(''); // Réinitialiser le tableau de jeu
+	board = Array(9).fill('');
 	const boardElement = document.getElementById('board');
 	if (boardElement) {
-		boardElement.remove(); // Supprimer l'élément du DOM
+		boardElement.remove();
 	}
 }
 
-function setPongLoader() {
-	const app = document.getElementById('app');
+function setPongLoader(elem) {
 	const spinner = document.createElement('div');
 	spinner.className = 'pong-spinner';
 	spinner.innerHTML = `
@@ -82,7 +82,10 @@ function setPongLoader() {
 		<div class="ball"></div>
 		<div class="paddle-spinner paddle-spinner-right"></div>
 	`;
-	app.appendChild(spinner);
+	if (elem == null) {
+        elem = document.getElementById("app");
+    }
+    elem.appendChild(spinner);
 }
 
 function deletePongLoader() {

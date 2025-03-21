@@ -10,7 +10,6 @@ async function fetchUserInfo() {
 		setPongLoader();
 	else
 		setTicTacToeLoader();
-	
 	try {
 		const response = await fetch('/api/account/current-user/', {
 			method: 'GET',
