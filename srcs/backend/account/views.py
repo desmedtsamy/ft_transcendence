@@ -275,7 +275,6 @@ class UserMatchesListView(generics.ListAPIView):
 			return Response({'error': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 		
 		matches = Match.objects.filter(Q(player1=user) | Q(player2=user), game_type=selected_game, status='finished').order_by('-created_at')[:10]
-		
 		serializer = self.get_serializer(matches, many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	
