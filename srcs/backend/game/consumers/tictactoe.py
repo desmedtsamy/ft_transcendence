@@ -18,6 +18,8 @@ class Game():
 		self.p2_id = match.player2.id
 		self.turntoplay = self.p1_id
 		self.lock = Lock()
+		self.turn_played = 0
+		self.game_to_have_a_winner = 1
 		self.state = { 'type': 'gamestate',
 			'board': [' ' for _ in range(9)],
 			'winner': 0,
@@ -112,6 +114,7 @@ class Consumer(WebsocketConsumer):
 				both_voted = self.game.p1_id in self.game.restart_votes and self.game.p2_id in self.game.restart_votes
 				
 				if both_voted:
+					self.game.game_to_have_a_winner += 1
 					self.game.state['board'] = [' ' for _ in range(9)]
 					self.game.state['winner'] = 0
 					self.game.state['turn'] = 'X'
@@ -141,8 +144,8 @@ class Consumer(WebsocketConsumer):
 				else:
 					winner = self.game.match.player1
 					self.game.state['winner'] = 'X'
-				
-				self.game.match.end(winner)
+				match_data = {'turn_played': self.game.turn_played, 'board_played': self.game.game_to_have_a_winner}
+				self.game.match.end(winner, match_data)
 				
 				self.game.reset_restart_votes()
 				
@@ -157,6 +160,7 @@ class Consumer(WebsocketConsumer):
 		if self.id == self.game.turntoplay:
 			move = data['cell']
 			if self.game.state['board'][move] == ' ':
+				self.game.turn_played += 1
 				self.game.state['board'][move] = self.game.state['turn']
 				winner = self.check_winner(self.game.state['board'])
 				if winner == 'X' or winner == 'O' or winner == 'n':
@@ -166,9 +170,11 @@ class Consumer(WebsocketConsumer):
 					
 					if winner != 'n':
 						if self.id == self.game.match.player1.id:
-							self.game.match.end(self.game.match.player1)
+							match_data = {'turn_played': self.game.turn_played, 'board_played': self.game.game_to_have_a_winner}
+							self.game.match.end(self.game.match.player1, match_data)
 						else:
-							self.game.match.end(self.game.match.player2)
+							match_data = {'turn_played': self.game.turn_played, 'board_played': self.game.game_to_have_a_winner}
+							self.game.match.end(self.game.match.player2, match_data)
 					self.send_state()
 					return
 				else:
@@ -213,9 +219,11 @@ class Consumer(WebsocketConsumer):
 								'message': 'Game ended due to opponent not reconnecting'
 							})
 							if self.id == self.game.match.player1.id :
-								self.game.match.end(self.game.match.player2)
+								match_data = {'turn_played': self.game.turn_played, 'board_played': self.game.game_to_have_a_winner}
+								self.game.match.end(self.game.match.player2, match_data)
 							else:
-								self.game.match.end(self.game.match.player1)
+								match_data = {'turn_played': self.game.turn_played, 'board_played': self.game.game_to_have_a_winner}
+								self.game.match.end(self.game.match.player1, match_data)
 				timer_thread = threading.Thread(target=end_game_timer)
 				timer_thread.start()
 
