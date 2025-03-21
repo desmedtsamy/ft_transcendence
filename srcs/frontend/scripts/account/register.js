@@ -1,4 +1,33 @@
+async function getClientAPI(){
+	try {
+		const link = document.getElementById('login_42');
+        const csrftoken = getCookie('csrftoken');
+        const response = await fetch('/api/account/42client/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken,
+            },
+            credentials: 'include',
+        });
+		if (response.ok) {
+			const response_json = await response.json();
+			const client_id = response_json.client_id;
+			const redirect_uri = response_json.redirect_uri;
+			link.href = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&response_type=code`;
+		} else {
+			link.style.display = 'none';
+			const result = await response.json();
+			alert(result.error || 'Login failed');
+		}
+
+    } catch (error) {
+		alert(error || 'Login failed');
+    }
+}
+
 function onLoad() {
+	getClientAPI();
 	const form = document.getElementById('register-form');
 	const messageDiv = document.getElementById('message');
 
