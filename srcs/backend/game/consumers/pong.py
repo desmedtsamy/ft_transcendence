@@ -166,6 +166,12 @@ class Consumer(WebsocketConsumer):
 			if self.id != self.game.p1_id and self.id != self.game.p2_id:
 				return
 			if len(self.game.player_list) == 0:
+				if self.id == self.game.match.player1.id :
+					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+					self.game.match.end(self.game.match.player2, match_data)
+				else:
+					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+					self.game.match.end(self.game.match.player1, match_data)
 				if self.game in all_game:
 					all_game.remove(self.game)
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
