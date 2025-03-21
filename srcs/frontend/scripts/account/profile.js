@@ -75,7 +75,8 @@ function renderProfileInfo(user) {
 	}
     lastConnection.textContent = formatTimeAgo(user.last_connection);
 	rank.textContent = user.rank;
-    renderFriendActions(user);
+	if (user.id != window.user.id)
+    	renderFriendActions(user);
 	set1v1Button(user);
 }
 
@@ -347,7 +348,6 @@ function renderRecentMatches(matches, userData) {
 
 
 function renderScoreChart(matches, user) {
-	console.log(matches)
     const ctx = document.getElementById('scoreChart').getContext('2d');
 
     // Calculate starting score by going backward from current score based on match history
