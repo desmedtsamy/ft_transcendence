@@ -200,6 +200,9 @@ async function fetchMatchesData(userData) {
 		}); 
         if (response.ok) {
 			const matchesData = await response.json();
+			console.log(matchesData)
+			// Afficher l'en-tête approprié en fonction du type de jeu
+			updateMatchesHeader(selectedGame);
 			renderRecentMatches(matchesData, userData);
             renderScoreChart(matchesData, userData); 
         } else {
@@ -208,6 +211,22 @@ async function fetchMatchesData(userData) {
     } catch (error) {
 		console.error('Erreur lors de la requête pour l\'historique des matchs :', error);
     }
+}
+
+/**
+ * Affiche l'en-tête approprié en fonction du type de jeu sélectionné
+ */
+function updateMatchesHeader(gameType) {
+	const pongHeader = document.getElementById('matches-header-pong');
+	const tictactoeHeader = document.getElementById('matches-header-tictactoe');
+	
+	if (gameType === 'pong') {
+		pongHeader.style.display = '';
+		tictactoeHeader.style.display = 'none';
+	} else if (gameType === 'tictactoe') {
+		pongHeader.style.display = 'none';
+		tictactoeHeader.style.display = '';
+	}
 }
 
 function renderRecentMatches(matches, userData) {
@@ -227,6 +246,10 @@ function renderRecentMatches(matches, userData) {
         // Échange si l'utilisateur est player2
         if (player2.id === userData.id) {
             [player1, player2] = [player2, player1];
+            // Échange des scores seulement pour Pong
+            if (match.game_type === 'pong' && match.data && match.data.scores) {
+                [match.data.scores[1], match.data.scores[2]] = [match.data.scores[2], match.data.scores[1]];
+            }
         }
 
         // Création des éléments DOM
@@ -269,30 +292,48 @@ function renderRecentMatches(matches, userData) {
 
         // Colonne 2: Résultat
         const resultDiv = document.createElement('div');
-        const userWon = match.winner === userData.id;
-        resultDiv.classList.add('match-result', userWon ? 'winner-badge' : 'loser-badge');
+        const userWon = match.winner && match.winner.id === userData.id;
+        resultDiv.classList.add('match-result', userWon ? 'winner-badge' : (match.winner ? 'loser-badge' : 'draw-badge'));
+        
         resultDiv.textContent = userWon ? 'Victoire' : 'Défaite';
+        
 
-        // Colonne 3: Durée
-        const durationDiv = document.createElement('div');
-        durationDiv.textContent = match.data.duration ? 
-            `${Math.floor(match.data.duration / 60)}m${match.data.duration % 60}s` : 
-            'N/A';
+        // Colonne 3 et 4: Données spécifiques au type de jeu
+        const dataCol1 = document.createElement('div');
+        const dataCol2 = document.createElement('div');
 
-        // Colonne 4: Score final
-        const scoreDiv = document.createElement('div');
-        scoreDiv.textContent = match.final_score || 'N/A';
+        if (match.game_type === 'pong') {
+            // Pour Pong: Durée et Score
+            dataCol1.textContent = match.data && match.data.duration ? 
+                `${Math.floor(match.data.duration / 60)}m${match.data.duration % 60}s` : 
+                'N/A';
+            
+            dataCol2.textContent = match.data && match.data.scores ? 
+                `${match.data.scores[1]} / ${match.data.scores[2]}` : 
+                'N/A';
+        } else if (match.game_type === 'tictactoe') {
+            // Pour Tic-tac-toe: Nombre de coups et Match nul
+            dataCol1.textContent = match.data && match.data.moves ? 
+                `${match.data.moves} coups` : 
+                'N/A';
+            
+            dataCol2.textContent = match.data && match.data.draws !== undefined ? 
+				match.data.draws : 'N/A';
+        }
 
         // Assemblage des éléments
         listItem.append(
             playersDiv,
             resultDiv,
-            durationDiv,
-            scoreDiv
+            dataCol1,
+            dataCol2
         );
 
-        // Ajout des classes de style
-        if (userWon) {
+        // Ajout des classes de style pour les joueurs
+        if (match.game_type === 'tictactoe' && match.data && match.data.draws === 1) {
+            player1Span.classList.add('draw');
+            player2Span.classList.add('draw');
+        } else if (userWon) {
             player1Span.classList.add('winner');
             player2Span.classList.add('loser');
         } else {

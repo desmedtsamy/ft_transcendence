@@ -37,6 +37,7 @@ class Match(models.Model):
 		self.save()
 
 	def end(self, winner, match_data=None):
+		print(match_data)
 		if match_data:
 			if not self.data:
 				self.data = {}
@@ -81,17 +82,15 @@ class Match(models.Model):
 		return self.player1 != None and self.player2 != None
 	
 	def initialize_data(self):
+		"""Initialise le dictionnaire de données en fonction du type de jeu"""
 		if not self.data:
 			self.data = {}
 			
 		if self.game_type == 'pong':
-			print("ici ?")
 			if 'duration' not in self.data:
 				self.data['duration'] = 0
-			if 'score_player1' not in self.data:
-				self.data['score_player1'] = 0
-			if 'score_player2' not in self.data:
-				self.data['score_player2'] = 0
+			if 'scores' not in self.data:
+				self.data['scores'] = {1: 0, 2: 0}  # Format {1: score_player1, 2: score_player2}
 				
 		elif self.game_type == 'tictactoe':
 			if 'moves' not in self.data:

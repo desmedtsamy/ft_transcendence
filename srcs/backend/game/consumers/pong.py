@@ -182,10 +182,10 @@ class Consumer(WebsocketConsumer):
 								'message': 'Game ended due to opponent not reconnecting'
 							})
 							if self.id == self.game.match.player1.id :
-								match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+								match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
 								self.game.match.end(self.game.match.player2, match_data)
 							else:
-								match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+								match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
 								self.game.match.end(self.game.match.player1, match_data)
 				timer_thread = threading.Thread(target=end_game_timer)
 				timer_thread.start()
@@ -300,12 +300,12 @@ class Consumer(WebsocketConsumer):
 					if self.game.state['scores'][1] >= MAXSCORE:
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
-						match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
 						self.game.match.end(self.game.match.player1, match_data)
 					else:
 						self.game.state['winner'] = self.game.p2_id
 						self.send_state()
-						match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
 						self.game.match.end(self.game.match.player2, match_data)
 					return
 				self.update_game()

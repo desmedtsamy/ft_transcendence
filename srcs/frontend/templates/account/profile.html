@@ -43,11 +43,17 @@
     <!-- Historique des matchs -->
     <div class="matches-section">
         <h2>Derniers matchs</h2>
-        <div class="matches-header">
+        <div class="matches-header grid" id="matches-header-pong">
             <span>Joueurs</span>
             <span>Résultat</span>
             <span>Durée</span>
             <span>Score final</span>
+        </div>
+        <div class="matches-header grid" id="matches-header-tictactoe" style="display: none;">
+            <span>Joueurs</span>
+            <span>Résultat</span>
+            <span>Nombre de coups</span>
+            <span>Nombre de match nul</span>
         </div>
         <ul id="recent-matches" class="matches-list">
             <li class="empty-state">Aucun match récent</li>
