@@ -160,6 +160,17 @@ async function leaveTournament(){
 }
 
 function onLoad() {
+	if (window.user)
+	{
+		document.getElementById("create_tournament_btn").style.display = 'block'
+		console.log("Utilisateur connecté, bouton affiché")
+	}
+	else
+	{
+		document.getElementById("create_tournament_btn").style.display = 'none'
+		console.log("Utilisateur non connecté, bouton masqué")
+	}
+
     // Initialize Bootstrap modal
     const modalElement = document.getElementById('Modal');
     if (modalElement && typeof bootstrap !== 'undefined') {
