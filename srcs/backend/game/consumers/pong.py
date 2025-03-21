@@ -296,6 +296,7 @@ class Consumer(WebsocketConsumer):
 			#to do: add a stop to the loop upon reaching a certain score
 			while len(self.game.player_list) == 2:
 				if self.game.state['scores'][1] >= MAXSCORE or self.game.state['scores'][2] >= MAXSCORE:
+					self.game.time_total += time.time() - start_time
 					if self.game.state['scores'][1] >= MAXSCORE:
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
@@ -306,7 +307,6 @@ class Consumer(WebsocketConsumer):
 						self.send_state()
 						match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
 						self.game.match.end(self.game.match.player2, match_data)
-					self.game.time_total += time.time() - start_time
 					return
 				self.update_game()
 				self.send_state()
