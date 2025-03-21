@@ -30,6 +30,7 @@ class Game():
 		self.p2_name = match.player2.username
 		self.is_running = False
 		self.lock = Lock()
+		self.time_total = 0
 		self.state = { 'type': 'gamestate',
 			'players': {
 				1: {'x': 50, 'y': 150},  # left player
@@ -181,9 +182,11 @@ class Consumer(WebsocketConsumer):
 								'message': 'Game ended due to opponent not reconnecting'
 							})
 							if self.id == self.game.match.player1.id :
-								self.game.match.end(self.game.match.player2)
+								match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+								self.game.match.end(self.game.match.player2, match_data)
 							else:
-								self.game.match.end(self.game.match.player1)
+								match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+								self.game.match.end(self.game.match.player1, match_data)
 				timer_thread = threading.Thread(target=end_game_timer)
 				timer_thread.start()
 
@@ -286,6 +289,7 @@ class Consumer(WebsocketConsumer):
 				client.send(json.dumps({'type' : 'opponent connected'}))
 	
 	def start_game_loop(self):
+		start_time = time.time()
 		def game_loop():
 			self.game.match.status = "started"
 			self.game.match.save()
@@ -295,17 +299,21 @@ class Consumer(WebsocketConsumer):
 					if self.game.state['scores'][1] >= MAXSCORE:
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
-						self.game.match.end(self.game.match.player1)
+						match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+						self.game.match.end(self.game.match.player1, match_data)
 					else:
 						self.game.state['winner'] = self.game.p2_id
 						self.send_state()
-						self.game.match.end(self.game.match.player2)
+						match_data = {'duration': self.game.time_total, 'score': self.game.state['score']}
+						self.game.match.end(self.game.match.player2, match_data)
+					self.game.time_total += time.time() - start_time
 					return
 				self.update_game()
 				self.send_state()
 				time.sleep(0.0155)
 			if len(self.game.player_list) < 2:
 				self.game.is_running = False
+				self.game.time_total += time.time() - start_time
 				return
 		threading.Thread(target=game_loop, daemon=True).start()
 
