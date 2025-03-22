@@ -6,6 +6,9 @@
 					<h2 class="text-center mb-0">Paramètres du compte</h2>
 				</div>
 				<div class="card-body p-4">
+					<div id="message-container" class="mb-4" style="display: none;">
+						<div id="message" class="alert"></div>
+					</div>
 					<form id="settings-form">
 						<!-- Hidden fields -->
 						<input type="text" name="username_fake" style="display:none">
@@ -14,16 +17,19 @@
 						<div class="mb-3">
 							<label for="username_input" class="form-label">Nom d'utilisateur</label>
 							<input type="text" class="form-control" id="username_input" name="username" autocomplete="new-password">
+							<div class="error-message" id="username-error"></div>
 						</div>
 						
 						<div class="mb-3">
 							<label for="email" class="form-label">Email</label>
 							<input type="email" class="form-control" id="email" name="email" autocomplete="new-password">
+							<div class="error-message" id="email-error"></div>
 						</div>
 						
 						<div class="mb-4">
 							<label for="avatar" class="form-label">Avatar</label>
 							<input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+							<div class="error-message" id="avatar-error"></div>
 						</div>
 						
 						<div class="border-top pt-4 mb-4" style="color: var(--primary-color)">
@@ -32,16 +38,19 @@
 							<div class="mb-3">
 								<label for="old_password" class="form-label">Ancien mot de passe</label>
 								<input type="password" class="form-control" id="old_password" name="old_password" autocomplete="new-password">
+								<div class="error-message" id="old-password-error"></div>
 							</div>
 							
 							<div class="mb-3">
 								<label for="new_password1" class="form-label">Nouveau mot de passe</label>
 								<input type="password" class="form-control" id="new_password1" name="new_password1" autocomplete="new-password">
+								<div class="error-message" id="new-password1-error"></div>
 							</div>
 							
 							<div class="mb-3">
 								<label for="new_password2" class="form-label">Confirmez le nouveau mot de passe</label>
 								<input type="password" class="form-control" id="new_password2" name="new_password2" autocomplete="new-password">
+								<div class="error-message" id="new-password2-error"></div>
 							</div>
 						</div>
 						
@@ -132,5 +141,30 @@ h2, h4 {
 	background-color: transparent !important;
 	color: var(--primary-color) !important;
 	border: 1px solid var(--primary-color) !important;
+}
+
+.error-message {
+    color: #ff5555;
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+    color: #28a745;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #dc3545;
 }
 </style>

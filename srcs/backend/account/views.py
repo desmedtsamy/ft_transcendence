@@ -37,6 +37,8 @@ class LoginViewAPI(APIView):
 
 	def post(self, request):
 		username = request.data.get('username')
+		if username:
+			username = username.lower()
 		password = request.data.get('password')
 		User.check_user_status()
 		user = authenticate(username=username, password=password)
@@ -55,6 +57,10 @@ class registerViewAPI(APIView):
 	def post(self, request):
 		try:
 			data = request.data
+			# Convertir le username en minuscules
+			if 'username' in data and data['username']:
+				data = data.copy()  # Créer une copie modifiable des données
+				data['username'] = data['username'].lower()
 		except json.JSONDecodeError:
 			return JsonResponse({'error': 'Données JSON invalides'}, status=400)
 		serializer = UserSerializer(data=data)

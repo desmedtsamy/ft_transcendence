@@ -1,5 +1,5 @@
-async function LoginForm() {
-	const username = document.getElementById('username_input').value;
+async function LoginForm(event) {
+	const username = document.getElementById('username_input').value.trim();
     const password = document.getElementById('password').value;
 	
     event.preventDefault();
@@ -9,10 +9,13 @@ async function LoginForm() {
         const response = await fetch('/api/account/login/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,
             },
-            body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+            body: JSON.stringify({
+						username:username,
+						password:password,
+			 }),
             credentials: 'include',
         });
 		if (response.ok) {
@@ -22,7 +25,7 @@ async function LoginForm() {
 			navigateTo('/');
 		} else {
 			const result = await response.json();
-			alert(result.error || 'Login failed');
+			alert("nom d'utilisateur ou mot de passe incorrect");
 		}
 
     } catch (error) {
