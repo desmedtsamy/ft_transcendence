@@ -2,6 +2,7 @@
 
 from .services import create_tournament, join_tournament, leave_tournament, get_tournament_details, delete_tournament
 from .models import Tournament
+from game.models import Match
 from rest_framework import generics, permissions
 from .serializers import TournamentSerializer
 from rest_framework.response import Response
@@ -25,6 +26,24 @@ class JoinTournamentView(APIView):
 			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
 		data,status = join_tournament(tournament_id, user.id);
 		return Response(data, status=status)
+
+class declineTournamentView(APIView):
+	permission_classes = [permissions.IsAuthenticated]
+	
+	def post(self, request):
+		data = request.data
+		match_id = data.get('match_id')
+		user_id = data.get('user_id')
+		
+		match = Match.objects.get(id=match_id)
+		if match.player1.id == user_id:
+			match.end(match.player2)
+		else :
+			match.end(match.player1)
+		return Response({
+				'success': True,
+				'message': 'Vous avez refusé de participer au match de tournoi.'
+			}, status=status.HTTP_200_OK)
 
 class deleteTournamentView(APIView):
 	permission_classes = [permissions.IsAuthenticated]

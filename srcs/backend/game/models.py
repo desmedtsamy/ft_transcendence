@@ -25,45 +25,46 @@ class Match(models.Model):
 	data = models.JSONField(default=dict, blank=True, null=True)
 
 	def start(self, type="tournament"):
-		if self.player1 == None and self.player2 == None:
-			self.end(None)
-		if self.player1 == None:
-			self.end(self.player2)
-		elif self.player2 == None:
-			self.end(self.player1)
-		else:
-			match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self, type=type)
-			self.status = 'pending'
-			self.save()
+		if self.status == "pending":
+			if self.player1 == None and self.player2 == None:
+				self.end(None)
+			if self.player1 == None:
+				self.end(self.player2)
+			elif self.player2 == None:
+				self.end(self.player1)
+			else:
+				match_started.send(sender=self, player1_id=self.player1.id, player2_id=self.player2.id, match=self, type=type)
 		self.save()
 
 	def end(self, winner, match_data=None):
-		if match_data:
-			if not self.data:
-				self.data = {}
-			self.data.update(match_data)
-		if not winner:
-			winner = random.choice([self.player1, self.player2])
-		self.winner = winner
-		if winner:
-			looser = self.player1 if self.player1 != winner else self.player2
-			if self.game_type not in self.winner.scores:
-				self.winner.scores[self.game_type] = 0 
-			self.winner.scores[self.game_type] +=42
-			self.winner.wins[self.game_type] += 1
-			if looser.scores[self.game_type] > 19:
-				looser.scores[self.game_type] -=19
-			else:
-				looser.scores[self.game_type] = 0
-			
-			looser.losses[self.game_type] += 1
-			self.winner.save()
-			looser.save()
-		self.status = 'finished'
-		self.save()
+		if self.status == "started":
+			self.status = 'finished'
+			self.save()
+			if match_data:
+				if not self.data:
+					self.data = {}
+				self.data.update(match_data)
+			if not winner:
+				winner = random.choice([self.player1, self.player2])
+			self.winner = winner
+			if winner:
+				looser = self.player1 if self.player1 != winner else self.player2
+				if self.game_type not in self.winner.scores:
+					self.winner.scores[self.game_type] = 0 
+				self.winner.scores[self.game_type] +=42
+				self.winner.wins[self.game_type] += 1
+				if looser.scores[self.game_type] > 19:
+					looser.scores[self.game_type] -=19
+				else:
+					looser.scores[self.game_type] = 0
+				
+				looser.losses[self.game_type] += 1
+				self.winner.save()
+				looser.save()
+			self.save()
 		
-		if hasattr(self, 'tournament_match') and self.tournament_match:
-			self.tournament_match.end(winner)
+			if hasattr(self, 'tournament_match') and self.tournament_match:
+				self.tournament_match.end(self.winner)
 
 	def set_player(self, player):
 		if self.player1 == None:
@@ -83,7 +84,6 @@ class Match(models.Model):
 		return self.player1 != None and self.player2 != None
 	
 	def initialize_data(self):
-		"""Initialise le dictionnaire de données en fonction du type de jeu"""
 		if not self.data:
 			self.data = {}
 			

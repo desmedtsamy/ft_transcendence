@@ -13,5 +13,6 @@ urlpatterns = [
 	path('join_tournament/', views.JoinTournamentView.as_view()),
 	path('leave_tournament/', views.leaveTournamentView.as_view()),
 	path('delete_tournament/', views.deleteTournamentView.as_view()),
+	path('decline_match/', views.declineTournamentView.as_view()),
 	
 ]
