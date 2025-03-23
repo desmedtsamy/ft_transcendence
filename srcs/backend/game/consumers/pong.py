@@ -167,7 +167,7 @@ class Consumer(WebsocketConsumer):
 				self.role = None
 			if self.id not in (self.game.p1_id, self.game.p2_id):
 				return
-			if len(self.game.player_list):
+			if len(self.game.player_list) == 0:
 				if self.game in all_game:
 					all_game.remove(self.game)
 				self.game.disconnect_event.set()  # Stop any running timer
@@ -183,6 +183,7 @@ class Consumer(WebsocketConsumer):
 				if not self.game.disconnect_timer_active:
 					self.game.disconnect_event.clear()  # Reset the event
 					self.game.disconnect_timer_active = True
+					self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 					timer_thread = threading.Thread(target=self.end_game_timer)
 					timer_thread.start()
 
