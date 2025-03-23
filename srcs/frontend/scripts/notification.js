@@ -215,6 +215,7 @@ class NotificationManager {
 		const declineButton = this._createButton('Decline', 'button btn-danger cancel-friend-request', () => {
 		  this.declineMatch(userId, match_id);
 		  this._clearMatchTimeout(match_id);
+		  alertEl.remove();
 		});
 		
 		buttonsContainer.appendChild(acceptButton);

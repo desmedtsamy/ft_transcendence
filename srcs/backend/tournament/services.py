@@ -49,22 +49,6 @@ def join_tournament(tournament_id, user_id):
 	except Exception as e:
 		return {'error': str(e)}, 500
 
-def set_start_tournament(tournament_id, user):
-	try:
-		tournament = Tournament.objects.get(id=tournament_id)
-		if user != tournament.creator:
-			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
-		if tournament.is_started:
-			return {'error': 'Le tournoi a déjà commencé'}, 400
-		if tournament.players.count() == 0 :
-			return {'error': 'Le tournoi est vide'}, 400
-		tournament.set_start_tournament()
-		return {'status': 'success', 'message': 'Tournoi commencé'}, 200
-	except Tournament.DoesNotExist:
-		return {'error': 'Tournoi introuvable'}, 404
-	except Exception as e:
-		return {'error': str(e)}, 500
-
 def delete_tournament(tournament_id, user):
 	try:
 		tournament = Tournament.objects.get(id=tournament_id)

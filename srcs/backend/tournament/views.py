@@ -1,6 +1,6 @@
 # views.py
 
-from .services import create_tournament, join_tournament, leave_tournament, get_tournament_details, delete_tournament, set_start_tournament
+from .services import create_tournament, join_tournament, leave_tournament, get_tournament_details, delete_tournament
 from .models import Tournament
 from rest_framework import generics, permissions
 from .serializers import TournamentSerializer
@@ -24,17 +24,6 @@ class JoinTournamentView(APIView):
 		if not tournament_id:
 			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
 		data,status = join_tournament(tournament_id, user.id);
-		return Response(data, status=status)
-
-class startTournamentView(APIView):
-	permission_classes = [permissions.IsAuthenticated]
-	def post(self, request):
-		data = request.data
-		user = request.user
-		tournament_id = data.get('tournamentId')
-		if not tournament_id:
-			return Response({'error': 'ID de tournoi requis.'}, status=status.HTTP_400_BAD_REQUEST)
-		data,status = set_start_tournament(tournament_id, user);
 		return Response(data, status=status)
 
 class deleteTournamentView(APIView):

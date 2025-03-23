@@ -161,9 +161,6 @@ function renderTournament(tournament) {
 
 	// Admin buttons
 	if (tournament.creator === window.user.username) {
-		if (!tournament.is_started) {
-			document.getElementById('admin_button_container').appendChild(createButton('Démarrer le tournoi', startTournament));
-		}
 		if (!tournament.is_started || tournament.is_finished) {
 			document.getElementById('admin_button_container').appendChild(createButton('Supprimer le tournoi', deleteTournament));
 		}
@@ -229,35 +226,6 @@ function createButton(text, onClick) {
 	return button;
 }
 
-async function startTournament(){
-	if (!window.activeTournament)
-	{
-		alert('Aucun tournois selectionné');
-		return;
-	}
-	try {
-		const response = await fetch('/api/tournament/set_start_tournament/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': getCookie('csrftoken'),
-			},
-			body: JSON.stringify({tournamentId: window.activeTournament.id}),
-		});
-		
-		if (response.ok) {
-			alert('Tournois démarré avec succès !');
-			navigateTo('/tournaments/' + window.activeTournament.id);
-		} else {
-			const errorData = await response.json();
-			alert('imposible de démarrer le tournois : ' + errorData.error);
-		}
-	} catch (error) {
-		console.error('Erreur lors de la requête :', error);
-		alert('Une erreur est survenue. Veuillez réessayer plus tard.');
-	}
-}
-
 async function deleteTournament(){
 	if (!window.activeTournament)
 	{
@@ -294,6 +262,5 @@ window.renderTournament = renderTournament;
 window.createMatchElement = createMatchElement;
 window.createPlayerElement = createPlayerElement;
 window.createButton = createButton;
-window.startTournament = startTournament;
 window.deleteTournament = deleteTournament;
 window.createWinnerElement = createWinnerElement;
