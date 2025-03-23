@@ -43,6 +43,7 @@ class Game:
 		}
 		self.disconnect_event = Event()  # To signal reconnection
 		self.disconnect_timer_active = False
+		self.game_ended = False
 
 class Consumer(WebsocketConsumer):
 	def getGame(self):
@@ -96,7 +97,7 @@ class Consumer(WebsocketConsumer):
 			self.send_connection()
 
 		# Start or resume the game if both players are connected
-		if len(self.game.player_list) == 2:
+		if len(self.game.player_list) == 2 and not self.game.game_ended:
 			with self.game.game_loop_start_lock:
 				if not self.game.is_running:
 					self.game.is_running = True
@@ -166,13 +167,16 @@ class Consumer(WebsocketConsumer):
 				self.role = None
 			if self.id not in (self.game.p1_id, self.game.p2_id):
 				return
-			if len(self.game.player_list) == 0:
+			if len(self.game.player_list):
 				if self.game in all_game:
 					all_game.remove(self.game)
 				self.game.disconnect_event.set()  # Stop any running timer
 				self.game.disconnect_timer_active = False
-				match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
-				self.game.match.end(None, match_data)  # End match with no winner
+				if not self.game.game_ended:
+					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+					print(f"{self.id}: Ending match with no winner")
+					self.game.match.end(None, match_data)  # End match with no winner
+					self.game.game_ended = True
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
 				self.send_msg({'type': 'disconnect', 'message': 'Your opponent left the game'})
 				# Start the disconnect timer only if not already active
@@ -204,7 +208,7 @@ class Consumer(WebsocketConsumer):
 
 		# If timeout is reached and no reconnection
 		with self.game.lock:
-			if len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
+			if len(self.game.player_list) < 2 and self.game.state['winner'] == 0 and not self.game.game_ended:
 				if self.game in all_game:
 					all_game.remove(self.game)
 				if len(self.game.player_list) > 0:
@@ -215,7 +219,9 @@ class Consumer(WebsocketConsumer):
 					remaining_player = self.game.player_list[0]
 					winner = self.game.match.player1 if remaining_player.id == self.game.p1_id else self.game.match.player2
 					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+					print(f"{self.id}: Ending match when someone leaves")
 					self.game.match.end(winner, match_data)
+					self.game.game_ended = True
 			self.game.disconnect_timer_active = False
 
 	def update_game(self):
@@ -310,12 +316,18 @@ class Consumer(WebsocketConsumer):
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
 						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+						print(f"{self.id}: Ending match normally for player2 (ID: {self.game.p1_id})")
+						self.game.game_ended = True
 						self.game.match.end(self.game.match.player1, match_data)
+						self.game.game_ended = True
 					else:
 						self.game.state['winner'] = self.game.p2_id
 						self.send_state()
 						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
+						print(f"{self.id}: Ending match normally for player2 (ID: {self.game.p2_id})")
+						self.game.game_ended = True
 						self.game.match.end(self.game.match.player2, match_data)
+						self.game.game_ended = True
 					return
 				self.update_game()
 				self.send_state()
