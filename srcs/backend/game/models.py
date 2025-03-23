@@ -37,7 +37,7 @@ class Match(models.Model):
 		self.save()
 
 	def end(self, winner, match_data=None):
-		print(match_data)
+		print(self.id, match_data)
 		if match_data:
 			if not self.data:
 				self.data = {}

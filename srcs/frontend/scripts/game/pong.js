@@ -45,6 +45,24 @@ const handleKeyUp = function (e) {
 
 let listenersAdded = false;
 
+function resetGameState() {
+    // Reset all game-related variables to their initial state
+    playerPosition = { x: 50, y: 150 };
+    opponentPosition = { x: 750, y: 150 };
+    ballPosition = { x: 400, y: 200 };
+    scores = [0, 0];
+    countdown = 0;
+    gameFinished = false;
+    win = false;
+    opponentConnected = false;
+    gamePaused = false;
+    myUsername = "player1";
+    opponentUsername = "player2";
+    keysPressed = { ArrowUp: false, ArrowDown: false };
+    velocity = 0;
+    lastSent = 0;
+}
+
 function onLoad() {
     const gameSelector = document.getElementById('gameSelector');
 	if (gameSelector) {
@@ -58,6 +76,8 @@ function onLoad() {
         return;
     }
     
+    resetGameState();
+
     document.body.setAttribute('data-game', 'pong');
 
     canvas = document.getElementById('pongCanvas');
@@ -82,6 +102,20 @@ function onLoad() {
 
         if (data.type === 'disconnect') {
             handleOpponentDisconnect();
+        }
+
+        if (data.type === 'game_ended'){
+            gameFinished = true;
+            disconnectMessage.textContent = "Game won by forfeit";
+            win = true;
+            drawEndScreen(win);
+            clearInterval(window.disconnectTimer);
+            window.disconnectTimer = null;
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.close();
+            }
+            
+            document.getElementById('back_to_menu').style = "visibility:visible;";
         }
 
         if (data.type === 'opponent connected') {
@@ -132,6 +166,9 @@ function onLoad() {
                     win = true;
                 }
                 document.getElementById('back_to_menu').style = "visibility:visible;";
+            }
+            else {
+                gameFinished = false;
             }
         }
         
@@ -210,18 +247,6 @@ function handleOpponentDisconnect() {
             if (timeLeft >= 0) {
                 disconnectMessage.textContent = `Opponent disconnected ${timeLeft}s left before forfeit`;
                 timeLeft--;
-            } else {
-                gameFinished = true;
-                disconnectMessage.textContent = "Game won by forfeit";
-                win = true;
-                drawEndScreen(win);
-                clearInterval(window.disconnectTimer);
-                window.disconnectTimer = null;
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.close();
-                }
-                
-                document.getElementById('back_to_menu').style = "visibility:visible;";
             }
         }, 1000);
     }
@@ -376,17 +401,14 @@ function onUnload(){
 		gameSelector.disabled = false;
 	}
     gameLoopRunning = false;
-    keysPressed = { ArrowUp: false, ArrowDown: false };
-    velocity = 0;
-    lastSent = 0;
-
     // Supprimer les écouteurs clavier
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    gameFinished = false;
-    win = false;
-    socket.close();
+    if (socket && socket.readyState !== WebSocket.CLOSED) {
+        socket.close();
+    }
+    resetGameState();
 }
 
 export { onLoad, onUnload }
