@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import F
 from tournament.models import TournamentMatch
 from .signals import match_started
+import random
 
 
 class Match(models.Model):
@@ -37,12 +38,12 @@ class Match(models.Model):
 		self.save()
 
 	def end(self, winner, match_data=None):
-		print(self.id, match_data)
 		if match_data:
 			if not self.data:
 				self.data = {}
 			self.data.update(match_data)
-		
+		if not winner:
+			winner = random.choice([self.player1, self.player2])
 		self.winner = winner
 		if winner:
 			looser = self.player1 if self.player1 != winner else self.player2

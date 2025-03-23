@@ -129,7 +129,6 @@ function onLoad() {
 	
 		const formData = new FormData(form);
 		
-		// Validation côté client
 		if (!validateForm(formData)) {
 			return;
 		}
@@ -152,14 +151,11 @@ function onLoad() {
 			} else {
 				const errorData = await response.json();
 				
-				// Gestion des erreurs spécifiques aux champs
 				if (errorData.username) {
-					// Traiter le cas où username contient un tableau d'erreurs
 					const usernameError = Array.isArray(errorData.username) 
-						? errorData.username[0] // Prendre le premier message d'erreur s'il y en a plusieurs
+						? errorData.username[0]
 						: errorData.username;
 					
-					// Rendre le message plus convivial
 					let friendlyMessage = usernameError;
 					if (usernameError.includes("existe déjà")) {
 						friendlyMessage = "Ce nom d'utilisateur est déjà utilisé. Veuillez en choisir un autre.";
@@ -168,12 +164,10 @@ function onLoad() {
 					displayFieldError('username', friendlyMessage);
 				}
 				if (errorData.email) {
-					// Traiter le cas où email contient un tableau d'erreurs
 					const emailError = Array.isArray(errorData.email) 
 						? errorData.email[0] 
 						: errorData.email;
 					
-					// Rendre le message plus convivial
 					let friendlyMessage = emailError;
 					if (emailError.includes("existe déjà")) {
 						friendlyMessage = "Cette adresse email est déjà utilisée. Veuillez en utiliser une autre.";
