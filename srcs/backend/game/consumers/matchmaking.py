@@ -138,18 +138,6 @@ class Consumer(WebsocketConsumer):
 		# Annuler le timer si encore actif
 		if self.matchmaking_timer:
 			self.matchmaking_timer.cancel()
-		# Notifier les deux joueurs du match
-		# self.send(text_data=json.dumps({
-		# 	'action': 'match_found',
-		# 	'match_id': match.id,
-		# 	'opponent_id': opponent_id
-		# }))
-		
-		# opponent_consumer.send(text_data=json.dumps({
-		# 	'action': 'match_found',
-		# 	'match_id': match.id,
-		# 	'opponent_id': self.id
-		# }))
 		
 		return True
 

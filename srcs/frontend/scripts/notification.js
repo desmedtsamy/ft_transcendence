@@ -77,13 +77,10 @@ class NotificationManager {
 	_handleIncomingMessage(event) {
 	  try {
 		const data = JSON.parse(event.data);
-		console.log('Message reçu:', data);
 		
 		// Si le message est une confirmation de suppression
-		if (data.message === 'notification_deleted') {
-			console.log(`Notification ${data.notification_id} supprimée avec succès: ${data.success}`);
+		if (data.message === 'notification_deleted')
 			return;
-		}
 		
 		switch (data.message) {
 		  case 'match_request':
@@ -173,10 +170,6 @@ class NotificationManager {
 		timestamp,
 		notification_id
 	  });
-	  
-	  if (notification_id) {
-		this._deleteNotification(notification_id);
-	  }
 	  // Ajouter l'alerte au conteneur
 	  const alertsEl = document.getElementById('alerts');
 	  alertsEl.appendChild(alertEl);
@@ -228,7 +221,7 @@ class NotificationManager {
 		const acceptButton = this._createButton('Accept', 'button btn-success accept-friend-request', () => {
 		  this.acceptMatch(userId, match_id);
 		  this._clearMatchTimeout(match_id);
-		  // Supprimer la notification côté serveur
+		  alertEl.remove()
 		  if (notification_id) {
 		    this._deleteNotification(notification_id);
 		  }
@@ -238,7 +231,6 @@ class NotificationManager {
 		const declineButton = this._createButton('Decline', 'button btn-danger cancel-friend-request', () => {
 		  this.declineMatch(userId, match_id, isTournament);
 		  this._clearMatchTimeout(match_id);
-		  // Supprimer la notification côté serveur
 		  if (notification_id) {
 		    this._deleteNotification(notification_id);
 		  }
@@ -377,6 +369,9 @@ class NotificationManager {
 	 * @private
 	 */
 	_handleMatchStart(data) {
+		const alertEl = document.getElementById(data.match_id);
+		if (alertEl)
+			alertEl.remove()
 		if (data.notification_id) {
 			this._deleteNotification(data.notification_id);
 		}
@@ -394,6 +389,14 @@ class NotificationManager {
 
 	_handleMatchDecline(data) {
 		const alertsEl = document.getElementById('alerts');
+		const alertEl = document.getElementById(data.match_id);
+		if (alertEl){
+			if (alertEl.dataset.notificationId) {
+				console.log(alertEl.dataset.notificationId);
+				this._deleteNotification(alertEl.dataset.notificationId);
+			}
+			alertEl.remove()
+		}
 		if (data.notification_id) {
 			this._deleteNotification(data.notification_id);
 		}
