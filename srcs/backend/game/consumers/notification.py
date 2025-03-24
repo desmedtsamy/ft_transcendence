@@ -285,12 +285,16 @@ class Consumer(WebsocketConsumer):
                 # Match normal
                 logger.info(f"Refus d'un match normal {match_id}")
                 match = Match.objects.filter(id=match_id).first()
-                notification_data = {
-                	'message': "match_decline"
-            	}
-                notification_manager.send_notification(match.player1.id,notification_data)
+                
+                # Vérifier si le match existe avant d'y accéder
                 if match:
+                    notification_data = {
+                        'message': "match_decline"
+                    }
+                    notification_manager.send_notification(match.player1.id, notification_data)
                     match.delete()
+                else:
+                    logger.info(f"Match {match_id} non trouvé, probablement déjà supprimé")
                     
         except Exception as e:
             logger.error(f"Erreur lors du traitement de match_decline: {e}", exc_info=True)

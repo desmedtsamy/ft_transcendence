@@ -155,7 +155,7 @@ async function profilePage() {
     const htmlContent = await response.text();
 	return {
 		html: htmlContent,
-		script: "/scripts/account/profile.js",
+		script: "/scripts/account/profile/profile.js",
 	};
 }
 
