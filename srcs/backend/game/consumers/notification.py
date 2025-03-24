@@ -23,6 +23,26 @@ class NotificationManager:
         self.connected_clients = {}
         self.pending_notifications = {}
         self.notification_ttl = timedelta(minutes=1)
+        self.next_notification_id = 1  # Pour générer des ID uniques
+        
+        # Démarrer le nettoyage périodique des notifications
+        self._start_cleanup_scheduler()
+    
+    def _start_cleanup_scheduler(self):
+        """Démarre le planificateur de nettoyage des notifications expirées."""
+        def cleanup_task():
+            while True:
+                time.sleep(60)  # Nettoyage toutes les minutes
+                try:
+                    self.cleanup_notifications()
+                    logger.info("Nettoyage périodique des notifications terminé")
+                except Exception as e:
+                    logger.error(f"Erreur lors du nettoyage périodique des notifications: {e}", exc_info=True)
+        
+        # Démarrer le nettoyage dans un thread séparé
+        cleanup_thread = threading.Thread(target=cleanup_task)
+        cleanup_thread.daemon = True  # Le thread se fermera quand le programme principal se termine
+        cleanup_thread.start()
     
     def add_client(self, user_id, consumer):
         """Ajoute un client connecté."""
@@ -35,20 +55,29 @@ class NotificationManager:
             del self.connected_clients[user_id]
             logger.info(f"Client {user_id} déconnecté. Restants: {len(self.connected_clients)}")
     
+    def _generate_notification_id(self):
+        """Génère un ID unique pour une notification."""
+        notification_id = self.next_notification_id
+        self.next_notification_id += 1
+        return notification_id
+    
     def store_notification(self, user_id, notification_data):
         """Stocke une notification pour une livraison ultérieure."""
         if user_id not in self.pending_notifications:
             self.pending_notifications[user_id] = []
             
-        # Ajouter un timestamp à la notification
+        # Ajouter un timestamp et un ID unique à la notification
         timestamp = datetime.now()
         notification_data["timestamp"] = int(timestamp.timestamp() * 1000)
+        notification_data["notification_id"] = self._generate_notification_id()
         
         self.pending_notifications[user_id].append((timestamp, notification_data))
-        logger.info(f"Notification stockée pour l'utilisateur {user_id}")
+        logger.info(f"Notification {notification_data['notification_id']} stockée pour l'utilisateur {user_id}")
+        
+        return notification_data
         
     def get_pending_notifications(self, user_id):
-        """Récupère et nettoie les notifications en attente pour un utilisateur."""
+        """Récupère les notifications en attente pour un utilisateur sans les supprimer."""
         if user_id not in self.pending_notifications:
             return []
             
@@ -58,11 +87,30 @@ class NotificationManager:
         # Récupérer les notifications valides
         notifications = [data for _, data in self.pending_notifications.get(user_id, [])]
         
-        # Supprimer les notifications après récupération
-        if user_id in self.pending_notifications:
+        return notifications
+        
+    def delete_notification(self, user_id, notification_id):
+        """Supprime une notification spécifique pour un utilisateur."""
+        if user_id not in self.pending_notifications:
+            return False
+            
+        # Trouver et supprimer la notification
+        before_count = len(self.pending_notifications[user_id])
+        self.pending_notifications[user_id] = [
+            (timestamp, data) for timestamp, data in self.pending_notifications[user_id]
+            if data.get("notification_id") != notification_id
+        ]
+        after_count = len(self.pending_notifications[user_id])
+        
+        # Si toutes les notifications ont été supprimées, supprimer l'entrée
+        if len(self.pending_notifications[user_id]) == 0:
             del self.pending_notifications[user_id]
             
-        return notifications
+        deleted = before_count > after_count
+        if deleted:
+            logger.info(f"Notification {notification_id} supprimée pour l'utilisateur {user_id}")
+        
+        return deleted
         
     def cleanup_notifications(self, user_id=None):
         """Nettoie les notifications expirées."""
@@ -71,10 +119,16 @@ class NotificationManager:
         if user_id is not None:
             # Nettoyer seulement pour un utilisateur spécifique
             if user_id in self.pending_notifications:
+                before_count = len(self.pending_notifications[user_id])
                 self.pending_notifications[user_id] = [
                     (timestamp, data) for timestamp, data in self.pending_notifications[user_id]
                     if current_time - timestamp < self.notification_ttl
                 ]
+                after_count = len(self.pending_notifications[user_id])
+                
+                if after_count < before_count:
+                    logger.info(f"{before_count - after_count} notifications expirées supprimées pour l'utilisateur {user_id}")
+                
                 if not self.pending_notifications[user_id]:
                     del self.pending_notifications[user_id]
         else:
@@ -83,14 +137,17 @@ class NotificationManager:
                 self.cleanup_notifications(user_id)
     
     def send_notification(self, user_id, notification_data):
-        """Envoie une notification ou la stocke si le client n'est pas connecté."""
+        """Envoie une notification ET la stocke systématiquement."""
+        # Toujours stocker la notification
+        notification_data = self.store_notification(user_id, notification_data)
+        
+        # Si l'utilisateur est connecté, envoyer la notification immédiatement
         if user_id in self.connected_clients:
             self.connected_clients[user_id].send(text_data=json.dumps(notification_data))
-            logger.info(f"Notification envoyée à l'utilisateur {user_id}")
+            logger.info(f"Notification {notification_data['notification_id']} envoyée à l'utilisateur {user_id}")
             return True
         else:
-            self.store_notification(user_id, notification_data)
-            logger.info(f"Utilisateur {user_id} non connecté, notification stockée")
+            logger.info(f"Utilisateur {user_id} non connecté, notification {notification_data['notification_id']} en attente")
             return False
 
 
@@ -150,15 +207,29 @@ class Consumer(WebsocketConsumer):
         """Gère la réception de messages du client."""
         try:
             data = json.loads(text_data)
+            message_type = data.get('message')
             
+            # Traiter la demande de suppression de notification
+            if message_type == "delete_notification":
+                notification_id = data.get('notification_id')
+                if notification_id:
+                    deleted = notification_manager.delete_notification(self.user_id, notification_id)
+                    # Confirmer la suppression au client
+                    self.send(text_data=json.dumps({
+                        'message': 'notification_deleted',
+                        'notification_id': notification_id,
+                        'success': deleted
+                    }))
+                    return
+            
+            # Pour les autres types de messages (match_accept, match_decline, etc.)
             # Validation des données requises
-            required_fields = ['client_id', 'match_id', 'game_type', 'message', 'name', 'id']
+            required_fields = ['client_id', 'match_id', 'game_type', 'id']
             if not all(field in data for field in required_fields):
                 logger.warning(f"Message reçu avec des champs manquants: {data}")
                 return
                 
             client_id = int(data['client_id'])
-            message_type = data['message']
             
             if message_type == "match_accept":
                 self._handle_match_accept(data['match_id'], client_id)

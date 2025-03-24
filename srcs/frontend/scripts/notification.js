@@ -77,6 +77,14 @@ class NotificationManager {
 	_handleIncomingMessage(event) {
 	  try {
 		const data = JSON.parse(event.data);
+		console.log('Message reçu:', data);
+		
+		// Si le message est une confirmation de suppression
+		if (data.message === 'notification_deleted') {
+			console.log(`Notification ${data.notification_id} supprimée avec succès: ${data.success}`);
+			return;
+		}
+		
 		switch (data.message) {
 		  case 'match_request':
 			if (data.type == "matchmaking")
@@ -110,6 +118,7 @@ class NotificationManager {
 	  const userId = window.user.id;
 	  const match_id = data.match_id;
 	  const timestamp = data.timestamp;
+	  const notification_id = data.notification_id;
 	  const isTournament = data.tournament === true;
 	  const tournamentName = data.tournament_name || "Tournoi";
 	  const player1Name = data.player1_name || "Joueur 1";
@@ -122,6 +131,7 @@ class NotificationManager {
 	  // Créer l'alerte de match
 	  const alertEl = this._createMatchAlert({
 		match_id,
+		notification_id,
 		isTournament,
 		tournamentName,
 		opponentName,
@@ -137,6 +147,10 @@ class NotificationManager {
 	  this.timeoutHandlers[match_id] = setTimeout(() => {
 		if (alertsEl.contains(alertEl)) {
 		  this.declineMatch(userId, match_id, isTournament);
+		  // Supprimer la notification côté serveur
+		  if (notification_id) {
+			this._deleteNotification(notification_id);
+		  }
 		  alertEl.remove();
 		}
 	  }, this.NOTIFICATION_TIMEOUT);
@@ -151,12 +165,14 @@ class NotificationManager {
 	  const from_user_id = data.from_user_id;
 	  const from_user_name = data.from_user_name;
 	  const timestamp = data.timestamp;
+	  const notification_id = data.notification_id;
 	  
 	  // Créer l'alerte de demande d'ami
 	  const alertEl = this._createFriendRequestAlert({
 		from_user_id,
 		from_user_name,
-		timestamp
+		timestamp,
+		notification_id
 	  });
 	  
 	  // Ajouter l'alerte au conteneur
@@ -166,6 +182,10 @@ class NotificationManager {
 	  // Configurer le timeout pour supprimer automatiquement après 5 minutes
 	  setTimeout(() => {
 		if (alertsEl.contains(alertEl)) {
+		  // Supprimer la notification côté serveur
+		  if (notification_id) {
+		    this._deleteNotification(notification_id);
+		  }
 		  alertEl.remove();
 		}
 	  }, 5 * 60 * 1000); // 5 minutes
@@ -177,7 +197,7 @@ class NotificationManager {
 	 * @returns {HTMLElement} - Élément d'alerte
 	 * @private
 	 */
-	_createMatchAlert({ match_id, isTournament, tournamentName, opponentName, isPlayer1, timestamp }) {
+	_createMatchAlert({ match_id, notification_id, isTournament, tournamentName, opponentName, isPlayer1, timestamp }) {
 	  const userId = window.user.id;
 	  
 	  // Créer l'élément d'alerte
@@ -209,12 +229,20 @@ class NotificationManager {
 		const acceptButton = this._createButton('Accept', 'button btn-success accept-friend-request', () => {
 		  this.acceptMatch(userId, match_id);
 		  this._clearMatchTimeout(match_id);
+		  // Supprimer la notification côté serveur
+		  if (notification_id) {
+		    this._deleteNotification(notification_id);
+		  }
 		});
 		
 		// Bouton de refus
 		const declineButton = this._createButton('Decline', 'button btn-danger cancel-friend-request', () => {
 		  this.declineMatch(userId, match_id, isTournament);
 		  this._clearMatchTimeout(match_id);
+		  // Supprimer la notification côté serveur
+		  if (notification_id) {
+		    this._deleteNotification(notification_id);
+		  }
 		  alertEl.remove();
 		});
 		
@@ -231,6 +259,10 @@ class NotificationManager {
 	  
 	  // Stocker la référence au timer pour le nettoyage
 	  alertEl.dataset.timerId = timerInterval;
+	  // Stocker l'ID de notification pour référence
+	  if (notification_id) {
+	    alertEl.dataset.notificationId = notification_id;
+	  }
 	  
 	  return alertEl;
 	}
@@ -347,8 +379,15 @@ class NotificationManager {
 	 */
 	_handleMatchStart(data) {
 		let notif = document.getElementById(data.match_id);
-		if (notif)
+		
+		// Récupérer l'ID de notification et supprimer sur le serveur
+		if (notif) {
+			const notificationId = notif.dataset.notificationId;
+			if (notificationId) {
+				this._deleteNotification(notificationId);
+			}
 			notif.remove();
+		}
 	  
 		if (data.game_type !== this.game_type && window.setSelectedGame) {
 			window.setSelectedGame(data.game_type);
@@ -363,8 +402,14 @@ class NotificationManager {
 
 	_handleMatchDecline(data) {
 		const alertsEl = document.getElementById('alerts');
-		// const alerts = alertsEl.querySelectorAll('.alert');
-		// alertsEl.innerHTML = '';
+		// Récupérer et supprimer la notification sur le serveur si présente
+		const notif = document.getElementById(data.match_id);
+		if (notif) {
+			const notificationId = notif.dataset.notificationId;
+			if (notificationId) {
+				this._deleteNotification(notificationId);
+			}
+		}
 
 		const declineAlert = document.createElement('div');
 		declineAlert.className = 'alert alert-danger';
@@ -385,7 +430,7 @@ class NotificationManager {
 	 * @returns {HTMLElement} - Élément d'alerte
 	 * @private
 	 */
-	_createFriendRequestAlert({ from_user_id, from_user_name, timestamp }) {
+	_createFriendRequestAlert({ from_user_id, from_user_name, timestamp, notification_id }) {
 	  // Créer l'élément d'alerte
 	  const alertEl = document.createElement('div');
 	  alertEl.className = 'alert alert-info friend-request-alert';
@@ -393,6 +438,11 @@ class NotificationManager {
 	  alertEl.style.justifyContent = 'space-between';
 	  alertEl.style.flexDirection = 'column';
 	  alertEl.id = `friend-request-${from_user_id}-${timestamp}`;
+	  
+	  // Stockage de l'ID de notification
+	  if (notification_id) {
+	    alertEl.dataset.notificationId = notification_id;
+	  }
 	  
 	  // Définir le message de l'alerte
 	  const messageEl = document.createElement('div');
@@ -408,12 +458,20 @@ class NotificationManager {
 	  // Bouton d'acceptation
 	  const acceptButton = this._createButton('Accepter', 'button btn-success accept-friend-request', () => {
 		this._acceptFriendRequest(from_user_id);
+		// Supprimer la notification côté serveur
+		if (notification_id) {
+		  this._deleteNotification(notification_id);
+		}
 		alertEl.remove();
 	  });
 	  
 	  // Bouton de refus
 	  const declineButton = this._createButton('Refuser', 'button btn-danger cancel-friend-request', () => {
 		this._rejectFriendRequest(from_user_id);
+		// Supprimer la notification côté serveur
+		if (notification_id) {
+		  this._deleteNotification(notification_id);
+		}
 		alertEl.remove();
 	  });
 	  
@@ -628,6 +686,30 @@ class NotificationManager {
 		clearTimeout(this.timeoutHandlers[matchId]);
 	  });
 	  this.timeoutHandlers = {};
+	}
+  
+	/**
+	 * Supprime une notification sur le serveur
+	 * @param {number} notificationId - ID de la notification à supprimer
+	 * @private
+	 */
+	_deleteNotification(notificationId) {
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			console.error('WebSocket non disponible pour la suppression de notification');
+			return false;
+		}
+		
+		try {
+			this.socket.send(JSON.stringify({
+				message: 'delete_notification',
+				notification_id: notificationId
+			}));
+			console.log(`Demande de suppression de la notification ${notificationId} envoyée`);
+			return true;
+		} catch (error) {
+			console.error('Erreur lors de la suppression de notification:', error);
+			return false;
+		}
 	}
   }
   
