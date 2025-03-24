@@ -43,7 +43,7 @@ export function renderScoreChart(matches, user) {
         const userIsWinner = match.winner && match.winner.id === user.id;
         
         // Calculer les points gagnés/perdus (inverse car on va dans le passé)
-        const pointsChange = userIsWinner ? -42 : 21;
+        const pointsChange = userIsWinner ? -42 : 19;
         
         // Mettre à jour le score pour ce point dans le temps (en allant dans le passé)
         currentScore += pointsChange;
