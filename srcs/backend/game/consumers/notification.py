@@ -69,7 +69,6 @@ class NotificationManager:
         # Ajouter un timestamp et un ID unique à la notification
         timestamp = datetime.now()
         notification_data["timestamp"] = int(timestamp.timestamp() * 1000)
-        notification_data["notification_id"] = self._generate_notification_id()
         
         self.pending_notifications[user_id].append((timestamp, notification_data))
         logger.info(f"Notification {notification_data['notification_id']} stockée pour l'utilisateur {user_id}")
@@ -138,7 +137,7 @@ class NotificationManager:
     
     def send_notification(self, user_id, notification_data):
         """Envoie une notification ET la stocke systématiquement."""
-        # Toujours stocker la notification
+        notification_data["notification_id"] = self._generate_notification_id()
         notification_data = self.store_notification(user_id, notification_data)
         
         # Si l'utilisateur est connecté, envoyer la notification immédiatement

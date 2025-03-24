@@ -378,15 +378,8 @@ class NotificationManager {
 	 * @private
 	 */
 	_handleMatchStart(data) {
-		let notif = document.getElementById(data.match_id);
-		
-		// Récupérer l'ID de notification et supprimer sur le serveur
-		if (notif) {
-			const notificationId = notif.dataset.notificationId;
-			if (notificationId) {
-				this._deleteNotification(notificationId);
-			}
-			notif.remove();
+		if (data.notification_id) {
+			this._deleteNotification(data.notification_id);
 		}
 	  
 		if (data.game_type !== this.game_type && window.setSelectedGame) {
@@ -402,13 +395,8 @@ class NotificationManager {
 
 	_handleMatchDecline(data) {
 		const alertsEl = document.getElementById('alerts');
-		// Récupérer et supprimer la notification sur le serveur si présente
-		const notif = document.getElementById(data.match_id);
-		if (notif) {
-			const notificationId = notif.dataset.notificationId;
-			if (notificationId) {
-				this._deleteNotification(notificationId);
-			}
+		if (data.notification_id) {
+			this._deleteNotification(data.notification_id);
 		}
 
 		const declineAlert = document.createElement('div');
