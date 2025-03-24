@@ -100,7 +100,6 @@ class NotificationManager {
 			break;
 		  case 'friend_request':
 			this._handleFriendRequest(data);
-			break;
 		  default:
 			break;
 		}
@@ -175,6 +174,9 @@ class NotificationManager {
 		notification_id
 	  });
 	  
+	  if (notification_id) {
+		this._deleteNotification(notification_id);
+	  }
 	  // Ajouter l'alerte au conteneur
 	  const alertsEl = document.getElementById('alerts');
 	  alertsEl.appendChild(alertEl);
@@ -183,9 +185,6 @@ class NotificationManager {
 	  setTimeout(() => {
 		if (alertsEl.contains(alertEl)) {
 		  // Supprimer la notification côté serveur
-		  if (notification_id) {
-		    this._deleteNotification(notification_id);
-		  }
 		  alertEl.remove();
 		}
 	  }, 5 * 60 * 1000); // 5 minutes

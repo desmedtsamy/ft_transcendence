@@ -163,3 +163,6 @@ class Consumer(WebsocketConsumer):
 		# Annuler le timer si existant
 		if hasattr(self, 'matchmaking_timer') and self.matchmaking_timer:
 			self.matchmaking_timer.cancel()
+			
+		# Déconnecter l'utilisateur
+		self.close()
