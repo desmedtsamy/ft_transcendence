@@ -626,45 +626,6 @@ class NotificationManager {
 	 */
 	declineMatch(userId, matchId, isTournament) {
 	  this.sendNotification(userId, matchId, 'match_decline');
-	  if (isTournament) {
-		// Envoyer une notification spécifique pour le refus de tournoi
-		fetch('/api/tournament/decline_match/', {
-		  method: 'POST',
-		  headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': this._getCookie('csrftoken'),
-		  },
-		  body: JSON.stringify({
-			match_id: matchId,
-			user_id: window.user.id
-		  }),
-		  credentials: 'include'
-		})
-		.then(response => {
-		  if (!response.ok) {
-			throw new Error('Erreur lors du refus du match de tournoi');
-		  }
-		  return response.json();
-		})
-		.then(data => {
-		  // Remplacer alert par une notification plus élégante
-		  this._showSuccessAlert('Vous avez refusé de participer au match de tournoi');
-		})
-		.catch(error => {
-		  console.error('Erreur:', error);
-		  // Afficher une notification d'erreur avec la classe d'alerte rouge
-		  const alertsEl = document.getElementById('alerts');
-		  const errorAlert = document.createElement('div');
-		  errorAlert.className = 'alert alert-danger';
-		  errorAlert.textContent = 'Erreur lors du refus du match de tournoi';
-		  alertsEl.appendChild(errorAlert);
-		  
-		  // Supprimer la notification après 3 secondes
-		  setTimeout(() => {
-			errorAlert.remove();
-		  }, 3000);
-		});
-	  }
 	}
   
 	/**

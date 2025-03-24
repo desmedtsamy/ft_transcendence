@@ -37,7 +37,7 @@ class Match(models.Model):
 		self.save()
 
 	def end(self, winner, match_data=None):
-		if self.status == "started":
+		if self.status != "finished":
 			self.status = 'finished'
 			self.save()
 			if match_data:
