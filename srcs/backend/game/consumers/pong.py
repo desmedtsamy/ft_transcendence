@@ -96,6 +96,21 @@ class Consumer(WebsocketConsumer):
 			self.send_role_to_client()
 			self.send_connection()
 
+		if len(self.game.player_list) == 1 and not self.game.game_ended:
+			def check_match_status():
+				while True:
+					match = getMatch(self.scope['url_route']['kwargs']['game_id'])
+					if match.status == 'finished':
+						self.send(json.dumps({'type': 'redirect', 'message': 'Match is finished','url': '/'}))
+						self.game.game_ended = True
+						self.close()
+						break
+					with self.game.lock:
+						if len(self.game.player_list) == 2:
+							break
+					time.sleep(1)
+			threading.Thread(target=check_match_status, daemon=True).start()
+
 		# Start or resume the game if both players are connected
 		if len(self.game.player_list) == 2 and not self.game.game_ended:
 			with self.game.game_loop_start_lock:
