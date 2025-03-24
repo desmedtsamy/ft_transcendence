@@ -160,7 +160,7 @@ function renderTournament(tournament) {
 	}
 
 	// Admin buttons
-	if (tournament.creator === window.user.username) {
+	if (window.user && tournament.creator === window.user.username) {
 		if (!tournament.is_started || tournament.is_finished) {
 			document.getElementById('admin_button_container').appendChild(createButton('Supprimer le tournoi', deleteTournament));
 		}
