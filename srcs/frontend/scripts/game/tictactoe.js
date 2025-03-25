@@ -25,8 +25,8 @@ function onLoad() {
     
     // Initialize game controls
     document.getElementById('button-wrapper').innerHTML = `
-    <button id="restart-button" class="game-button">Recommencer</button>
-    <button id="quit-button" class="game-button">Abandonner</button>
+    <button id="restart-button" class="button">Recommencer</button>
+    <button id="quit-button" class="button">Abandonner</button>
     `;
     
     // Setup restart functionality
