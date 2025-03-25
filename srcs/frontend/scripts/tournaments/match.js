@@ -142,7 +142,7 @@ function renderTournament(tournament) {
 			tournamentEl.appendChild(roundEl);
 		});
 		
-		if (tournament.winner) {
+		if (tournament.is_finished) {
 			tournamentEl.appendChild(createWinnerElement(tournament));
 		}
 	} else {
@@ -170,10 +170,19 @@ function createMatchElement(match) {
 	const matchEl = document.createElement('div');
 	matchEl.className = 'match';
 	
-	let player1El = createPlayerElement(match.player1);
-	let player2El = createPlayerElement(match.player2);
+	// Si le match est terminé et qu'un joueur est manquant, on le remplace par "anonyme"
+	let player1 = match.player1;
+	let player2 = match.player2;
 	
-	if (match.winner != null) {
+	if (match.status == "finished") {
+		if (player1 == null) player1 = "anonyme";
+		if (player2 == null) player2 = "anonyme";
+	}
+	
+	let player1El = createPlayerElement(player1);
+	let player2El = createPlayerElement(player2);
+	
+	if (match.status == "finished") {
 		if (match.winner === match.player1) {
 			player1El.classList.add('win');
 			player2El.classList.add('looser');
@@ -208,10 +217,8 @@ function createWinnerElement(tournament) {
 	matchEl.className = 'match';
 	const winnerEl = document.createElement('div');
 	winnerEl.className = 'player';
-	if (tournament.winner != null) {
-		winnerEl.classList.add('winner');
-	}
-	winnerEl.textContent = tournament.winner;
+	winnerEl.classList.add('winner');
+	winnerEl.textContent = tournament.winner ? tournament.winner : "anonyme";
 	matchEl.appendChild(winnerEl);
 	roundEl.appendChild(matchEl);
 	return roundEl;
