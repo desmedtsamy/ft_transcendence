@@ -36,24 +36,8 @@
 	</div>
     <div id="player-turn"></div>
 	<div id="mobile-controls">
-		<button id="move-up">Up</button>
-		<button id="move-down">Down</button>
+		<button style="position: absolute; left :1em; top : 40% ;font-size: 6em" id="move-up"> <i class="fa-solid fa-arrow-up"></i></button>
+		<button style="position: absolute; right :1em; top : 40% ; font-size: 6em" id="move-down"><i class="fa-solid fa-arrow-down"></i></button>
 	</div>
     <script type="module" src="game.js"></script>
 </body>
-<style>
-#neon {
-    color: var(--primary-color);
-    text-shadow: 0 0 10px var(--primary-color),
-                 0 0 20px var(--primary-color),
-                 0 0 30px var(--primary-color);
-    margin: 0;
-    font-size: 4.5rem;
-    white-space: nowrap;
-    animation: neonPulse 1.5s infinite alternate;
-    font-family: 'VT323', monospace;
-    letter-spacing: 4px;
-    font-weight: bold;
-}
-</style>
-</html>
