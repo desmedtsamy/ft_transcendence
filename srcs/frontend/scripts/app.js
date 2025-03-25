@@ -67,14 +67,6 @@ window.changeCSS = function (game) {
 		linkElement.href = `/css/tictactoe.css?v=${timestamp}`;
 	}
 	document.head.appendChild(linkElement);
-
-	if (window.location.pathname.startsWith('/tournaments')) {
-		const tournamentStylesheet = document.createElement('link');
-		tournamentStylesheet.rel = 'stylesheet';
-		tournamentStylesheet.id = 'tournamentStylesheet';
-		tournamentStylesheet.href = `/css/tournament/tournament.css?v=${timestamp}`;
-		document.head.appendChild(tournamentStylesheet);
-	}
 }
 
 window.getCookie = function(name) {

@@ -1,0 +1,98 @@
+.card {
+	background-color: var(--secondary-bg) !important;
+	border-color: var(--primary-color) !important;
+	box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.1);
+}
+
+.card-header {
+	background-color: var(--primary-color) !important;
+	color: var(--bg-color) !important;
+	padding: 1rem;
+}
+
+.card-body {
+	background-color: var(--secondary-bg);
+}
+
+h2, h4 {
+	color: inherit;
+	font-weight: bold;
+}
+
+.form-label {
+	color: var(--text-color);
+	margin-bottom: 0.5rem;
+}
+
+.form-control {
+	background-color: var(--secondary-bg);
+	border: 1px solid rgba(var(--primary-rgb), 0.3);
+	color: var(--text-color);
+	padding: 0.75rem 1rem;
+	border-radius: 8px;
+	font-size: 1rem;
+}
+
+.form-control:focus {
+	background-color: var(--secondary-bg);
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+	color: var(--text-color);
+}
+
+.form-control::placeholder {
+	color: rgba(var(--primary-rgb), 0.5);
+}
+
+.border-top {
+	border-top: 1px solid rgba(var(--primary-rgb), 0.3) !important;
+}
+
+/* Override Bootstrap button styles to ensure consistency */
+.btn-outline-primary {
+	border: 1px solid var(--primary-color) !important;
+	color: var(--bg-color) !important;
+	background-color: var(--primary-color) !important;
+	padding: 0.5rem 1rem !important;
+	font-weight: normal !important;
+}
+
+.btn-outline-primary:hover {
+	background-color: transparent !important;
+	color: var(--primary-color) !important;
+	border: 1px solid var(--primary-color) !important;
+}
+
+/* Focus state should match hover */
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+	box-shadow: none !important;
+	background-color: transparent !important;
+	color: var(--primary-color) !important;
+	border: 1px solid var(--primary-color) !important;
+}
+
+.error-message {
+    color: #ff5555;
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+    color: #28a745;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #dc3545;
+}

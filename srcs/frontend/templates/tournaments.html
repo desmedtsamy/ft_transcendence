@@ -5,30 +5,16 @@
 	// Make functions available globally
 	window.createModal = createModal;
 	
-	// Initialize tournaments after the template is loaded
-	window.initializeTournaments = function() {
-		// Ensure tournament CSS is loaded
-		let tournamentStylesheet = document.getElementById('tournamentStylesheet');
-		if (!tournamentStylesheet) {
-			tournamentStylesheet = document.createElement('link');
-			tournamentStylesheet.rel = 'stylesheet';
-			tournamentStylesheet.id = 'tournamentStylesheet';
-			tournamentStylesheet.href = '/css/tournament/tournament.css';
-			document.head.appendChild(tournamentStylesheet);
-		}
-		
-		// Force reload of tournament CSS
-		tournamentStylesheet.href = tournamentStylesheet.href.split('?')[0] + '?v=' + new Date().getTime();
-		
+	
 		const tournamentList = document.getElementById('tournament-list');
 		if (tournamentList) {
 			populateTournaments();
 		}
-	};
 
 	// Call initialization when this script loads
 	window.initializeTournaments();
 </script>
+<link rel="stylesheet" href="/css/tournament.css">
 
 <div class="container-fluid mt-5">
 	<div class="row">

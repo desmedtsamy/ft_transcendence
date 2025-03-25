@@ -1,0 +1,130 @@
+.card {
+    background-color: var(--secondary-bg) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.border-glow {
+    position: relative;
+}
+
+.border-glow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(var(--primary-rgb), 0.5), 
+        rgba(var(--primary-rgb), 0.1), 
+        rgba(var(--primary-rgb), 0.5));
+    border-radius: 14px;
+    z-index: -1;
+    animation: glowing 1.5s linear infinite;
+}
+
+@keyframes glowing {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+.form-control {
+    background-color: var(--secondary-bg);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    color: var(--text-color);
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: var(--secondary-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: bold;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.btn-primary:hover, .btn-primary:active {
+    background-color: transparent !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+h2 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.form-label {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+a {
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:active{
+    background-color: var(--primary-color) !important;
+    color: var(--bg-color) !important;
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+/* Style spécifique pour le bouton 42 */
+#login_42 {
+    border-color: rgba(var(--primary-rgb), 0.7);
+    color: var(--primary-color);
+}
+
+#login_42:hover {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.2);
+}
+
+.login-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.login-link span {
+    color: var(--text-color);
+}

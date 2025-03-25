@@ -3,81 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        canvas {
-            border: 2px solid #16e0bd;
-            box-shadow: 0 0 15px #16e0bd;
-            display: block;
-            margin: 0 auto;
-            background-color: #1a1a2e;
-            max-width: 100%;
-            height: auto;
-        }
-        
-        @media screen and (orientation: landscape) {
-            canvas {
-                width: 95vh;
-                height: 47.5vh;
-            }
-            
-            body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                margin: 0;
-                padding: 10px;
-            }
-        }
-        #player-turn {
-            color: #16e0bd;
-            margin-top: 20px;
-            font-family: 'VT323', monospace;
-            font-size: 24px;
-            text-shadow: 0 0 10px #16e0bd;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-        #button-wrapper a {
-            color: #16e0bd;
-            text-decoration: none;
-            font-family: 'VT323', monospace;
-        }
-        #mobile-controls {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        @media (min-width: 1024px) {
-            #mobile-controls {
-                display: none;
-            }
-        }
-        
-        #mobile-controls button {
-			position: absolute;
-            top: 20%;
-            width: 50%;
-            height: 60%;
-            border: none;
-            pointer-events: auto;
-			opacity: 0;
-        }
-        #move-up {
-            left: 0;
-        }
-        #move-down {
-            right: 0;
-        }
-        .hidden {
-            display: none !important;
-        }
-    </style>
+	<link rel="stylesheet" href="/css/game/pong.css">
 </head>
 <body>
     <canvas id="pongCanvas" width="800" height="400"></canvas>
@@ -88,8 +14,8 @@
 	</div>
     <div id="player-turn"></div>
 	<div id="mobile-controls">
-		<button id="move-up"><i class="fa-solid fa-arrow-up"></i></button>
-		<button id="move-down"><i class="fa-solid fa-arrow-down"></i></button>
+		<button id="move-up"></button>
+		<button id="move-down"></button>
 	</div>
     <script type="module" src="game.js"></script>
 </body>

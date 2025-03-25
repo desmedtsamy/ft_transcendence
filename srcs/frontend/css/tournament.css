@@ -165,7 +165,8 @@
 }
 
 .looser {
-	background-color: var(--primary-color);
+	/* background-color: var(--primary-color); */
+	background-color:#e01616;
 	color: black;
 }
 

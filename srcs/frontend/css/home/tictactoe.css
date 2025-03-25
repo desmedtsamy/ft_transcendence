@@ -1,0 +1,40 @@
+.board {
+	display: grid;
+	grid-template-columns: repeat(3, 100px);
+	gap: 5px;
+	margin: 20px auto;
+	width: fit-content;
+}
+.cell {
+	width: 100px;
+	height: 100px;
+	border: 2px solid #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 100px;
+}
+#glass{
+	opacity: 0;
+	background: rgba(255, 255, 255, 0);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(8.6px);
+	-webkit-backdrop-filter: blur(8.6px);
+	width:342px;
+	height:342px;
+	position: absolute;
+	top: 48%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+#glass:hover{
+	opacity: 1;
+}
+#play_button {
+	cursor: pointer;
+}
