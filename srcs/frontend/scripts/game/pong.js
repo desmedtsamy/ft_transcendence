@@ -114,6 +114,7 @@ function onLoad() {
             const disconnectMessage = document.getElementById('player-turn');
             disconnectMessage.textContent = "Game won by forfeit";
             win = true;
+			document.getElementById("mobile-controls").classList.add("hidden");
             drawEndScreen(win);
             clearInterval(window.disconnectTimer);
             window.disconnectTimer = null;
