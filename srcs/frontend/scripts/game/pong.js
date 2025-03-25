@@ -212,29 +212,37 @@ function onLoad() {
     window.addEventListener('keyup', handleKeyUp);
 
     // Add event listeners for mobile controls
+    addMobileControls();
+}
+
+function addMobileControls() {
     const moveUpButton = document.getElementById('move-up');
     const moveDownButton = document.getElementById('move-down');
 
     if (moveUpButton && moveDownButton) {
-
-        // Also add click events for non-touch devices
-        moveUpButton.addEventListener('mousedown', () => {
+        // Touch events
+        moveUpButton.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling
             keysPressed.ArrowUp = true;
         });
 
-        moveUpButton.addEventListener('mouseup', () => {
+        moveUpButton.addEventListener('touchend', (e) => {
+            e.preventDefault();
             keysPressed.ArrowUp = false;
         });
 
-        moveDownButton.addEventListener('mousedown', () => {
+        moveDownButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             keysPressed.ArrowDown = true;
         });
 
-        moveDownButton.addEventListener('mouseup', () => {
+        moveDownButton.addEventListener('touchend', (e) => {
+            e.preventDefault();
             keysPressed.ArrowDown = false;
         });
     }
 }
+
 let gameLoopRunning = false;
 function startGameLoop(){
     let lastTime = 0;
