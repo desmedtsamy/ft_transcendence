@@ -49,7 +49,7 @@ class Consumer(WebsocketConsumer):
 	def getGame(self):
 		match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 		if match.status == 'finished':
-			self.send(json.dumps({
+			self.send_try(json.dumps({
 				'type': 'redirect',
 				'message': 'Match is finished',
 				'url': '/'
@@ -102,11 +102,11 @@ class Consumer(WebsocketConsumer):
 
 		if len(self.game.player_list) == 1 and not self.game.game_ended:
 			def check_match_status():
-				# self.send(json.dumps({'type': 'waiting'}))
+				self.send_try(json.dumps({'type': 'waiting'}))
 				while True:
 					match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 					if match.status == 'finished':
-						self.send(json.dumps({'type': 'redirect', 'message': 'Match is finished','url': '/'}))
+						self.send_try(json.dumps({'type': 'redirect', 'message': 'Match is finished','url': '/'}))
 						self.game.game_ended = True
 						self.close()
 						break
@@ -125,7 +125,7 @@ class Consumer(WebsocketConsumer):
 					self.start_game_loop()
 
 	def refuse_connection(self, reason="Too many players for the game"):
-		self.send(json.dumps({"error": reason}))
+		self.send_try(json.dumps({"error": reason}))
 		self.close()
 
 	def countdown(self):
@@ -141,14 +141,14 @@ class Consumer(WebsocketConsumer):
 
 	def send_role_to_client(self):
 		if self.id == self.game.p1_id:
-			self.send(json.dumps({
+			self.send_try(json.dumps({
 				'type': 'role',
 				'role': "left",
 				'player1': self.game.p1_name,
 				'player2': self.game.p2_name,
 			}))
 		else:
-			self.send(json.dumps({
+			self.send_try(json.dumps({
 				'type': 'role',
 				'role': "left",
 				'player1': self.game.p2_name,
@@ -162,10 +162,10 @@ class Consumer(WebsocketConsumer):
 				self.handle_data(data)
 		except json.JSONDecodeError as e:
 			print(f"JSON decoding error: {e}")
-			self.send(json.dumps({"error": "Invalid JSON format"}))
+			self.send_try(json.dumps({"error": "Invalid JSON format"}))
 		except Exception as e:
 			print(f"Error in receive: {e}")
-			self.send(json.dumps({"error": "Server error"}))
+			self.send_try(json.dumps({"error": "Server error"}))
 
 	def handle_data(self, data):
 		if data.get('type') == 'move':
@@ -324,6 +324,12 @@ class Consumer(WebsocketConsumer):
 		for client in self.game.player_list:
 			if client != self:
 				client.send(json.dumps({'type': 'opponent connected'}))
+
+	def send_try(self, arg):
+		try:
+			self.send(arg)
+		except :
+			print('problem sending to self')
 
 	def start_game_loop(self):
 		start_time = time.time()
