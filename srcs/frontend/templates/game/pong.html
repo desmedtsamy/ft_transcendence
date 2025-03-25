@@ -25,6 +25,30 @@
             text-decoration: none;
             font-family: 'VT323', monospace;
         }
+        #mobile-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        #mobile-controls button {
+            position: absolute;
+            top: 40%;
+            width: 50%;
+            height: 50%;
+            background: transparent;
+            border: none;
+            opacity: 0;
+            pointer-events: auto;
+        }
+        #move-up {
+            left: 0;
+        }
+        #move-down {
+            right: 0;
+        }
     </style>
 </head>
 <body>
@@ -36,8 +60,9 @@
 	</div>
     <div id="player-turn"></div>
 	<div id="mobile-controls">
-		<button style="position: absolute; left :0.2em; top : 40% ;font-size: 2em" id="move-up"> <i class="fa-solid fa-arrow-up"></i></button>
-		<button style="position: absolute; right :0.2em; top : 40% ; font-size: 2em" id="move-down"><i class="fa-solid fa-arrow-down"></i></button>
+		<button id="move-up"><i class="fa-solid fa-arrow-up"></i></button>
+		<button id="move-down"><i class="fa-solid fa-arrow-down"></i></button>
 	</div>
     <script type="module" src="game.js"></script>
 </body>
+</html>
