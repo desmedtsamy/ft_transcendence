@@ -87,6 +87,7 @@ async function handleCreateTournament(event) {
     } catch (error) {
         console.error('Erreur lors de la requête :', error);
         alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+		navigateTo('/tournaments');
     }
 }
 
@@ -121,10 +122,12 @@ async function joinTournament(){
         } else {
             const errorData = await response.json();
             alert('imposible de rejoindre le tournois : ' + errorData.error);
+			navigateTo('/tournaments/' + window.activeTournament.id);
         }
     } catch (error) {
         console.error('Erreur lors de la requête :', error);
         alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+		navigateTo('/tournaments/' + window.activeTournament.id);
     }
 }
 
@@ -147,10 +150,12 @@ async function leaveTournament(){
             } else {
                 const errorData = await response.json();
                 alert('imposible de quité le tournois : ' + errorData.error);
+				navigateTo('/tournaments/' + window.activeTournament.id);
             }
         } catch (error) {
             console.error('Erreur lors de la requête :', error);
             alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+			navigateTo('/tournaments/' + window.activeTournament.id);
         }
     }
     else
@@ -161,16 +166,9 @@ async function leaveTournament(){
 
 function onLoad() {
 	if (window.user)
-	{
 		document.getElementById("create_tournament_btn").style.display = 'block'
-		console.log("Utilisateur connecté, bouton affiché")
-	}
 	else
-	{
 		document.getElementById("create_tournament_btn").style.display = 'none'
-		console.log("Utilisateur non connecté, bouton masqué")
-	}
-
     // Initialize Bootstrap modal
     const modalElement = document.getElementById('Modal');
     if (modalElement && typeof bootstrap !== 'undefined') {

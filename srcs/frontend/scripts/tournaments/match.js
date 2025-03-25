@@ -7,16 +7,6 @@ export function populateTournaments(tournamentId)
 		return;
 	}
 
-	// Ensure CSS is loaded
-	const cssLink = document.querySelector('link[href*="tournament.css"]');
-	if (!cssLink) {
-		const link = document.createElement('link');
-		link.rel = 'stylesheet';
-		link.type = 'text/css';
-		link.href = '/css/tournament/tournament.css';
-		document.head.appendChild(link);
-	}
-
 	// Get selected game with fallback to 'pong'
 	const selectedGame = localStorage.getItem('selectedGame') || 'pong';
 
@@ -100,11 +90,20 @@ function selectTournament(element) {
 	element.classList.add('selected');
 	const tournamentId = element.dataset.tournamentId;
 	fetch(`/api/tournament/${tournamentId}/`)
-	.then(response => response.json())
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Erreur lors de la récupération du tournoi');
+		}
+		return response.json();
+	})
 	.then(data => {	
 		window.activeTournament = data;
 		document.getElementById('tournament_name').textContent = data.name;
 		renderTournament(data);
+	})
+	.catch(error => {
+		alert("le tournoi a été supprimé")
+		navigateTo('/tournaments');
 	});	
 }	
 
@@ -252,6 +251,7 @@ async function deleteTournament(){
 	} catch (error) {
 		console.error('Erreur lors de la requête :', error);
 		alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+		navigateTo('/tournaments');
 	}
 }
 

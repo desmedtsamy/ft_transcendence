@@ -54,8 +54,11 @@ def delete_tournament(tournament_id, user):
 		tournament = Tournament.objects.get(id=tournament_id)
 		if user != tournament.creator:
 			return {'error': 'Vous n\'êtes pas le créateur du tournoi'}, 403
-		tournament.delete_tournament()
-		return {'status': 'success', 'message': 'Tournoi supprimé'}, 200
+		if tournament.is_finished or not tournament.is_started :
+			tournament.delete_tournament()
+			return {'status': 'success', 'message': 'Tournoi supprimé'}, 200
+		else :
+			return {'error': 'Le tournois a déjà débuté'}, 403
 	except Tournament.DoesNotExist:
 		return {'error': 'Tournoi introuvable'}, 404
 	except Exception as e:
