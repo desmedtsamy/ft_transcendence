@@ -53,7 +53,7 @@ class GetTournamentsView(generics.ListAPIView):
 	permission_classes = [AllowAny]
 	def post(self, request):
 		selected_game = request.data.get('selectedGame')
-		tournaments = Tournament.objects.filter(selected_game=selected_game)
+		tournaments = Tournament.objects.filter(selected_game=selected_game).order_by('-id')
 		serializer = TournamentSerializer(tournaments, many=True)
 		return Response({'tournaments': serializer.data}, status=status.HTTP_200_OK)
 	
