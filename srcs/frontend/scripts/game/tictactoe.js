@@ -202,7 +202,7 @@ function updateBoard(boardData) {
 
 function handleOpponentDisconnect() {
     if (!gameFinished) {
-        let timeLeft = 61;
+        let timeLeft = 11;
         const disconnectMessage = document.getElementById('player-turn');
         const countdown = setInterval(() => {
             timeLeft--;
