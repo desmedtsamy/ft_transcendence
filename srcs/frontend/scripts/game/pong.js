@@ -100,6 +100,11 @@ function onLoad() {
             window.location.href = data.url;
         }
 
+        if (data.type === 'waiting'){
+            const disconnectMessage = document.getElementById('player-turn');
+            disconnectMessage.textContent = data.message;
+        }
+
         if (data.type === 'disconnect') {
             handleOpponentDisconnect();
         }
