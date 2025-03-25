@@ -102,7 +102,7 @@ function onLoad() {
 
         if (data.type === 'waiting'){
             const disconnectMessage = document.getElementById('player-turn');
-            disconnectMessage.textContent = data.message;
+            disconnectMessage.textContent = 'Waiting for the other player';
         }
 
         if (data.type === 'disconnect') {
@@ -111,6 +111,7 @@ function onLoad() {
 
         if (data.type === 'game_ended'){
             gameFinished = true;
+            const disconnectMessage = document.getElementById('player-turn');
             disconnectMessage.textContent = "Game won by forfeit";
             win = true;
             drawEndScreen(win);
@@ -165,6 +166,7 @@ function onLoad() {
             }
             
             if (data.winner !== 0){
+                console.log('end classique appelr')
                 socket.close();
                 gameFinished = true;
                 if (data.winner === window.user.id){

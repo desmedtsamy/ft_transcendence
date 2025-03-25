@@ -98,7 +98,7 @@ class Consumer(WebsocketConsumer):
 
 		if len(self.game.player_list) == 1 and not self.game.game_ended:
 			def check_match_status():
-				self.send(json.dumps({'type': 'waiting', 'message': 'Waiting for the other player',}))
+				self.send(json.dumps({'type': 'waiting'}))
 				while True:
 					match = getMatch(self.scope['url_route']['kwargs']['game_id'])
 					if match.status == 'finished':
