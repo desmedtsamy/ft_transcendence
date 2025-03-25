@@ -165,7 +165,7 @@
 
 /* Winner styles */
 .winner {
-	font-size: 1.2em;
+	font-size: 1em;
 	align-content: center;
 	background: linear-gradient(135deg, #ffd700, #ffcc00);
 	color: black;
