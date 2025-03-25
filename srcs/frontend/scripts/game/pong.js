@@ -100,10 +100,10 @@ function onLoad() {
             window.location.href = data.url;
         }
 
-        // if (data.type === 'waiting'){
-        //     const disconnectMessage = document.getElementById('player-turn');
-        //     disconnectMessage.textContent = 'Waiting for the other player';
-        // }
+        if (data.type === 'waiting'){
+            const disconnectMessage = document.getElementById('player-turn');
+            disconnectMessage.textContent = 'Waiting for the other player';
+        }
 
         if (data.type === 'disconnect') {
             handleOpponentDisconnect();
