@@ -131,11 +131,12 @@ def get_tournament_details(tournament_id):
 	try:
 		tournament = Tournament.objects.get(pk=tournament_id)
 		rounds = tournament.rounds.all()
+		creator = tournament.creator.username if tournament.creator else "anonyme"
 
 		data = {
 			'id': tournament.id,
 			'name': tournament.name,
-			'creator': tournament.creator.username,
+			'creator': creator,
 			'winner': tournament.winner.username if tournament.winner else None,
 			'rounds': [
 				{
@@ -148,6 +149,7 @@ def get_tournament_details(tournament_id):
 							'player2': tournamentMatch.match.player2.username if tournamentMatch.match.player2 else None,
 							"player2_id" : tournamentMatch.match.player2.id if tournamentMatch.match.player2 else None,
 							'winner': tournamentMatch.match.winner.username if tournamentMatch.match.winner else None,
+							'status': tournamentMatch.match.status,
 						}
 						for tournamentMatch in TournamentMatch.objects.filter(round=round).order_by('id')
 					]
