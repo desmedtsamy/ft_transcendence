@@ -21,7 +21,8 @@ function renderSearchResults(users) {
 
 	if (users.length === 0) {
 		searchResults.innerHTML = '<img src="/img/travolta.png" alt="Aucun résultat">';
-		searchResults.innerHTML += "<p>Aucun résultat pour <strong>"+ document.getElementById('query').value +'</strong></p>';
+		const searchQuery = escapeHTML(document.getElementById('query').value);
+		searchResults.innerHTML += "<p>Aucun résultat pour <strong>" + searchQuery + "</strong></p>";
 		return;
 	}
 
@@ -181,3 +182,18 @@ function onLoad() {
 }
 export { onLoad, searchUsers };
 window.searchUsers = searchUsers;
+
+/**
+ * Échappe les caractères spéciaux HTML pour prévenir les attaques XSS
+ * @param {string} text - Texte à échapper
+ * @returns {string} - Texte échappé
+ */
+function escapeHTML(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
