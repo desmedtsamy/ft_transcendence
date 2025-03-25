@@ -307,3 +307,49 @@ th {
     text-align: center;
     margin-right: 12px !important;
 }
+
+#mobile-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between buttons */
+    margin-top: 20px;
+}
+
+#mobile-controls button {
+    background-color: #1a1a2e; /* Matches canvas background */
+    border: 2px solid var(--primary-color, #16e0bd);
+    color: var(--primary-color, #16e0bd);
+    font-family: 'VT323', monospace; /* Matches your retro font */
+    font-size: 24px;
+    padding: 10px 20px; /* Comfortable tap size */
+    border-radius: 8px;
+    text-shadow: 0 0 5px var(--primary-color, #16e0bd);
+    box-shadow: 0 0 10px var(--primary-color, #16e0bd);
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transitions */
+}
+
+#mobile-controls button:hover {
+    background-color: var(--primary-color, #16e0bd);
+    color: #1a1a2e;
+    text-shadow: 0 0 10px #1a1a2e;
+    box-shadow: 0 0 20px var(--primary-color, #16e0bd);
+}
+
+
+#mobile-controls button:active {
+    background-color: #0f0f1a; 
+    box-shadow: 0 0 5px var(--primary-color, #16e0bd) inset; 
+    transform: scale(0.95); 
+}
+
+/* Ensure buttons are mobile-friendly */
+@media (max-width: 576px) {
+    #mobile-controls button {
+        font-size: 20px;
+        padding: 8px 16px; /* Slightly smaller on small screens */
+        position: fixed;
+        left : 0px;
+
+    }
+}
