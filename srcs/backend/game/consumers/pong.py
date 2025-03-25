@@ -68,6 +68,10 @@ class Consumer(WebsocketConsumer):
 		self.id = int(self.scope['url_route']['kwargs']['user_id'])
 		print("user ", self.id, " se connecte")
 		self.game = self.getGame()
+		if self.game.match.player1.id ==  self.id:
+			print(self.game.match.player1.username , " se connect")
+		else :
+			print(self.game.match.player2.username , " se connect")
 		print(f"{self.id}: se lie a la game {self.game.id}")
 		with self.game.lock:
 			# Remove any existing connection for this player

@@ -210,6 +210,30 @@ function onLoad() {
     // Event listener for player movement
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+
+    // Add event listeners for mobile controls
+    const moveUpButton = document.getElementById('move-up');
+    const moveDownButton = document.getElementById('move-down');
+
+    if (moveUpButton && moveDownButton) {
+
+        // Also add click events for non-touch devices
+        moveUpButton.addEventListener('mousedown', () => {
+            keysPressed.ArrowUp = true;
+        });
+
+        moveUpButton.addEventListener('mouseup', () => {
+            keysPressed.ArrowUp = false;
+        });
+
+        moveDownButton.addEventListener('mousedown', () => {
+            keysPressed.ArrowDown = true;
+        });
+
+        moveDownButton.addEventListener('mouseup', () => {
+            keysPressed.ArrowDown = false;
+        });
+    }
 }
 let gameLoopRunning = false;
 function startGameLoop(){
