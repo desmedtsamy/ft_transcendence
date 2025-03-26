@@ -10,7 +10,7 @@ all_game = []
 all_game_lock = Lock()
 
 # Game options
-velocity = 3
+velocity = 6
 canvas_width = 800
 canvas_height = 400
 paddle_height = 100
@@ -127,7 +127,7 @@ class Consumer(WebsocketConsumer):
 		i = 3
 		while i >= 0:
 			for client in self.game.player_list:
-				client.send(json.dumps({"countdown": i}))
+				client.send_try(json.dumps({"countdown": i}))
 			if i > 0:
 				time.sleep(1)
 			i -= 1
@@ -216,7 +216,7 @@ class Consumer(WebsocketConsumer):
 			remaining_time = int(timeout - (time.time() - start_time))
 			with self.game.lock:
 				for client in self.game.player_list:
-					client.send(json.dumps({'type': 'disconnect_countdown', 'time_left': remaining_time}))
+					client.send_try(json.dumps({'type': 'disconnect_countdown', 'time_left': remaining_time}))
 
 		# If timeout is reached and no reconnection
 		with self.game.lock:
@@ -283,7 +283,7 @@ class Consumer(WebsocketConsumer):
 		with self.game.lock:
 			for client in self.game.player_list:
 				if client.id == self.game.p1_id:
-					client.send(json.dumps(self.game.state))
+					client.send_try(json.dumps(self.game.state))
 				elif client.id == self.game.p2_id:
 					inverted_state = {
 						'type': 'gamestate',
@@ -303,17 +303,17 @@ class Consumer(WebsocketConsumer):
 						},
 						'winner': self.game.state['winner']
 					}
-					client.send(json.dumps(inverted_state))
+					client.send_try(json.dumps(inverted_state))
 
 	def send_msg(self, msg):
 		msg_json = json.dumps(msg)
 		for client in self.game.player_list:
-			client.send(msg_json)
+			client.send_try(msg_json)
 
 	def send_connection(self):
 		for client in self.game.player_list:
 			if client != self:
-				client.send(json.dumps({'type': 'opponent connected'}))
+				client.send_try(json.dumps({'type': 'opponent connected'}))
 
 	def send_try(self, arg):
 		try:
