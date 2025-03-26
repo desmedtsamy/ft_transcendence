@@ -132,9 +132,8 @@ class Consumer(WebsocketConsumer):
 		self.send_state()
 		i = 3
 		while i >= 0:
-			with self.game.lock:
-				for client in self.game.player_list:
-					client.send(json.dumps({"countdown": i}))
+			for client in self.game.player_list:
+				client.send(json.dumps({"countdown": i}))
 			if i > 0:
 				time.sleep(1)
 			i -= 1
