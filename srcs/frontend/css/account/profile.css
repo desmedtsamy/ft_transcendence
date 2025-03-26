@@ -80,7 +80,7 @@
 
 .matches-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
@@ -96,7 +96,7 @@
 
 .match-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 1rem;
     align-items: center;
     padding: 1rem;
@@ -147,12 +147,13 @@
     
     .matches-header,
     .match-item {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         text-align: center;
     }
     
     .match-players {
         justify-content: center;
+        grid-column: span 2;
     }
 }
 #accept_refuse {

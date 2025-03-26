@@ -20,22 +20,19 @@ make
 python manage.py startapp newapp
 ```
 
-
-pour lancer docker sur les mac de l'ecole  
-```bash
-	correnv
-```
-
 python3 manage.py makemigrations && python3 manage.py migrate
 
 V1		django
-V0.5	User and Game Stat Dashboard
+V0.5	boostrap
 V0.5	postgresSQL
 V1		standard user management
 V1		Oauth 42
 V1		Remote players
-V0.5	boostrap
-X1		Another game
+V1		Another game
+
+
+
+V0.5	User and Game Stat Dashboard
 X(0.5)	expanding browser compatibility
 
 

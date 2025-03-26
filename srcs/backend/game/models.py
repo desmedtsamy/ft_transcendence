@@ -3,6 +3,7 @@ from django.db.models import F
 from tournament.models import TournamentMatch
 from .signals import match_started
 import random
+from django.utils import timezone
 
 
 class Match(models.Model):
@@ -21,6 +22,7 @@ class Match(models.Model):
 	player2 = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='player2_matches')
 	winner  = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='won_matches')
 	created_at = models.DateTimeField(auto_now_add=True)
+	end_date = models.DateTimeField(null=True)
 	status = models.CharField(max_length=100, default='pending', choices=GAME_STATUS)
 	data = models.JSONField(default=dict, blank=True, null=True)
 
@@ -39,6 +41,7 @@ class Match(models.Model):
 	def end(self, winner, match_data=None):
 		if self.status != "finished":
 			self.status = 'finished'
+			self.end_date = timezone.now()
 			self.save()
 			if match_data:
 				if not self.data:

@@ -25,7 +25,7 @@ async function LoginForm(event) {
 			navigateTo('/');
 		} else {
 			const result = await response.json();
-			alert("nom d'utilisateur ou mot de passe incorrect");
+			alert("nom d'utilisateur ou mot de passe incorrect ou utilisateur déjà connecté");
 		}
 
     } catch (error) {

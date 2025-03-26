@@ -123,32 +123,39 @@ export function renderRecentMatches(matches, userData) {
         // Colonne 3 et 4: Données spécifiques au type de jeu
         const dataCol1 = document.createElement('div');
         const dataCol2 = document.createElement('div');
+        const dataCol3 = document.createElement('div');
 
+        // Ajout de la date de fin dans dataCol1
+        dataCol1.textContent = match.end_date ? 
+            new Date(match.end_date).toLocaleDateString() :
+            'N/A';
+        
         if (match.game_type === 'pong') {
             // Pour Pong: Durée et Score
-            dataCol1.textContent = match.data && match.data.duration ? 
+            dataCol2.textContent = match.data && match.data.duration ? 
                 `${Math.floor(match.data.duration / 60)}m${match.data.duration % 60}s` : 
                 'N/A';
             
-            dataCol2.textContent = match.data && match.data.scores ? 
+            dataCol3.textContent = match.data && match.data.scores ? 
                 `${match.data.scores[1]} / ${match.data.scores[2]}` : 
                 'N/A';
         } else if (match.game_type === 'tictactoe') {
             // Pour Tic-tac-toe: Nombre de coups et Match nul
-            dataCol1.textContent = match.data && match.data.moves ? 
+            dataCol2.textContent = match.data && match.data.moves ? 
                 `${match.data.moves} coups` : 
                 'N/A';
             
-            dataCol2.textContent = match.data && match.data.draws !== undefined ? 
-				match.data.draws : 'N/A';
+            dataCol3.textContent = match.data && match.data.draws !== undefined ? 
+                match.data.draws : 'N/A';
         }
 
-        // Assemblage des éléments
+        // Assemblage des éléments - Ajout de dataCol1 dans l'ordre
         listItem.append(
             playersDiv,
             resultDiv,
             dataCol1,
-            dataCol2
+            dataCol2,
+            dataCol3
         );
 
         // Ajout des classes de style pour les joueurs
