@@ -16,7 +16,7 @@ def validate_reserved_username(value):
 
 def update_user_status():
 	time_threshold_inactive = timezone.now() - timedelta(minutes=2)
-	time_threshold_disconnect = timezone.now() - timedelta(minutes=15)
+	time_threshold_disconnect = timezone.now() - timedelta(minutes=60)
 
 	inactive_users = User.objects.filter(last_activity__lt=time_threshold_inactive, is_online=True)
 	for user in User.objects.filter(last_activity__lt=time_threshold_disconnect, is_online=True):
