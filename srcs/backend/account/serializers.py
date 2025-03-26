@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 		avatar = validated_data.get('avatar', None)
 		if avatar:
-			if instance.avatar:
+			if instance.avatar and 'default.png' not in instance.avatar.name:
 				instance.avatar.delete()
 			instance.avatar = avatar
 

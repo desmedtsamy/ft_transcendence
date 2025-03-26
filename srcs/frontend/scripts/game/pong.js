@@ -23,7 +23,7 @@ const BG_COLOR = '#1a1a2e';
 
 let keysPressed = { ArrowUp: false, ArrowDown: false };
 let velocity = 0; // Vitesse du joueur
-const SPEED = 300; // Pixels par seconde
+const SPEED = 600; // Pixels par seconde
 let lastSent = 0; // Pour le débouncing
 const SEND_INTERVAL = 16; // ms (~60 FPS)
 
