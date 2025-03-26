@@ -392,7 +392,6 @@ class NotificationManager {
 		const alertEl = document.getElementById(data.match_id);
 		if (alertEl){
 			if (alertEl.dataset.notificationId) {
-				console.log(alertEl.dataset.notificationId);
 				this._deleteNotification(alertEl.dataset.notificationId);
 			}
 			alertEl.remove()
@@ -655,7 +654,6 @@ class NotificationManager {
 				message: 'delete_notification',
 				notification_id: notificationId
 			}));
-			console.log(`Demande de suppression de la notification ${notificationId} envoyée`);
 			return true;
 		} catch (error) {
 			console.error('Erreur lors de la suppression de notification:', error);

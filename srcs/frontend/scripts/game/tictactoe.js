@@ -142,7 +142,7 @@ function onLoad() {
                 }
             }
         } catch (e) {
-            console.log("cpt ", e);
+            console.log("error while receiving data ", e);
         }
     });
 

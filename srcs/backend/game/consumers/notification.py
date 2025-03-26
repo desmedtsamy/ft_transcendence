@@ -275,7 +275,7 @@ class Consumer(WebsocketConsumer):
 			logger.error(f"Erreur lors du traitement de match_accept: {e}", exc_info=True)
 	
 	def _handle_match_decline(self, match_id, client_id):
-		print("match refusé ", match_id, " ", client_id)
+
 		try:
 			match = Match.objects.filter(id=match_id).first()
 			notification_data = {

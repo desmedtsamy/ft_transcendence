@@ -112,8 +112,6 @@ class Sync42View(APIView):
 		if status != 200:
 			return Response(user_data, status)
 		response,status = handle_42_user(request, user_data, update_existing_user=True)
-		print(response)
-		print(status)
 		return Response(response, status=status)
 
 class UserSettingsView(APIView):

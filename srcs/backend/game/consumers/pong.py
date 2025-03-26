@@ -66,13 +66,7 @@ class Consumer(WebsocketConsumer):
 	def connect(self):
 		self.accept()
 		self.id = int(self.scope['url_route']['kwargs']['user_id'])
-		print("user ", self.id, " se connecte")
 		self.game = self.getGame()
-		if self.game.match.player1.id ==  self.id:
-			print(self.game.match.player1.username , " se connect")
-		else :
-			print(self.game.match.player2.username , " se connect")
-		print(f"{self.id}: se lie a la game {self.game.id}")
 		with self.game.lock:
 			# Remove any existing connection for this player
 			player_to_remove = None
@@ -179,7 +173,6 @@ class Consumer(WebsocketConsumer):
 				self.game.state['players'][2]['y'] = position['y']
 
 	def disconnect(self, code):
-		print("l'utilisateur ", self, " se déconnecte")
 		with self.game.lock:
 			if self in self.game.player_list:
 				self.game.player_list.remove(self)
@@ -193,7 +186,6 @@ class Consumer(WebsocketConsumer):
 				self.game.disconnect_timer_active = False
 				if not self.game.game_ended:
 					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
-					print(f"{self.id}: Ending match with no winner")
 					self.game.match.end(None, match_data)  # End match with no winner
 					self.game.game_ended = True
 			elif len(self.game.player_list) < 2 and self.game.state['winner'] == 0:
@@ -239,7 +231,6 @@ class Consumer(WebsocketConsumer):
 					remaining_player = self.game.player_list[0]
 					winner = self.game.match.player1 if remaining_player.id == self.game.p1_id else self.game.match.player2
 					match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
-					print(f"{self.id}: Ending match when someone leaves")
 					self.game.match.end(winner, match_data)
 					self.game.game_ended = True
 			self.game.disconnect_timer_active = False
@@ -342,7 +333,6 @@ class Consumer(WebsocketConsumer):
 						self.game.state['winner'] = self.game.p1_id
 						self.send_state()
 						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
-						print(f"{self.id}: Ending match normally for player2 (ID: {self.game.p1_id})")
 						self.game.game_ended = True
 						self.game.match.end(self.game.match.player1, match_data)
 						self.game.game_ended = True
@@ -350,7 +340,6 @@ class Consumer(WebsocketConsumer):
 						self.game.state['winner'] = self.game.p2_id
 						self.send_state()
 						match_data = {'duration': int(self.game.time_total), 'scores': self.game.state['scores']}
-						print(f"{self.id}: Ending match normally for player2 (ID: {self.game.p2_id})")
 						self.game.game_ended = True
 						self.game.match.end(self.game.match.player2, match_data)
 						self.game.game_ended = True
